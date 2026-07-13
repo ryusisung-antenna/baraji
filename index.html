@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>2026년 7월 군청년 바라지 · 행복학교</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Pretendard&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF9F5; --paper:#FAF9F5; --paper-2:#F3F2ED;
+  --ink:#20211D; --ink-soft:#8A8A7E; --line:#E4E2D8;
+  --accent:#20211D; --maxw:560px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0; background:var(--bg);}
+body{ color:var(--ink); font-family:'Pretendard',sans-serif; line-height:1.65; }
+.wrap{ max-width:var(--maxw); margin:0 auto; min-height:100vh; background:var(--paper); position:relative; display:flex; flex-direction:column; }
+.icon{ display:inline-flex; width:1em; height:1em; vertical-align:-0.15em; }
+.icon svg{ width:100%; height:100%; }
+.page{ display:none; flex:1; flex-direction:column; min-height:100vh; }
+.page.active{ display:flex; animation:fadeIn .35s ease; }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+.page-scroll{ flex:1; overflow-y:auto; padding:30px 26px 18px; -webkit-overflow-scrolling:touch; }
+.page-footer{ flex:none; padding:16px 26px calc(16px + env(safe-area-inset-bottom)); background:linear-gradient(180deg, rgba(250,249,245,0), var(--paper) 40%); }
+.kicker{ font-size:11px; font-weight:600; letter-spacing:.24em; color:var(--ink-soft); margin-bottom:18px; text-transform:uppercase; }
+h1.title{ font-family:'Noto Serif KR',serif; font-size:23px; font-weight:600; margin:0 0 12px; color:var(--ink); line-height:1.5; letter-spacing:-.01em; }
+h2.subtitle{ font-family:'Noto Serif KR',serif; font-size:16px; font-weight:600; margin:28px 0 13px; color:var(--ink); display:flex; align-items:center; gap:8px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+p.lead{ font-size:13px; color:var(--ink-soft); margin:0 0 26px; line-height:1.7; }
+.card{ background:transparent; border:none; border-bottom:1px solid var(--line); padding:0 0 16px; margin-bottom:16px; }
+.card p{ font-size:14px; margin:0 0 10px; color:var(--ink); line-height:1.7; }
+.card p:last-child{ margin-bottom:0; }
+.opt-group{ margin-bottom:26px; }
+.opt-group:last-child{ margin-bottom:0; }
+.opt-group-label{ font-size:12px; font-weight:700; color:var(--ink); margin-bottom:2px; padding-left:2px; }
+.opt-item{ display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid var(--line); padding:15px 2px; cursor:pointer; transition:opacity .15s ease; }
+.opt-item:active{ opacity:.6; }
+.opt-radio{ width:16px; height:16px; border-radius:50%; border:1.4px solid #C7C4B4; flex:none; position:relative; order:2; }
+.opt-item.sel .opt-radio{ border-color:var(--ink); }
+.opt-item.sel .opt-radio::after{ content:''; position:absolute; inset:3.5px; border-radius:50%; background:var(--ink); }
+.opt-text{ font-size:14.5px; font-weight:500; color:var(--ink); }
+.opt-item.sel .opt-text{ font-weight:700; }
+.btn-next{ display:block; width:100%; padding:16px; text-align:center; background:var(--ink); color:#fff; border:none; border-radius:3px; font-size:14.5px; font-weight:600; letter-spacing:.02em; cursor:pointer; }
+.btn-next:disabled{ background:#D8D6C8; color:#fff; }
+.btn-back{ display:inline-flex; align-items:center; gap:4px; background:none; border:none; color:var(--ink-soft); font-size:12.5px; padding:2px 0 18px; cursor:pointer; }
+.btn-back .icon{ font-size:11px; }
+.intro-quote{ border-left:2px solid var(--ink); padding:2px 0 2px 18px; margin:16px 0 4px; }
+.intro-quote p{ font-size:14.5px; margin:0 0 15px; color:var(--ink); line-height:1.75; }
+.sec-title{ display:flex; align-items:center; gap:9px; font-family:'Noto Serif KR',serif; font-size:14.5px; font-weight:600; color:var(--ink); margin:24px 0 12px; }
+.recipe-block{ background:var(--paper-2); border-radius:8px; padding:14px 16px; margin-bottom:12px; }
+.recipe-block ul.plain{ margin-bottom:0; }
+.recipe-block ul.plain li:last-child{ margin-bottom:0; }
+.prep-group{ padding-bottom:18px; margin-bottom:18px; border-bottom:1px solid var(--line); }
+.prep-group:last-child{ padding-bottom:0; margin-bottom:0; border-bottom:none; }
+.prep-group-label{ font-family:'Noto Serif KR',serif; font-size:14px; font-weight:600; color:var(--ink); margin:0 0 8px; }
+.sec-title .icon{ font-size:14px; color:var(--ink-soft); flex:none; }
+ul.plain{ margin:0; padding-left:0; list-style:none; }
+ul.plain li{ font-size:14px; margin-bottom:8px; color:var(--ink); padding-left:14px; position:relative; line-height:1.6; }
+ul.plain li::before{ content:''; position:absolute; left:0; top:9px; width:4px; height:4px; border-radius:50%; background:var(--ink-soft); }
+.meta-row{ display:flex; margin-bottom:20px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.meta-chip{ display:flex; align-items:center; gap:8px; color:var(--ink); font-size:12.5px; font-weight:600; padding:13px 0; flex:1; justify-content:center; }
+.meta-chip + .meta-chip{ border-left:1px solid var(--line); }
+.meta-chip .icon{ font-size:14px; color:var(--ink-soft); }
+.recipe-mini{ display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); padding:13px 2px; cursor:pointer; }
+.recipe-mini .rm-left{ display:flex; align-items:center; gap:11px; }
+.recipe-mini .rm-dot{ width:4px; height:4px; border-radius:50%; background:var(--ink-soft); flex:none; }
+.recipe-mini .rm-name{ font-size:14px; font-weight:500; }
+.recipe-mini .rm-arrow{ color:var(--ink-soft); font-size:12px; display:flex; align-items:center; gap:3px; }
+.day-label{ display:block; font-family:'Noto Serif KR',serif; font-size:13px; font-weight:600; margin:20px 0 10px; color:var(--ink); }
+.tt-row{ display:flex; gap:14px; padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px; }
+.tt-row:last-child{ border-bottom:none; }
+.tt-time{ flex:none; width:74px; color:var(--ink-soft); font-weight:600; font-size:12.5px; }
+.tt-content{ flex:1; line-height:1.5; }
+.tt-content b.prog{ color:var(--ink); font-weight:700; }
+.tt-place-f-divider{ display:inline-block; margin:0 8px; color:var(--line); font-weight:400; }
+.tt-place-f{ font-size:12.5px; font-weight:400; color:var(--ink-soft); }
+.tt-content.tt-newline .tt-extra{ display:block; margin-top:3px; }
+.tt-content.tt-newline .tt-extra > .tt-place-f-divider:first-child{ display:none; }
+.footer-link{ display:flex; align-items:center; justify-content:space-between; padding:17px 2px; margin-top:24px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); color:var(--ink); font-size:13.5px; font-weight:600; cursor:pointer; }
+.footer-link .icon{ font-size:12px; color:var(--ink-soft); }
+.foot-note{ text-align:center; font-size:11px; color:var(--ink-soft); margin-top:28px; opacity:.7; padding-bottom:6px; }
+.empty-note{ color:var(--ink-soft); font-size:13.5px; padding:6px 0; }
+/* 스텝(1p씩 넘기기) 네비게이션 */
+.step-track{ flex:1; display:flex; flex-direction:column; min-height:0; }
+.step-slide{ display:none; flex-direction:column; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:30px 26px 18px; min-height:0; }
+.step-slide.active{ display:flex; animation:fadeIn .3s ease; }
+.step-count{ font-size:11px; color:var(--ink-soft); font-weight:600; letter-spacing:.06em; margin-bottom:4px; }
+.step-dots{ display:flex; justify-content:center; gap:6px; margin-bottom:12px; }
+.step-dot{ width:6px; height:6px; border-radius:50%; background:var(--line); transition:.25s ease; }
+.step-dot.on{ width:18px; border-radius:3px; background:var(--ink); }
+.step-btnrow{ display:flex; gap:10px; }
+.step-btnrow .btn-next{ flex:1; margin:0; }
+.step-prev-btn{ flex:1; padding:16px; text-align:center; background:none; border:1px solid var(--line); color:var(--ink); border-radius:3px; font-size:14.5px; font-weight:600; cursor:pointer; }
+.step-prev-btn:active, .step-btnrow .btn-next:active{ opacity:.7; }
+.step-placeholder{ background:var(--paper-2); border-radius:3px; padding:16px; font-size:13px; color:var(--ink-soft); line-height:1.7; }
+/* admin */
+body.admin-on .adm-toolbar{ display:flex; }
+.adm-toolbar{ display:none; gap:8px; padding:10px 26px; background:#FFF6D8; border-bottom:1px solid #E9DDA8; font-size:12px; align-items:center; }
+.adm-toolbar button{ font-size:11.5px; padding:5px 10px; border-radius:14px; border:1px solid var(--ink); background:#fff; cursor:pointer; }
+.admin-editrow{ display:flex; gap:6px; align-items:center; padding:8px 0; border-bottom:1px dashed var(--line); }
+.admin-editrow input{ font-size:12.5px; padding:6px 8px; border:1px solid var(--line); border-radius:6px; }
+.admin-editrow input.time{ width:56px; }
+.admin-editrow input.content{ flex:1; min-width:60px; }
+.admin-editrow input.place{ width:70px; }
+.admin-editrow button.del{ border:1px solid #c0392b; color:#c0392b; background:#fff; border-radius:6px; padding:4px 7px; font-size:11px; cursor:pointer; }
+.admin-add-btn{ margin-top:8px; width:100%; padding:9px; border:1px dashed var(--ink); border-radius:6px; background:#fff; font-size:12.5px; cursor:pointer; color:var(--ink); }
+#adminBadge{ position:fixed; top:8px; right:8px; font-size:10px; background:#0002; color:#fff; padding:4px 8px; border-radius:10px; z-index:50; opacity:.4; }
+.modal{ position:fixed; inset:0; background:rgba(20,20,18,.55); z-index:100; display:none; align-items:flex-end; justify-content:center; }
+.modal.show{ display:flex; }
+.modal-box{ width:100%; max-width:var(--maxw); background:#fff; border-radius:16px 16px 0 0; padding:22px 22px calc(22px + env(safe-area-inset-bottom)); max-height:85vh; overflow-y:auto; }
+.modal-box h3{ font-family:'Noto Serif KR',serif; margin:0 0 4px; font-size:19px; }
+.m-actions{ display:flex; gap:10px; margin-top:18px; }
+.m-actions button{ flex:1; padding:12px; border-radius:8px; border:none; font-size:14px; cursor:pointer; }
+.btn-cancel{ background:var(--line); color:var(--ink); }
+.btn-ok{ background:var(--ink); color:#fff; }
+/* 문구 수정 모드 (동기화되지 않는 서브앱 전용 텍스트만 대상) */
+#secretTapZone{ position:fixed; top:0; right:0; width:52px; height:52px; z-index:999; }
+#textEditBadge{
+  display:none; position:fixed; bottom:0; left:0; right:0; z-index:998;
+  background:var(--ink); color:#fff; font-size:11.5px; text-align:center;
+  padding:9px 16px calc(9px + env(safe-area-inset-bottom));
+}
+body.text-edit-on #textEditBadge{ display:block; }
+body.text-edit-on [data-editable-key]{
+  outline:1px dashed #B7B29E; outline-offset:3px; border-radius:2px; cursor:text;
+}
+body.text-edit-on [data-editable-key]:focus{ outline:2px solid var(--ink); background:#fff; }
+</style>
+</head>
+<body>
+<div id="adminBadge" style="display:none;">ADMIN</div>
+<div id="secretTapZone" onclick="handleSecretTap()" title=""></div>
+<div id="textEditBadge">문구 수정 모드 · 점선 테두리를 탭해서 고치세요 · 같은 자리 5번 탭하면 종료</div>
+<div class="wrap" id="mainWrap">
+
+  <div class="adm-toolbar" id="admToolbar">
+    <span>관리자 모드</span>
+    <button onclick="logoutAdmin()">로그아웃</button>
+  </div>
+
+  <!-- PAGE 0 : 일정 선택 -->
+  <div class="page active" id="page-select">
+    <div class="page-scroll">
+      <div class="kicker" data-editable-key="selectKicker">2026년 7월 군청년 바라지</div>
+      <h1 class="title" data-editable-key="selectTitle">봉사 일정을<br>선택해 주세요</h1>
+      <p class="lead" data-editable-key="selectLead">신청하실 봉사 유형과 날짜를 골라주시면, 그에 맞는 상세 일정을 안내드립니다.</p>
+      <div id="optGroups"></div>
+    </div>
+    <div class="page-footer">
+      <button class="btn-next" id="btnToIntro" disabled onclick="goIntro()">다음</button>
+    </div>
+  </div>
+
+  <!-- PAGE 1 : 소개 -->
+  <div class="page" id="page-intro">
+    <div class="page-scroll">
+      <button class="btn-back" onclick="showPage('page-select')"><span class="icon" id="icBackIntro"></span>일정 다시 선택</button>
+      <div class="kicker">이번 바라지 소개</div>
+      <h1 class="title" id="introTitle" data-editable-key="introTitle"></h1>
+      <div class="intro-quote" id="introBody" data-editable-key="introBody"></div>
+    </div>
+    <div class="page-footer">
+      <button class="btn-next" onclick="goDetail()">다음</button>
+    </div>
+  </div>
+
+  <!-- PAGE 2 : 점심공양 -->
+  <div class="page" id="page-lunch">
+    <div class="step-track">
+      <div class="step-slide" data-step="0">
+        <h1 class="title" data-editable-key="lunchTitle">점심공양지원 · 파트봉사</h1>
+        <h2 class="subtitle" style="margin-top:6px;"><span class="icon" id="icWhyLunch"></span><span data-editable-key="hdgWhyLunch">점심공양지원이 꼭 필요한 이유</span></h2>
+        <div class="card">
+          <p data-editable-key="lunchWhy">회관에 머무는 2박 3일 동안 군장병들의 점심공양은 회관 대중공양팀에서 준비해줍니다. 기존에 공양하시는 분들에 더해 군장병들, 청년봉사자들, 바라지분들, 행복학교 스텝들도 점심공양을 하기 때문에 공양인원이 40~50명 늘어나게 됩니다. 점심공양지원 봉사를 신청해주신 분들은 대중공양팀에 속해서 그날 대중공양팀이 만드는 음식을 같이 만들게 됩니다.</p>
+        </div>
+        <div class="meta-row">
+          <div class="meta-chip"><span class="icon" id="icClockLunch"></span><span data-editable-key="lunchTime">09시–14시</span></div>
+          <div class="meta-chip"><span class="icon" id="icPinLunch"></span><span data-editable-key="lunchPlace">지하 1층 공양간</span></div>
+        </div>
+        <p class="lead" data-editable-key="lunchLead">대중공양팀과 함께 여는나누기, 닫는나누기를 진행하고 귀가하게 됩니다.</p>
+      </div>
+      <div class="step-slide" data-step="1">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icBagLunch"></span><span data-editable-key="hdgBagLunch">준비물</span></h2>
+        <div class="card" id="lunchPrepBox"></div>
+      </div>
+      <div class="step-slide" data-step="2">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icCheckLunch"></span><span data-editable-key="hdgCheckLunch">봉사하면서 이것은 꼭 지켜주세요</span></h2>
+        <div class="card" id="lunchRulesBox"></div>
+        <a class="footer-link" onclick="goToMoreInfo('page-lunch')">바라지 전체 활동이 궁금하시다면<span class="icon" id="icChevLunch"></span></a>
+      </div>
+    </div>
+    <div class="page-footer">
+      <div class="step-dots" id="dots-page-lunch"></div>
+      <div class="step-btnrow">
+        <button class="step-prev-btn" onclick="stepBack('page-lunch')"><span class="icon" id="icBackLunch"></span>이전</button>
+        <button class="btn-next" id="next-page-lunch" onclick="stepFwd('page-lunch')">다음</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2-2 : 저녁공양 -->
+  <div class="page" id="page-dinner">
+    <div class="step-track">
+      <div class="step-slide" data-step="0">
+        <h1 class="title" data-editable-key="dinnerTitle">저녁공양지원 · 파트봉사</h1>
+        <div class="meta-row">
+          <div class="meta-chip"><span class="icon" id="icClockDinner"></span><span data-editable-key="dinnerTime">14시–20시</span></div>
+          <div class="meta-chip"><span class="icon" id="icPinDinner"></span><span data-editable-key="dinnerPlace">지하 1층 공양간</span></div>
+        </div>
+        <p class="lead" data-editable-key="dinnerLead">대중공양팀과 함께 저녁공양을 준비하고 정리한 뒤 귀가하게 됩니다.</p>
+        <h2 class="subtitle" style="margin-top:6px;"><span class="icon" id="icBowlDinner"></span><span data-editable-key="hdgBowlDinner">선택하신 날의 저녁공양 메뉴</span></h2>
+        <p class="empty-note" id="dinnerDayLabel" style="margin-bottom:8px;"></p>
+        <div class="card" id="dinnerMenuBox"></div>
+      </div>
+      <div class="step-slide" data-step="1">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icBagDinner"></span><span data-editable-key="hdgBagDinner">준비물</span></h2>
+        <div class="card" id="dinnerPrepBox"></div>
+      </div>
+      <div class="step-slide" data-step="2">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icRuleDinner"></span><span data-editable-key="hdgRuleDinner">봉사하면서 이것은 꼭 지켜주세요</span></h2>
+        <div class="card" id="dinnerRulesBox"></div>
+        <a class="footer-link" onclick="goToMoreInfo('page-dinner')">바라지 전체 활동이 궁금하시다면<span class="icon" id="icChevDinner"></span></a>
+      </div>
+    </div>
+    <div class="page-footer">
+      <div class="step-dots" id="dots-page-dinner"></div>
+      <div class="step-btnrow">
+        <button class="step-prev-btn" onclick="stepBack('page-dinner')"><span class="icon" id="icBackDinner"></span>이전</button>
+        <button class="btn-next" id="next-page-dinner" onclick="stepFwd('page-dinner')">다음</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 3 : 1박2일 (15-16) -->
+  <div class="page" id="page-stay1">
+    <div class="step-track">
+      <div class="step-slide" data-step="0">
+        <h1 class="title"><span class="icon" id="icMoonStay1" style="font-size:20px; margin-right:6px;"></span><span data-editable-key="stay1Title">1박 2일 바라지 · 15일(수)–16일(목)</span></h1>
+        <h2 class="subtitle" style="margin-top:6px;"><span class="icon" id="icHandStay1"></span><span data-editable-key="hdgHandStay1">이 봉사에서 하는 일</span></h2>
+        <div class="card" id="stay1ActivityBox"></div>
+      </div>
+      <div class="step-slide" data-step="1">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icCalStay1"></span><span data-editable-key="hdgCalStay1">상세 일정표</span></h2>
+        <div class="admin-add-btn" onclick="openScheduleEditor('stay-1516')" style="display:none;" id="adEditStay1">일정 수정하기</div>
+        <div id="stay1ScheduleBox"></div>
+      </div>
+      <div class="step-slide" data-step="2">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icBowlStay1"></span><span data-editable-key="hdgBowlStay1">저녁공양 메뉴</span></h2>
+        <div class="card" id="stay1DinnerBox"></div>
+      </div>
+      <div class="step-slide" data-step="3">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icBagStay1"></span><span data-editable-key="hdgBagStay1">준비물</span></h2>
+        <div class="card" id="stay1PrepBox"></div>
+      </div>
+      <div class="step-slide" data-step="4">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icRuleStay1"></span><span data-editable-key="hdgRuleStay1">봉사하면서 이것은 꼭 지켜주세요</span></h2>
+        <div class="card" id="stay1RulesBox"></div>
+        <a class="footer-link" onclick="goToMoreInfo('page-stay1')">바라지 전체 활동이 궁금하시다면<span class="icon" id="icChevStay1"></span></a>
+      </div>
+    </div>
+    <div class="page-footer">
+      <div class="step-dots" id="dots-page-stay1"></div>
+      <div class="step-btnrow">
+        <button class="step-prev-btn" onclick="stepBack('page-stay1')"><span class="icon" id="icBackStay1"></span>이전</button>
+        <button class="btn-next" id="next-page-stay1" onclick="stepFwd('page-stay1')">다음</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 4 : 1박2일 (16-17) -->
+  <div class="page" id="page-stay2">
+    <div class="step-track">
+      <div class="step-slide" data-step="0">
+        <h1 class="title"><span class="icon" id="icMoonStay2" style="font-size:20px; margin-right:6px;"></span><span data-editable-key="stay2Title">1박 2일 바라지 · 16일(목)–17일(금)</span></h1>
+        <h2 class="subtitle" style="margin-top:6px;"><span class="icon" id="icHandStay2"></span><span data-editable-key="hdgHandStay2">이 봉사에서 하는 일</span></h2>
+        <div class="card" id="stay2ActivityBox"></div>
+      </div>
+      <div class="step-slide" data-step="1">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icCalStay2"></span><span data-editable-key="hdgCalStay2">상세 일정표</span></h2>
+        <div class="admin-add-btn" onclick="openScheduleEditor('stay-1617')" style="display:none;" id="adEditStay2">일정 수정하기</div>
+        <div id="stay2ScheduleBox"></div>
+      </div>
+      <div class="step-slide" data-step="2">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icBowlStay2"></span><span data-editable-key="hdgBowlStay2">저녁공양 메뉴</span></h2>
+        <div class="card" id="stay2DinnerBox"></div>
+      </div>
+      <div class="step-slide" data-step="3">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icBagStay2"></span><span data-editable-key="hdgBagStay2">준비물</span></h2>
+        <div class="card" id="stay2PrepBox"></div>
+      </div>
+      <div class="step-slide" data-step="4">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icRuleStay2"></span><span data-editable-key="hdgRuleStay2">봉사하면서 이것은 꼭 지켜주세요</span></h2>
+        <div class="card" id="stay2RulesBox"></div>
+        <a class="footer-link" onclick="goToMoreInfo('page-stay2')">바라지 전체 활동이 궁금하시다면<span class="icon" id="icChevStay2"></span></a>
+      </div>
+    </div>
+    <div class="page-footer">
+      <div class="step-dots" id="dots-page-stay2"></div>
+      <div class="step-btnrow">
+        <button class="step-prev-btn" onclick="stepBack('page-stay2')"><span class="icon" id="icBackStay2"></span>이전</button>
+        <button class="btn-next" id="next-page-stay2" onclick="stepFwd('page-stay2')">다음</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 5 : 2박3일 (15-17) -->
+  <div class="page" id="page-stay3">
+    <div class="step-track">
+      <div class="step-slide" data-step="0">
+        <h1 class="title"><span class="icon" id="icTentStay3" style="font-size:20px; margin-right:6px;"></span><span data-editable-key="stay3Title">2박 3일 바라지 · 15일(수)–17일(금)</span></h1>
+        <h2 class="subtitle" style="margin-top:6px;"><span class="icon" id="icHandStay3"></span><span data-editable-key="hdgHandStay3">이 봉사에서 하는 일</span></h2>
+        <div class="card" id="stay3ActivityBox"></div>
+      </div>
+      <div class="step-slide" data-step="1">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icCalStay3"></span><span data-editable-key="hdgCalStay3">상세 일정표</span></h2>
+        <div class="admin-add-btn" onclick="openScheduleEditor('stay-1517')" style="display:none;" id="adEditStay3">일정 수정하기</div>
+        <div id="stay3ScheduleBox"></div>
+      </div>
+      <div class="step-slide" data-step="2">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icBowlStay3"></span><span data-editable-key="hdgBowlStay3">저녁공양 메뉴</span></h2>
+        <div id="stay3DinnerBoxes"></div>
+      </div>
+      <div class="step-slide" data-step="3">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icBagStay3"></span><span data-editable-key="hdgBagStay3">준비물</span></h2>
+        <div class="card" id="stay3PrepBox"></div>
+      </div>
+      <div class="step-slide" data-step="4">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icRuleStay3"></span><span data-editable-key="hdgRuleStay3">봉사하면서 이것은 꼭 지켜주세요</span></h2>
+        <div class="card" id="stay3RulesBox"></div>
+        <a class="footer-link" onclick="goToAugustSchedule('page-stay3')">8월의 일정이 궁금하시다면<span class="icon" id="icAugStay3"></span></a>
+      </div>
+    </div>
+    <div class="page-footer">
+      <div class="step-dots" id="dots-page-stay3"></div>
+      <div class="step-btnrow">
+        <button class="step-prev-btn" onclick="stepBack('page-stay3')"><span class="icon" id="icBackStay3"></span>이전</button>
+        <button class="btn-next" id="next-page-stay3" onclick="stepFwd('page-stay3')">다음</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 6 : 전체 활동 -->
+  <div class="page" id="page-moreinfo">
+    <div class="step-track">
+      <div class="step-slide" data-step="0">
+        <div class="kicker" data-editable-key="moreKicker">바라지 전체 활동</div>
+        <h1 class="title" data-editable-key="moreTitle">바라지 활동 전체가<br>궁금하시다면</h1>
+        <h2 class="subtitle" style="margin-top:6px;"><span class="icon" id="icHandMore"></span><span data-editable-key="hdgHandMore">우리가 하는 일</span></h2>
+        <div class="card" id="moreActivityBox"></div>
+      </div>
+      <div class="step-slide" data-step="1">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icCalMore"></span><span data-editable-key="hdgCalMore">2박 3일 전체 일정표</span></h2>
+        <p class="empty-note" id="moreScheduleNote" style="display:none; margin-bottom:14px;"></p>
+        <div id="moreScheduleBox"></div>
+      </div>
+      <div class="step-slide" data-step="2">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icBowlMore"></span><span data-editable-key="hdgBowlMore">공양 메뉴</span></h2>
+        <div id="moreMenuBoxes"></div>
+      </div>
+      <div class="step-slide" data-step="3">
+        <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icNextMore"></span><span data-editable-key="hdgNextMore">8월에 예정된 바라지 봉사일정</span></h2>
+        <div id="moreAugustBox"></div>
+        <p class="foot-note" data-editable-key="footNote">나무 한 그루가 숲이 되듯 · 모자이크 붓다</p>
+      </div>
+    </div>
+    <div class="page-footer">
+      <div class="step-dots" id="dots-page-moreinfo"></div>
+      <div class="step-btnrow">
+        <button class="step-prev-btn" onclick="stepBack('page-moreinfo')"><span class="icon" id="icBackMore"></span>이전</button>
+        <button class="btn-next" id="next-page-moreinfo" onclick="stepFwd('page-moreinfo')">다음</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 레시피 모달 -->
+<div class="modal" id="recipeModal">
+  <div class="modal-box" id="recipeModalBox">
+    <div id="recipeModalBody"></div>
+    <div class="m-actions"><button class="btn-cancel" onclick="closeRecipeModal()" style="flex:1;">닫기</button></div>
+  </div>
+</div>
+
+<!-- 일정 수정 모달 (관리자) -->
+<div class="modal" id="scheduleEditorModal">
+  <div class="modal-box">
+    <h3>상세 일정 수정</h3>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 14px;">여기서 수정하면 이 2박3일 바라지 원본 일정표가 바뀌고, 모든 참가자(1박·2박)의 일정에 즉시 반영됩니다.</p>
+    <div id="scheduleEditorBody"></div>
+    <div class="m-actions">
+      <button class="btn-cancel" onclick="closeScheduleEditor()">닫기</button>
+      <button class="btn-ok" onclick="saveScheduleEditor()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   0. 라인 아이콘 (메인앱과 동일 스타일)
+   ========================================================= */
+const ICONS = {
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg>',
+  bowl: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18a9 8 0 0 1-18 0Z"/><path d="M7 12V8M17 12V8M12 12V6"/></svg>',
+  bag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.3 2.3 4.7-5.2"/></svg>',
+  calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="15" rx="2.2"/><path d="M8 3.5v4M16 3.5v4M4 10h16"/></svg>',
+  hands: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11V6.5a1.7 1.7 0 0 1 3.4 0V10"/><path d="M10.4 10V5a1.7 1.7 0 0 1 3.4 0v5"/><path d="M13.8 10V6.3a1.7 1.7 0 0 1 3.4 0V13c0 4-2.8 7-6.6 7-3 0-5.2-1.6-6.4-4l-2-4.2a1.5 1.5 0 0 1 2.7-1.3L6 12"/></svg>',
+  chevron: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  arrowLeft: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg>',
+  tent: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19 12 4l9 15"/><path d="M8 19l4-7 4 7"/><path d="M3 19h18"/></svg>'
+};
+function setIcons(map){ Object.keys(map).forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=ICONS[map[id]]; }); }
+setIcons({
+  icBackIntro:'arrowLeft', icBackLunch:'arrowLeft', icBackDinner:'arrowLeft', icBackStay1:'arrowLeft', icBackStay2:'arrowLeft', icBackStay3:'arrowLeft', icBackMore:'arrowLeft',
+  icClockLunch:'clock', icPinLunch:'pin', icWhyLunch:'hands', icBagLunch:'bag', icCheckLunch:'check', icChevLunch:'chevron',
+  icClockDinner:'clock', icPinDinner:'pin', icBowlDinner:'bowl', icBagDinner:'bag', icRuleDinner:'check', icChevDinner:'chevron',
+  icMoonStay1:'moon', icHandStay1:'hands', icCalStay1:'calendar', icBowlStay1:'bowl', icBagStay1:'bag', icRuleStay1:'check', icChevStay1:'chevron',
+  icMoonStay2:'moon', icHandStay2:'hands', icCalStay2:'calendar', icBowlStay2:'bowl', icBagStay2:'bag', icRuleStay2:'check', icChevStay2:'chevron',
+  icTentStay3:'tent', icHandStay3:'hands', icCalStay3:'calendar', icBowlStay3:'bowl', icBagStay3:'bag', icRuleStay3:'check', icAugStay3:'calendar',
+  icHandMore:'hands', icCalMore:'calendar', icBowlMore:'bowl', icNextMore:'calendar'
+});
+
+/* =========================================================
+   1. 설정 영역 — 매달 여기만 고치면 됩니다
+   ========================================================= */
+const APPSSCRIPTURL = "https://script.google.com/macros/s/AKfycbypbINZxPPOTBCSPZL39LOWgZnqcRaxo0akj9fDN4Rsv6kZ3-dkUfhJ0ctV9CBF87Rs/exec";
+const ADMIN_PW_FALLBACK = "baraji2026";
+
+const PROGRAM_INFO = {
+  title: "2026년 7월 군청년 바라지 · 행복학교",
+  intro: [
+    "이번 7월 군청년 프로그램은 2박 3일 · 행복학교 프로그램으로 진행됩니다.",
+    "21명의 해병대원들이 정토사회문화회관에서 찾아와, \"행복도 배울 수 있습니다\"라는 내용을 가지고 행복학교 4강을 체험하게 됩니다.",
+    "군장병들이 편안하게 머무르고, 잘 먹고, 잘 쉴 수 있도록 청년봉사자, 공양바라지, 행복학교 진행자 등 여러 정토회원들이 함께 봉사합니다.",
+    "나의 봉사가 한 조각이 되어 큰 그림이 됩니다. 우리는 모자이크 붓다입니다."
+  ]
+};
+
+const OPTIONS = [
+  { group: "점심공양지원 · 파트봉사", items: [
+      { id:"lunch-15", label:"15일(수) 09시–14시", route:"page-lunch" },
+      { id:"lunch-16", label:"16일(목) 09시–14시", route:"page-lunch" },
+      { id:"lunch-17", label:"17일(금) 09시–14시", route:"page-lunch" }
+  ]},
+  { group: "저녁공양지원 · 파트봉사", items: [
+      { id:"dinner-15", label:"15일(수) 14시–20시", route:"page-dinner" },
+      { id:"dinner-16", label:"16일(목) 14시–20시", route:"page-dinner" }
+  ]},
+  { group: "1박 2일 바라지 신청", items: [
+      { id:"stay-1516", label:"15일(수)–16일(목) · 1박 2일", route:"page-stay1" },
+      { id:"stay-1617", label:"16일(목)–17일(금) · 1박 2일", route:"page-stay2" }
+  ]},
+  { group: "2박 3일 바라지 신청", items: [
+      { id:"stay-1517", label:"15일(수)–17일(금) · 2박 3일", route:"page-stay3" }
+  ]}
+];
+
+// 실제 달력 날짜와 요일. 매달 여기만 바꾸면 전체 화면(1일차→날짜)에 자동 반영됩니다.
+const CALENDAR_DAYS = ["15일(수)", "16일(목)", "17일(금)"];
+
+// 각 신청 유형이 2박3일 원본 TIMETABLES에서 몇 번째 날, 몇 시부터 시작하고
+// "귀가" 문구가 나오는 줄까지만 보여줄지 정의합니다.
+const STAY_RANGES = {
+  "stay-1516": [ { dayIndex:0, fromTime:1330 }, { dayIndex:1, toDepart:true } ],
+  "stay-1617": [ { dayIndex:1, fromTime:1330 }, { dayIndex:2, toDepart:true } ],
+  "stay-1517": [ { dayIndex:0, fromTime:1330 }, { dayIndex:1 }, { dayIndex:2, toDepart:true } ]
+};
+
+const PROGRAM_ID = "happy"; // 메인앱 TIMETABLES 키와 일치해야 함
+
+/* =========================================================
+   2. 기본 데이터 (동기화 실패해도 최소한 이 데이터로 화면이 채워집니다)
+   ========================================================= */
+let TIMETABLES = {
+  seohaeng: {
+    label: '서행 (1박 2일)',
+    days: [
+      { day:'1일차 (목요일)', rows:[
+        {time:'14:00~14:30', dur:'30', content:'여는 모임', place:'지하1층 공양간', note:''},
+        {time:'14:30~19:35', dur:'5시간', content:'저녁공양준비(공양준비/공양/뒷정리/닫는 나누기)', place:'B1층 공양간', note:''},
+        {time:'19:35~21:00', dur:'85', content:'프로그램(유수스님 일문일답 참관)', place:'6층 국제회의장', note:'', prog:true},
+        {time:'21:00~21:30', dur:'30', content:'프로그램(명상/나누기)', place:'4층 라홀라방', note:'', prog:true},
+        {time:'21:30~22:00', dur:'30', content:'개인정비 후 취침', place:'5층 소강당1', note:'남) 4층 라홀라방'},
+      ]},
+      { day:'2일차 (금요일)', rows:[
+        {time:'04:45~05:45', dur:'60', content:'예불 및 새벽기도', place:'3층 설법전', note:''},
+        {time:'05:45~07:00', dur:'75', content:'프로그램(산책)', place:'대성사', note:'', prog:true},
+        {time:'07:00~08:00', dur:'60', content:'아침공양 및 개인정비', place:'지하1층', note:'공동체 발우공 "묵언"'},
+        {time:'08:00~08:50', dur:'50', content:'공양간 마무리 / 반나절 템플스테이 사전준비', place:'지하1층/7층', note:''},
+        {time:'08:50~10:50', dur:'120', content:'프로그램(법사님 간담회)', place:'5층 소강당1', note:'', prog:true},
+        {time:'10:50~11:40', dur:'50', content:'프로그램(참관:소감문 발표/바라지소개)', place:'6층 국제회의장', note:'', prog:true},
+        {time:'11:40~12:30', dur:'50', content:'점심식사', place:'지하1층', note:''},
+        {time:'12:30~13:30', dur:'60', content:'사용공간 청소&뒷마무리', place:'', note:''},
+        {time:'13:30~14:00', dur:'30', content:'전체 소감 나누기', place:'5층 소강당1', note:''},
+        {time:'14:00~14:30', dur:'30', content:'프로그램(회관둘러보기)', place:'15층', note:'', prog:true},
+        {time:'14:40~', dur:'', content:'귀가', place:'', note:'수고많으셨습니다 ^^'},
+      ]},
+    ]
+  },
+  happy: {
+    label: '행복학교 (2박 3일)',
+    days: [
+      { day:'1일차', rows:[
+        {time:'13:30~14:30', dur:'60', content:'여는 모임', place:'지하1층 공양간', note:''},
+        {time:'14:30~20:00', dur:'330', content:'저녁공양(준비/공양/뒷정리/나누기)', place:'지하1층 공양간', note:''},
+        {time:'20:00~21:00', dur:'60', content:'프로그램(명상)', place:'예술의 전당', note:'', prog:true},
+        {time:'21:00~22:00', dur:'60', content:'개인정비 및 취침', place:'각 취침장소', note:''},
+      ]},
+      { day:'2일차', rows:[
+        {time:'04:45~05:45', dur:'60', content:'새벽기도', place:'3층 설법전', note:''},
+        {time:'05:45~07:00', dur:'75', content:'프로그램(아침 산책)', place:'대성사', note:'', prog:true},
+        {time:'07:00~08:00', dur:'60', content:'아침공양 및 개인정비', place:'지하1층', note:''},
+        {time:'08:00~08:30', dur:'30', content:'아침 공양 뒷정리', place:'지하1층', note:''},
+        {time:'08:30~10:40', dur:'100', content:'프로그램(법사님 간담회)', place:'4층 라홀라방', note:'', prog:true},
+        {time:'10:40~11:30', dur:'50', content:'프로그램(명상)', place:'4층 라홀라방', note:'', prog:true},
+        {time:'11:30~13:00', dur:'90', content:'점심공양 및 휴식', place:'지하1층', note:''},
+        {time:'13:00~13:30', dur:'30', content:'프로그램(회관둘러보기:기와법당)', place:'15층', note:'', prog:true},
+        {time:'13:30~14:00', dur:'30', content:'휴식', place:'숙소/카페', note:'12/17-12/18 바라지 귀가'},
+        {time:'13:30~14:30', dur:'60', content:'저녁공양 바라지 여는모임', place:'지하1층', note:''},
+        {time:'14:30~20:00', dur:'330', content:'저녁공양(준비/공양/뒷정리/나누기)', place:'지하1층', note:''},
+        {time:'20:00~21:00', dur:'60', content:'프로그램(레크레이션 관람)', place:'5층 중강당', note:'', prog:true},
+        {time:'21:00~22:00', dur:'60', content:'휴식 및 개인정비', place:'', note:''},
+      ]},
+      { day:'3일차', rows:[
+        {time:'04:45~05:45', dur:'60', content:'새벽기도', place:'3층 설법전', note:''},
+        {time:'05:45~07:00', dur:'75', content:'프로그램(아침 산책)', place:'대성사', note:'', prog:true},
+        {time:'07:00~08:00', dur:'60', content:'개인정비 및 아침공양 / 공양간 뒷마무리', place:'지하1층', note:''},
+        {time:'08:00~09:30', dur:'90', content:'프로그램(법사님 간담회)', place:'4층 라홀라방', note:'', prog:true},
+        {time:'09:30~10:00', dur:'30', content:'프로그램(참관_소감문 발표/활동영상/바라지 소개)', place:'6층 국제회의장', note:'', prog:true},
+        {time:'10:00~11:30', dur:'90', content:'프로그램(참관_유수스님 일문일답)', place:'6층 국제회의장', note:'', prog:true},
+        {time:'11:30~12:30', dur:'60', content:'점심공양', place:'지하1층', note:''},
+        {time:'12:30~13:30', dur:'60', content:'사용공간 뒷마무리 청소', place:'5층', note:''},
+        {time:'13:30~14:00', dur:'30', content:'전체 소감나누기', place:'5층 소강당1', note:''},
+        {time:'14:00~14:30', dur:'30', content:'프로그램(회관 둘러보기:옥상 기와법당)', place:'15층', note:'', prog:true},
+        {time:'14:30~', dur:'', content:'귀가', place:'', note:'수고많으셨습니다'},
+      ]},
+    ]
+  }
+};
+
+// 향후 일정(달력) — 메인앱 SCHEDULES와 동일한 구조로, month=8인 항목이 "8월 예정 일정"에 표시됩니다
+let SCHEDULES = [
+  {id:'s7', month:7, day:'', title:'7월 군청년 바라지', place:'정토사회문화회관', done:false, status:'open'},
+  {id:'s8', month:8, day:'', title:'8월 군청년 바라지', place:'정토사회문화회관', done:false, status:'planned'},
+];
+
+let PREPGROUPS = [
+  { group:"공통 준비물", items:[
+      {t:"편안한 복장", s:"활동하기 편한 옷차림", ic:""},
+      {t:"실내화 또는 슬리퍼", s:"", ic:""},
+      {t:"세면도구 · 수건", s:"1박 이상 신청자만", ic:"", stayOnly:true},
+      {t:"개인 컵", s:"", ic:""}
+  ]},
+  { group:"봉사하면서 지켜주세요", rules:true, items:[
+      {t:"휴대폰은 진동으로 전환해 주세요", s:""},
+      {t:"공양간 내에서는 위생모를 착용해 주세요", s:""},
+      {t:"군장병들과의 대화는 밝고 편안하게 나눠주세요", s:""},
+      {t:"사진 촬영 시 군장병 얼굴이 나오지 않도록 주의해 주세요", s:""}
+  ]}
+];
+
+let ACTIVITIES = [
+  { title:"공양 준비 및 배식", desc:"대중공양팀과 함께 식사를 준비하고 배식합니다." },
+  { title:"행복학교 진행 보조", desc:"강의실 세팅과 자료 배부를 돕습니다." },
+  { title:"숙소 환경 정돈", desc:"군장병들이 편안히 쉴 수 있도록 숙소를 정돈합니다." },
+  { title:"조별 나누기 진행", desc:"저녁 나누기 시간에 조원들과 이야기를 나눕니다." }
+];
+
+let MENUS = [
+  {emoji:'🍣', name:'유부초밥', tag:'점심 공양', recipe:{
+    serving:'',
+    ingredients:[
+      '조미유부 60장',
+      '비건햄 1kg',
+      '당근 중간크기 2개',
+      '표고버섯 기둥 (적당량)',
+      '파프리카 (빨강·노랑) 중간크기 2개',
+      '꼬들단무지 (적당량)',
+      '밥이랑 2봉지',
+      '소금 약간',
+    ],
+    steps:[
+      {title:'재료 준비', items:[
+        '밥 = 공양하는 총 인원수를 계산해서 밥을 짓는다',
+        '유부 = 살짝 짜서 볼에 담아둔다',
+        '비건햄 = 손으로 주물러서 잘게 으깨준다',
+        '당근·파프리카·표고버섯 기둥·꼬들단무지 = 잘게 다진다 (표고버섯 기둥 끝의 시커멓고 딱딱한 부분은 잘라낸다)',
+      ]},
+      {title:'조리하기', items:[
+        '단촛물 = 한 사람이 만들어 식혀둔다 · 비율은 식초 10 : 설탕 8 : 소금 1 · 약불에서 설탕·소금을 녹인 뒤 식힌다',
+        '당근 = 살짝만 볶고 소금 약간',
+        '표고버섯 기둥 = 살짝 갈색빛이 돌 정도로 볶고 소금 약간',
+        '비건햄 = 스팸 구울 때처럼 갈색이 날 정도로 볶는다 (소금간 ❌)',
+        '파프리카·꼬들단무지 = 꾹 짜서 물기를 빼준다 (볶지 않음)',
+      ]},
+      {title:'초밥 만들기', items:[
+        '큰 양푼(다라이) 2개를 준비한다',
+        '다 된 밥을 주걱으로 조금씩 퍼 양푼에 옮기며 단촛물을 부어준다',
+        '부채질을 해가며 밥을 식힌다',
+        '나머지 재료를 넣고 골고루 섞는다 (밥이랑도 함께)',
+        '유부 1–2개에 넣어 최종 간을 본다',
+        '유부가 찢어지지 않게 속을 적당히 채운다',
+      ]},
+      {title:'요리 내놓기', items:[
+        '큰 접시 2개에 나누어 담는다',
+        '위에 검정깨를 조금 뿌린다',
+        '주방에 두었다가 군청년들이 내려오기 전 배식대에 차려낸다',
+      ]},
+    ]
+  }},
+  {emoji:'🍙', name:'미니주먹밥', tag:'점심 공양', recipe:{
+    serving:'유부초밥 후 남은 밥으로',
+    ingredients:[
+      '유부초밥을 하고 남은 밥',
+      '김가루',
+      '검정깨',
+      '참기름',
+      '소금 (부족한 간만큼)',
+    ],
+    steps:[
+      {title:'주먹밥 만들기', items:[
+        '유부초밥 양념간이 된 밥에 김가루를 섞는다',
+        '1차 간이 되어 있으므로 김가루를 가감해 간을 맞춘다',
+        '참기름(또는 들기름)을 접시에 담아 손에 묻혀가며 주먹밥을 만든다',
+        '주먹밥을 김가루에 둥글려 최종 마무리한다',
+      ]},
+      {title:'요리 내놓기', items:[
+        '접시 2개에 정갈하게 담아 주방에 준비해둔다',
+        '군청년들이 내려오기 직전에 배식대에 차려낸다',
+      ]},
+    ]
+  }},
+  {emoji:'🍤', name:'표고버섯탕수육', tag:'든든한 한 그릇', recipe:{
+    serving:'',
+    ingredients:[
+      '표고버섯 2kg',
+      '찹쌀가루',
+      '감자전분',
+      '소금 (반죽용)',
+      '소스: 물 500 · 설탕 250 · 식초 140 · 간장 35 · 케첩 100',
+      '소스 농도: 감자전분 100 · 물 100',
+      '소스 야채: 파프리카·오이·당근·적채',
+    ],
+    steps:[
+      {title:'재료 준비', items:[
+        '표고버섯은 세척 금지!',
+        '표고 기둥 = 따내서 따로 모아둔다 (유부초밥에 다져 넣을 예정)',
+        '표고버섯 = 큰 것만 반으로 자르고, 작은 것은 그대로 둔다',
+      ]},
+      {title:'조리하기', items:[
+        '손질한 표고를 감자전분에 가볍게 버무려 놓는다',
+        '찹쌀반죽을 만든다 (찹쌀가루 3컵 · 물 1.5컵 · 소금 1.5작은술 정도) · 너무 질면 눅눅해지므로 질지 않게',
+        '오목한 팬에 기름을 넉넉히 붓고 온도를 올린다 (온도가 오른 뒤 튀길 것)',
+        '전분에 버무린 표고를 찹쌀반죽에 묻혀 튀긴다 · 2–3개 먼저 튀겨 반죽 농도와 소금간을 조정한 뒤 나머지를 튀긴다',
+      ]},
+      {title:'탕수육 만들기', items:[
+        '튀김은 총 2번 튀겨 마무리한다',
+        '1차 튀김 = 살짝만 튀긴다 (처음부터 많이 튀기면 2차에 탄다)',
+        '2차 튀김 = 17:20쯤 시작',
+        '소스 = 17:20쯤 물·설탕·식초·간장·케첩을 넣고 끓인다',
+        '17:40쯤 끓인 소스에 썰어놓은 야채를 넣고 전분물로 농도를 맞춘다 · 야채가 푹 익지 않게 나가기 직전에 한다',
+      ]},
+      {title:'요리 내놓기', items:[
+        '기름을 뺀 튀김을 접시 2개에 나누어 담는다',
+        '탕수육 소스는 소스 전용 볼에 담아 내놓는다',
+        '군청년들이 내려오기 직전에 배식대에 차려낸다',
+      ]},
+    ]
+  }},
+  {emoji:'🥬', name:'야채튀김', tag:'바삭한 별미', recipe:{
+    serving:'',
+    ingredients:[
+      '고구마 1.5kg',
+      '당근 중간크기 1개',
+      '고추 (적당량)',
+      '튀김가루',
+      '콩기름',
+      '소금 (반죽용)',
+    ],
+    steps:[
+      {title:'재료 준비', items:[
+        '고구마·당근·고추 = 세척해서 얇게 채썬다',
+        '채썬 재료 = 튀김가루를 약간 넣고 골고루 버무려둔다 (튀김가루는 너무 많이 넣지 말 것!)',
+        '반죽 = 튀김가루로 만들고 소금간을 한다 · 반죽 양이 너무 많으면 튀긴 후 눅눅해지므로 양 조절',
+      ]},
+      {title:'조리하기', items:[
+        '반죽에 재료를 넣어 잘 버무린다',
+        '튀김팬에 기름을 붓고 온도를 올린다',
+        '처음 2–3개를 시식용으로 튀겨 먹어본다 · 간이 부족하면 소금을 더한다 (청년들은 조금 간이 있는 것을 좋아함)',
+      ]},
+      {title:'야채튀김 만들기', items:[
+        '튀김은 총 2번 튀겨 마무리한다',
+        '1차 튀김 = 살짝만 튀긴다 (처음부터 많이 튀기면 2차에 탄다)',
+        '2차 튀김 = 17:20쯤 시작',
+      ]},
+      {title:'요리 내놓기', items:[
+        '기름을 뺀 튀김을 접시 2개에 나누어 담는다',
+        '군청년들이 내려오기 직전에 배식대에 차려낸다',
+      ]},
+    ]
+  }},
+  {emoji:'🌶️', name:'떡볶이', tag:'청년 인기 메뉴', recipe:{
+    serving:'',
+    ingredients:[
+      '밀떡 4kg',
+      '물 5L',
+      '떡볶이 소스 780g',
+    ],
+    steps:[
+      {title:'재료 준비', items:[
+        '17:20 = 물 5리터를 큰 냄비에 담아 끓인다',
+        '떡볶이떡 = 찬물에 2–3번 씻은 후 물기를 뺀다',
+      ]},
+      {title:'조리하기', items:[
+        '끓는 물에 간을 봐가며 떡볶이 소스를 넣고 끓인다',
+        '간이 적당하고 팔팔 끓으면 약불로 낮춘다 · 불은 끄지 않고 소스를 살짝 졸인다',
+        '17:40 = 강불로 올리고 떡을 넣어 끓인다 · 가끔 휘저어 냄비 아래 달라붙지 않게 한다',
+        '떡이 부풀어 떠오르면 4–5분 더 끓이고 불을 끈다',
+      ]},
+      {title:'요리 내놓기', items:[
+        '군청년들이 내려오기 직전에 국물과 떡을 그릇 2개에 나누어 담아낸다',
+      ]},
+    ]
+  }},
+  {emoji:'🍜', name:'비건잡채', tag:'정성 가득', recipe:{
+    serving:'',
+    ingredients:[
+      '당면 1kg',
+      '비건어묵 1kg',
+      '콩나물 1kg',
+      '피망 2~3개',
+      '당근 1.5개',
+      '양념장: 간장·설탕·들기름·깨소금·소금',
+    ],
+    steps:[
+      {title:'재료 준비', items:[
+        '당면 = 찬물에 3시간 담가 충분히 불린다 (흐물흐물해야 함)',
+        '비건어묵·피망·당근 = 비슷한 크기로 채썬다',
+        '콩나물 = 소금 약간 넣은 물에 3–4분 데친 후 간을 한다',
+      ]},
+      {title:'조리하기', items:[
+        '피망·비건어묵·콩나물을 볶는다 · 기름은 조금만, 살짝 숨만 죽이게 (너무 익히면 물이 생겨 질어짐) · 소금간은 살짝만!',
+        '5시쯤 = 불린 당면을 2–3분 삶는다 (익었는지 확인)',
+        '삶은 당면은 채반에 건져 찬물에 헹구지 않고, 참기름을 둘러 서로 붙지 않게 한다',
+        '간장·설탕·후추로 면에 먼저 양념한다',
+        '당면과 재료를 큰 볼에 넣고 간을 봐가며 양념한다',
+      ]},
+      {title:'요리 내놓기', items:[
+        '접시 2개에 나누어 준비해두었다가 내놓는다',
+      ]},
+    ]
+  }},
+  {emoji:'🥒', name:'오이절임', tag:'개운한 반찬', recipe:{
+    serving:'',
+    ingredients:[
+      '오이 10개',
+      '소금',
+      '설탕',
+      '식초',
+    ],
+    steps:[
+      {title:'재료 준비', items:[
+        '굵은 소금으로 오이를 세척한다',
+        '오이를 적당한 크기로 자른다 · 세로로 반 갈라 손가락 한 마디 길이로 자르거나, 잔 칼집을 낸 후 3cm 간격으로 자른다',
+      ]},
+      {title:'오이절임 만들기', items:[
+        '따로 절이지 않고 생오이에 바로 양념해 버무린다',
+        '소금·식초·설탕을 넣고 버무린다 (소금 1.5 · 설탕 5 · 식초 4)',
+        '냉장고에 넣어둔다 · 중간에 가서 뒤적여준다',
+      ]},
+      {title:'요리 내놓기', items:[
+        '최종 간을 보고 작은 볼 2개에 담는다',
+        '군청년들이 내려오기 직전에 배식대에 차려낸다',
+      ]},
+    ]
+  }},
+  {emoji:'🥣', name:'아침 (시리얼·우유·토스트)', tag:'간단한 아침'},
+  {emoji:'🍝', name:'펜네파스타', tag:'둘째 날 저녁', recipe:{
+    serving:'',
+    ingredients:[
+      '펜네',
+      '토마토소스',
+      '홀토마토',
+      '모짜렐라치즈',
+    ],
+    steps:[
+      {title:'재료 준비', items:[
+        '펜네 = 소금을 넣고 삶는다 · 찬물에 헹구지 않고 체에 올려 김만 뺀다 · 삶은 후 올리브오일로 버무려 놓는다',
+        '소스 = 새송이를 볶고 버터가 남은 팬을 그대로 쓴다 · 그 팬에 토마토소스와 홀토마토소스 두 가지를 섞는다',
+      ]},
+      {title:'파스타 만들기', items:[
+        '17:30 = 펜네와 소스를 섞어 약불에 올리고 치즈를 맨 위에 올린다',
+        '뚜껑을 덮고 약불에서 10분 정도 뭉근하게 데우며 치즈를 녹인다',
+      ]},
+      {title:'요리 내놓기', items:[
+        '군청년들이 내려오면 조리한 팬을 그대로 내놓는다',
+      ]},
+    ]
+  }},
+  {emoji:'🍳', name:'비건햄야채볶음', tag:'둘째 날 저녁', recipe:{
+    serving:'',
+    ingredients:[
+      '비건햄',
+      '양배추',
+      '피망 & 파프리카 (초록·빨강·노랑)',
+      '소금',
+      '올리고당',
+      '참깨',
+    ],
+    steps:[
+      {title:'재료 준비', items:[
+        '비건햄·양배추·파프리카·피망 = 새끼손가락 크기로 썬다',
+      ]},
+      {title:'조리하기', items:[
+        '재료별로 따로 볶는다',
+        '볶을 때 살짝 소금간을 한다 (햄은 소금간 ❌)',
+      ]},
+      {title:'요리 내놓기', items:[
+        '군청년들이 내려오기 직전에 볶은 재료를 다 같이 섞어 살짝 볶아 내놓는다',
+        '접시 2개에 나누어 담는다',
+      ]},
+    ]
+  }},
+  {emoji:'🥗', name:'사라다(모닝)빵', tag:'둘째 날 저녁', recipe:{
+    serving:'',
+    ingredients:[
+      '모닝빵',
+      '감자',
+      '당근',
+      '백오이',
+      '사과',
+      '건포도',
+      '마요네즈',
+      '머스타드소스',
+      '소금 (부족한 간 맞추는 용도)',
+    ],
+    steps:[
+      {title:'재료 준비', items:[
+        '빵 = 반으로 갈라 팬에 살짝 구워둔다',
+        '감자 = 가로 또는 세로로 칼집을 낸 후 삶는다 (칼집을 내면 껍질이 잘 벗겨짐)',
+        '오이 = 강판에 얇게 저며 새콤달콤하게 절인 후 꽉 짠다',
+        '사과·당근 = 작게 썬다',
+      ]},
+      {title:'속 만들기', items:[
+        '삶은 감자를 뜨거울 때 으깬다',
+        '으깬 감자에 다른 재료를 섞는다',
+        '양념을 버무린다 = 마요네즈·소금·설탕·머스타드(살짝) · 마요네즈를 많이 넣으면 질어지므로 주의 · 추가 간은 소금으로!',
+      ]},
+      {title:'모닝빵 만들기', items:[
+        '구워놓은 모닝빵에 적당량의 속을 넣어 완성한다',
+      ]},
+      {title:'요리 내놓기', items:[
+        '접시 2개에 나누어 담아둔다',
+        '군청년들이 내려오기 직전에 배식대에 차려낸다',
+      ]},
+    ]
+  }},
+  {emoji:'🍄', name:'새송이버터구이', tag:'둘째 날 저녁', recipe:{
+    serving:'파스타보다 먼저 조리',
+    ingredients:[
+      '새송이버섯',
+      '버터',
+      '소스 = 물·간장·맛술·설탕·올리고당(또는 물엿)',
+    ],
+    steps:[
+      {title:'재료 준비', items:[
+        '새송이버섯을 3cm 두께로 썬다',
+        '한 면에만 벌집 칼집을 낸다',
+        '소스 = 대접에 미리 만들어 놓는다 (비율: 물 3 · 간장 2 · 맛술 1 · 설탕 0.5)',
+      ]},
+      {title:'조리하기', items:[
+        '팬에 버터를 녹인다',
+        '버섯을 넣고 중약불에서 노릇하게 굽는다 · 물이 생기지 않게 노릇노릇(갈색·딱딱한 느낌)하게',
+        '버섯이 다 익어갈 때 소스를 넣고 약불에서 졸인다',
+        '마지막에 올리고당을 둘러 윤기를 낸다',
+      ]},
+      {title:'요리 내놓기', items:[
+        '접시 2개에 나누어 담는다',
+        '군청년들이 내려오기 직전에 배식대에 차려낸다',
+        '조리한 팬은 닦지 않는다 — 이 팬으로 파스타를 만든다',
+      ]},
+    ]
+  }},
+];
+
+let MEALS = {
+  dinner1: { label:'첫날 저녁', menus:['유부초밥','미니주먹밥','표고버섯탕수육','야채튀김','떡볶이','비건잡채','오이절임'] },
+  morning: { label:'아침', menus:['아침 (시리얼·우유·토스트)'] },
+  dinner2: { label:'둘째 날 저녁', menus:['펜네파스타','비건햄야채볶음','사라다(모닝)빵','새송이버터구이','오이절임'] },
+};
+
+let dataLoaded = true; // 기본 데이터가 있으므로 처음부터 화면을 채웁니다
+let isAdmin = false;
+
+/* =========================================================
+   3. 로컬 저장 / 시트 동기화
+   ========================================================= */
+const DATA_VERSION = 2; // 기본 데이터를 크게 바꿀 때마다 올려주세요. 오래된 기기 캐시를 자동으로 무시하게 됩니다.
+function loadLocalShared(){
+  try{
+    const raw = localStorage.getItem('barajidata');
+    if(!raw) return false;
+    const d = JSON.parse(raw);
+    if(d.version !== DATA_VERSION) return false; // 옛 버전 캐시는 쓰지 않고 최신 기본값을 사용합니다
+    if(d.menus) MENUS = d.menus;
+    if(d.meals) MEALS = d.meals;
+    if(d.timetables) Object.assign(TIMETABLES, d.timetables);
+    if(d.prep_groups) PREPGROUPS = d.prep_groups;
+    if(d.activities) ACTIVITIES = d.activities;
+    if(d.schedules) SCHEDULES = d.schedules;
+    return true;
+  }catch(e){ console.warn('local load failed', e); return false; }
+}
+function saveLocalShared(){
+  localStorage.setItem('barajidata', JSON.stringify({
+    version:DATA_VERSION, menus:MENUS, meals:MEALS, timetables:TIMETABLES, prep_groups:PREPGROUPS, activities:ACTIVITIES, schedules:SCHEDULES
+  }));
+}
+// 편집 중(문구 수정 모드로 필드에 커서가 가 있거나, 일정 수정창이 열려있는 동안)에는
+// 동기화가 화면을 갈아엎지 않도록 잠깐 건너뜁니다.
+let isEditingNow = false;
+async function syncFromSheetShared(){
+  if(isEditingNow) return;
+  if(!APPSSCRIPTURL || APPSSCRIPTURL.indexOf('http')!==0) return;
+  try{
+    const res = await fetch(APPSSCRIPTURL, {cache:'no-store'});
+    const json = await res.json();
+    if(!json.ok) return;
+    if(isEditingNow) return; // 응답을 기다리는 사이에 편집을 시작했을 수도 있으니 한 번 더 확인
+    const d = json.data;
+    if(d.menus && d.menus.length) MENUS = d.menus;
+    if(d.meals && Object.keys(d.meals).length) MEALS = d.meals;
+    if(d.timetables && Object.keys(d.timetables).length) Object.assign(TIMETABLES, d.timetables);
+    if(d.prep_groups && d.prep_groups.length) PREPGROUPS = d.prep_groups;
+    if(d.activities && d.activities.length) ACTIVITIES = d.activities;
+    if(d.schedules && d.schedules.length) SCHEDULES = d.schedules;
+    dataLoaded = true;
+    saveLocalShared();
+    renderAllContent();
+  }catch(e){ console.warn('sync failed', e); }
+}
+async function saveToSheetShared(key, value){
+  saveLocalShared();
+  if(!APPSSCRIPTURL || APPSSCRIPTURL.indexOf('http')!==0) return;
+  const pw = sessionStorage.getItem('barajiadminpw') || ADMIN_PW_FALLBACK;
+  try{
+    await fetch(APPSSCRIPTURL, { method:'POST', body: JSON.stringify({ password:pw, key:key, value:value }) });
+  }catch(e){ console.warn('sheet save failed', e); }
+}
+
+function findMenu(name){ return MENUS.find(m=>m.name===name); }
+
+/* =========================================================
+   4. 페이지 이동 (스크롤 최상단 고정)
+   ========================================================= */
+let selectedOptionId = null;
+let selectedRoute = null;
+
+/* =========================================================
+   4-1. 스텝(1p씩 넘기기) 네비게이션 + 뒤로가기(히스토리) 통합관리
+   페이지 전환, 스텝 전환, 모달 열기를 전부 하나의 브라우저 히스토리
+   상태로 관리합니다. 그래서 폰의 물리적 뒤로가기를 눌러도 항상
+   "한 단계"씩만 정확히 되돌아가고, 앱 밖으로 튕기거나 첫 화면으로
+   갑자기 점프하지 않습니다.
+   ========================================================= */
+const STEP_PAGES = {
+  'page-lunch': { steps:3, backTo:'page-intro' },
+  'page-dinner': { steps:3, backTo:'page-intro' },
+  'page-stay1': { steps:5, backTo:'page-intro' },
+  'page-stay2': { steps:5, backTo:'page-intro' },
+  'page-stay3': { steps:5, backTo:'page-intro' },
+  'page-moreinfo': { steps:4, backTo:null },
+};
+const stepIndex = {};
+let cameFromRoute = null;
+let moreInfoHiddenSteps = [];
+
+function hiddenStepsFor(pageId){
+  return pageId==='page-moreinfo' ? moreInfoHiddenSteps : [];
+}
+function currentPageId(){
+  const el = document.querySelector('.page.active');
+  return el ? el.id : 'page-select';
+}
+function buildNavState(overrides){
+  return Object.assign({
+    page: currentPageId(),
+    step: stepIndex[currentPageId()] || 0,
+    cameFromRoute: cameFromRoute,
+    hidden: moreInfoHiddenSteps,
+    modal: null
+  }, overrides || {});
+}
+function pushNav(overrides){
+  history.pushState(buildNavState(overrides), '');
+}
+function renderPageAndStep(pageId, stepNo){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const target = document.getElementById(pageId) || document.getElementById('page-select');
+  target.classList.add('active');
+  window.scrollTo(0,0);
+  if(STEP_PAGES[pageId]){
+    const cfg = STEP_PAGES[pageId];
+    const hidden = hiddenStepsFor(pageId);
+    let idx = (stepNo!=null) ? stepNo : 0;
+    while(hidden.includes(idx) && idx < cfg.steps-1) idx++;
+    stepIndex[pageId] = idx;
+    renderStepUI(pageId);
+    if(pageId==='page-moreinfo') renderMoreSchedule();
+  }else{
+    const scroller = target.querySelector('.page-scroll');
+    if(scroller){
+      scroller.scrollTop = 0;
+      requestAnimationFrame(()=>{ scroller.scrollTop = 0; window.scrollTo(0,0); });
+    }
+  }
+}
+function applyNavState(state){
+  state = state || {page:'page-select', step:0, cameFromRoute:null, hidden:[], modal:null};
+  cameFromRoute = state.cameFromRoute || null;
+  moreInfoHiddenSteps = state.hidden || [];
+  renderPageAndStep(state.page, state.step);
+  document.getElementById('recipeModal').classList.toggle('show', state.modal==='recipe');
+  const schedModal = document.getElementById('scheduleEditorModal');
+  schedModal.classList.toggle('show', state.modal==='schedule');
+  if(state.modal!=='schedule'){ editorStayKey = null; isEditingNow = false; }
+}
+window.addEventListener('popstate', function(e){
+  applyNavState(e.state);
+});
+
+function initSteps(pageId){
+  const cfg = STEP_PAGES[pageId];
+  const hidden = hiddenStepsFor(pageId);
+  let start = 0;
+  while(hidden.includes(start) && start < cfg.steps-1) start++;
+  stepIndex[pageId] = start;
+  renderStepUI(pageId);
+}
+function renderStepUI(pageId){
+  const cfg = STEP_PAGES[pageId];
+  if(!cfg) return;
+  const idx = stepIndex[pageId] || 0;
+  const hidden = hiddenStepsFor(pageId);
+  const page = document.getElementById(pageId);
+  page.querySelectorAll('.step-slide').forEach(s=>{
+    s.classList.toggle('active', parseInt(s.dataset.step,10)===idx);
+  });
+  window.scrollTo(0,0);
+  const activeSlide = page.querySelector('.step-slide.active');
+  if(activeSlide){
+    activeSlide.scrollTop = 0;
+    requestAnimationFrame(()=>{ activeSlide.scrollTop = 0; window.scrollTo(0,0); });
+  }
+  const dotsBox = document.getElementById('dots-'+pageId);
+  if(dotsBox){
+    const visible = Array.from({length:cfg.steps}, (_,i)=>i).filter(i=>!hidden.includes(i));
+    dotsBox.innerHTML = visible.map(i=>`<span class="step-dot${i===idx?' on':''}"></span>`).join('');
+  }
+  const nextBtn = document.getElementById('next-'+pageId);
+  if(nextBtn) nextBtn.style.display = (idx===cfg.steps-1) ? 'none' : 'block';
+}
+function stepFwd(pageId){
+  const cfg = STEP_PAGES[pageId];
+  if(!cfg) return;
+  const hidden = hiddenStepsFor(pageId);
+  const idx = stepIndex[pageId] || 0;
+  let next = idx+1;
+  while(next < cfg.steps && hidden.includes(next)) next++;
+  if(next < cfg.steps){
+    stepIndex[pageId] = next;
+    renderStepUI(pageId);
+    pushNav();
+  }
+}
+function stepBack(pageId){
+  const cfg = STEP_PAGES[pageId];
+  if(!cfg) return;
+  const hidden = hiddenStepsFor(pageId);
+  let idx = stepIndex[pageId] || 0;
+  let prev = idx-1;
+  while(prev >= 0 && hidden.includes(prev)) prev--;
+  if(prev >= 0){
+    stepIndex[pageId] = prev;
+    renderStepUI(pageId);
+    pushNav();
+  }else if(pageId==='page-moreinfo'){
+    goToPageKeepingStep(cameFromRoute || 'page-intro');
+  }else{
+    goToPageKeepingStep(cfg.backTo);
+  }
+}
+// 원래 있던 페이지로 돌아갈 때는 그 페이지의 스텝(몇 번째 화면이었는지)을 그대로 유지합니다
+function goToPageKeepingStep(id){
+  const keepStep = STEP_PAGES[id] ? (stepIndex[id] || 0) : 0;
+  renderPageAndStep(id, keepStep);
+  pushNav();
+}
+function goToMoreInfo(fromPageId){
+  cameFromRoute = fromPageId;
+  // 1박2일 신청자는 자기 페이지에 '하는 일'이 이미 있으므로 전체활동에서는 생략합니다
+  moreInfoHiddenSteps = (fromPageId==='page-stay1' || fromPageId==='page-stay2') ? [0] : [];
+  renderMoreSchedule();
+  showPage('page-moreinfo');
+}
+function goToAugustSchedule(fromPageId){
+  cameFromRoute = fromPageId;
+  moreInfoHiddenSteps = [0,1,2];
+  renderMoreSchedule();
+  showPage('page-moreinfo');
+}
+
+/* 밀어서 스텝 넘기기 — 터치(모바일)와 마우스 드래그(PC) 모두 지원 */
+function attachSwipe(el, onLeft, onRight){
+  let sx=0, sy=0, tracking=false;
+  function start(x,y){ sx=x; sy=y; tracking=true; }
+  function end(x,y){
+    if(!tracking) return;
+    tracking = false;
+    // 글자를 드래그로 선택한 것이라면(PC에서 마우스로 텍스트 드래그) 스와이프로 취급하지 않습니다
+    const sel = window.getSelection ? window.getSelection() : null;
+    if(sel && sel.toString().length > 0) return;
+    const dx = x - sx, dy = y - sy;
+    if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*1.5){
+      if(dx < 0) onLeft(); else onRight();
+    }
+  }
+  el.addEventListener('touchstart', e=>{ if(e.touches.length===1) start(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
+  el.addEventListener('touchend', e=>{ end(e.changedTouches[0].clientX, e.changedTouches[0].clientY); }, {passive:true});
+  let mouseDown = false;
+  el.addEventListener('mousedown', e=>{ mouseDown = true; start(e.clientX, e.clientY); });
+  el.addEventListener('mouseup', e=>{ if(mouseDown){ mouseDown=false; end(e.clientX, e.clientY); } });
+  el.addEventListener('mouseleave', ()=>{ mouseDown = false; tracking = false; });
+}
+document.querySelectorAll('.step-track').forEach(track=>{
+  const pageId = track.closest('.page').id;
+  attachSwipe(track, ()=>stepFwd(pageId), ()=>stepBack(pageId));
+});
+
+function showPage(id){
+  renderPageAndStep(id, 0);
+  pushNav();
+}
+function goIntro(){ showPage('page-intro'); }
+function goDetail(){
+  if(selectedRoute === 'page-dinner') renderDinnerContent();
+  showPage(selectedRoute || 'page-lunch');
+}
+
+/* =========================================================
+   5. 옵션(일정 선택) 렌더링
+   ========================================================= */
+function renderOptions(){
+  const box = document.getElementById('optGroups');
+  box.innerHTML = OPTIONS.map(g=>`
+    <div class="opt-group">
+      <div class="opt-group-label">${g.group}</div>
+      ${g.items.map(it=>`
+        <div class="opt-item" data-id="${it.id}" onclick="selectOption('${it.id}','${it.route}')">
+          <div class="opt-radio"></div>
+          <div class="opt-text">${it.label}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+function selectOption(id, route){
+  selectedOptionId = id;
+  selectedRoute = route;
+  document.querySelectorAll('.opt-item').forEach(el=>{
+    el.classList.toggle('sel', el.dataset.id===id);
+  });
+  document.getElementById('btnToIntro').disabled = false;
+}
+
+/* =========================================================
+   6. 콘텐츠 렌더링
+   ========================================================= */
+function renderIntro(){
+  document.getElementById('introTitle').textContent = PROGRAM_INFO.title;
+  document.getElementById('introBody').innerHTML = PROGRAM_INFO.intro.map(t=>`<p>${t}</p>`).join('');
+}
+
+const LOADING = '<p class="empty-note">불러오는 중입니다…</p>';
+
+// 숙박이 필요 없는(당일) 봉사자에게는 stayOnly 표시가 붙은 항목뿐 아니라,
+// 그룹명·항목명에 '숙박'이나 '1박 이상' 같은 문구가 들어간 것도 함께 걸러냅니다.
+// (구글시트에 옛 구조의 데이터가 남아있어도 놓치지 않도록 이름 기반으로도 한 번 더 확인합니다)
+function looksStayOnly(s){ return /숙박|1박\s*이상/.test(s||''); }
+function prepListHTML(filterFn, excludeStayOnly){
+  if(!dataLoaded) return LOADING;
+  if(!PREPGROUPS.length) return '<p class="empty-note">준비물 정보가 아직 등록되지 않았습니다.</p>';
+  let groups = PREPGROUPS.filter(g=>!filterFn||filterFn(g));
+  if(excludeStayOnly) groups = groups.filter(g=>!looksStayOnly(g.group));
+  if(!groups.length) return '<p class="empty-note">준비물 정보가 아직 등록되지 않았습니다.</p>';
+  const blocks = groups.map(g=>{
+    const items = excludeStayOnly ? g.items.filter(it=>!it.stayOnly && !looksStayOnly(it.t) && !looksStayOnly(it.s)) : g.items;
+    if(!items.length) return '';
+    return `<div class="prep-group"><p class="prep-group-label">${g.group}</p><ul class="plain">${items.map(it=>`<li><b>${it.t}</b>${it.s?(' — '+it.s):''}</li>`).join('')}</ul></div>`;
+  }).filter(Boolean);
+  if(!blocks.length) return '<p class="empty-note">준비물 정보가 아직 등록되지 않았습니다.</p>';
+  return blocks.join('');
+}
+function rulesListHTML(){
+  if(!dataLoaded) return LOADING;
+  const ruleGroup = PREPGROUPS.find(g=>g.rules);
+  if(!ruleGroup) return '<p class="empty-note">안내가 아직 등록되지 않았습니다.</p>';
+  return `<ul class="plain">${ruleGroup.items.map(it=>`<li><b>${it.t}</b>${it.s?(' — '+it.s):''}</li>`).join('')}</ul>`;
+}
+function activityListHTML(limit){
+  if(!dataLoaded) return LOADING;
+  if(!ACTIVITIES.length) return '<p class="empty-note">활동 정보가 아직 등록되지 않았습니다.</p>';
+  const arr = limit ? ACTIVITIES.slice(0,limit) : ACTIVITIES;
+  return `<ul class="plain">${arr.map(a=>`<li><b>${a.title}</b>${a.desc?(' — '+a.desc):''}</li>`).join('')}</ul>`;
+}
+function menuMiniHTML(name){
+  const m = findMenu(name);
+  if(!m) return `<div class="recipe-mini"><div class="rm-left"><span class="rm-dot"></span><span class="rm-name">${name}</span></div></div>`;
+  return `<div class="recipe-mini" onclick="openRecipeModal('${name.replace(/'/g,"\\'")}')">
+    <div class="rm-left"><span class="rm-dot"></span><span class="rm-name">${m.name}</span></div>
+    <span class="rm-arrow">레시피 보기<span class="icon">${ICONS.chevron}</span></span>
+  </div>`;
+}
+function menuListHTML(mealKey){
+  if(!dataLoaded) return LOADING;
+  const meal = MEALS[mealKey];
+  if(!meal || !meal.menus || !meal.menus.length) return '<p class="empty-note">메뉴 정보가 아직 등록되지 않았습니다.</p>';
+  return meal.menus.map(n=>menuMiniHTML(n)).join('');
+}
+// '표고버섯 2kg 기준' 처럼 분량 숫자만 반복하는 문구는 위의 "50인분 기준" 안내와 중복이라 표시하지 않습니다.
+// (실제 시트에 옛날 데이터가 남아있어도, 화면에는 항상 걸러져서 나갑니다)
+function isRedundantServingNote(s){
+  if(!s) return false;
+  const t = s.trim();
+  return /^[가-힣a-zA-Z()·・\s]{0,10}\d+(\.\d+)?\s*(kg|g|킬로|리터|l|ml|개|장|봉지|병|통|컵|모|대|줌|알|큰술|작은술)\s*기준\.?$/i.test(t);
+}
+function openRecipeModal(name){
+  const m = findMenu(name);
+  if(!m || !m.recipe) return;
+  const r = m.recipe;
+  const showNote = r.serving && !isRedundantServingNote(r.serving);
+  document.getElementById('recipeModalBody').innerHTML = `
+    <h2 style="font-family:'Noto Serif KR',serif; margin:0 0 4px; font-size:20px;">${m.name}</h2>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 ${showNote?4:16}px;">50인분 기준 · 인원수에 따라 가감해주세요</p>
+    ${showNote?`<p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 16px;">${r.serving}</p>`:''}
+    <div class="recipe-block">
+      <div class="sec-title" style="margin-top:0;"><span class="icon">${ICONS.bowl}</span>재료</div>
+      <ul class="plain">${(r.ingredients||[]).map(x=>`<li>${x}</li>`).join('')}</ul>
+    </div>
+    ${(r.steps||[]).map(s=>`
+      <div class="recipe-block">
+        <div class="sec-title" style="margin-top:0;">${s.title}</div>
+        <ul class="plain">${(s.items||[]).map(x=>`<li>${x}</li>`).join('')}</ul>
+      </div>
+    `).join('')}
+  `;
+  document.getElementById('recipeModal').classList.add('show');
+  const box = document.getElementById('recipeModalBox');
+  if(box) box.scrollTop = 0;
+  pushNav({modal:'recipe'});
+}
+function closeRecipeModal(){
+  history.back();
+}
+
+
+function formatRow(r){
+  const activityHTML = `${r.prog?'<b class="prog">':''}${r.content}${r.prog?'</b>':''}`;
+  const placeHTML = r.place ? `<span class="tt-place-f-divider">|</span><span class="tt-place-f">${r.place}</span>` : '';
+  const noteHTML = r.note ? `<span class="tt-place-f-divider">|</span><span class="tt-place-f">${r.note}</span>` : '';
+  const extra = placeHTML + noteHTML;
+  return `<div class="tt-row">
+    <div class="tt-time">${r.time}</div>
+    <div class="tt-content"><span class="tt-activity">${activityHTML}</span>${extra?`<span class="tt-extra">${extra}</span>`:''}</div>
+  </div>`;
+}
+// 활동명이 혼자서도 1줄을 넘기면(이미 줄바꿈 되면) 장소·비고를 그 줄 끝에 자연스럽게 붙이고,
+// 활동명이 원래 1줄로 끝나는 경우에는 장소·비고를 다음 줄로 내려서 항상 안정적으로 보이게 합니다.
+function adjustPlaceWrap(container){
+  if(!container) return;
+  container.querySelectorAll('.tt-content').forEach(el=>{
+    const activityEl = el.querySelector('.tt-activity');
+    const extraEl = el.querySelector('.tt-extra');
+    if(!activityEl || !extraEl) return;
+    const prevDisplay = extraEl.style.display;
+    extraEl.style.display = 'none';
+    const lineHeight = parseFloat(getComputedStyle(activityEl).lineHeight) || 20;
+    const isMultiline = activityEl.getBoundingClientRect().height > lineHeight * 1.4;
+    extraEl.style.display = prevDisplay;
+    el.classList.toggle('tt-newline', !isMultiline);
+  });
+}
+// dayIdx의 rows 중 fromTime 이후만, cutAtDepart가 true면 "귀가" 문구가 나오는 줄까지만 반환
+function ttRowsForDay(dayIdx, fromTime, cutAtDepart){
+  const t = TIMETABLES[PROGRAM_ID];
+  if(!t || !t.days || !t.days[dayIdx]) return null;
+  let rows = t.days[dayIdx].rows.slice();
+  if(fromTime!=null) rows = rows.filter(r=> parseInt(r.time.replace(':',''),10) >= fromTime);
+  if(cutAtDepart){
+    const cutIdx = rows.findIndex(r => (r.content||'').includes('귀가') || (r.note||'').includes('귀가'));
+    if(cutIdx !== -1) rows = rows.slice(0, cutIdx+1);
+  }else{
+    // '귀가' 안내는 그 시점에 떠나는 다른 조를 위한 표시라, 시작 구간에는 노출하지 않습니다
+    rows = rows.filter(r => !(r.content||'').includes('귀가') && !(r.note||'').includes('귀가'));
+  }
+  return rows;
+}
+function dayLabel(dayIdx){ return CALENDAR_DAYS[dayIdx] || (`${dayIdx+1}일차`); }
+
+function ttRowsHTMLByStayKey(stayKey){
+  if(!dataLoaded) return LOADING;
+  const ranges = STAY_RANGES[stayKey];
+  if(!ranges) return '<p class="empty-note">일정 정보가 아직 등록되지 않았습니다.</p>';
+  let html = '';
+  for(const seg of ranges){
+    const rows = ttRowsForDay(seg.dayIndex, seg.fromTime, seg.toDepart);
+    if(rows === null) continue;
+    html += `<div class="day-label" data-editable-key="calDay${seg.dayIndex}">${dayLabel(seg.dayIndex)}</div>` + rows.map(formatRow).join('');
+  }
+  return html || '<p class="empty-note">일정 정보가 아직 등록되지 않았습니다.</p>';
+}
+function ttFullHTML(){
+  if(!dataLoaded) return LOADING;
+  const t = TIMETABLES[PROGRAM_ID];
+  if(!t || !t.days) return '<p class="empty-note">일정 정보가 아직 등록되지 않았습니다.</p>';
+  return t.days.map((day,idx)=>`
+    <div class="day-label" data-editable-key="calDay${idx}">${dayLabel(idx)}</div>
+    ${day.rows.map(r=>formatRow(r)).join('')}
+  `).join('');
+}
+
+// 저녁공양지원은 15일/16일 중 어떤 날을 선택했는지에 따라 보여줄 메뉴가 다릅니다
+function renderDinnerContent(){
+  const box = document.getElementById('dinnerMenuBox');
+  if(!box) return;
+  const is16 = selectedOptionId === 'dinner-16';
+  const labelEl = document.getElementById('dinnerDayLabel');
+  if(labelEl) labelEl.textContent = is16 ? '16일(목) 저녁공양' : '15일(수) 저녁공양';
+  box.innerHTML = menuListHTML(is16 ? 'dinner2' : 'dinner1');
+  document.getElementById('dinnerPrepBox').innerHTML = prepListHTML(g=>!g.rules, true);
+  document.getElementById('dinnerRulesBox').innerHTML = rulesListHTML();
+}
+function renderAllContent(){
+  renderIntro();
+  renderOptions();
+
+  document.getElementById('lunchPrepBox').innerHTML = prepListHTML(g=>!g.rules, true);
+  document.getElementById('lunchRulesBox').innerHTML = rulesListHTML();
+
+  renderDinnerContent();
+
+  document.getElementById('stay1ActivityBox').innerHTML = activityListHTML();
+  document.getElementById('stay1ScheduleBox').innerHTML = ttRowsHTMLByStayKey('stay-1516');
+  document.getElementById('stay1DinnerBox').innerHTML = menuListHTML('dinner1');
+  document.getElementById('stay1PrepBox').innerHTML = prepListHTML(g=>!g.rules);
+  document.getElementById('stay1RulesBox').innerHTML = rulesListHTML();
+
+  document.getElementById('stay2ActivityBox').innerHTML = activityListHTML();
+  document.getElementById('stay2ScheduleBox').innerHTML = ttRowsHTMLByStayKey('stay-1617');
+  document.getElementById('stay2DinnerBox').innerHTML = menuListHTML('dinner2');
+  document.getElementById('stay2PrepBox').innerHTML = prepListHTML(g=>!g.rules);
+  document.getElementById('stay2RulesBox').innerHTML = rulesListHTML();
+
+  document.getElementById('stay3ActivityBox').innerHTML = activityListHTML();
+  document.getElementById('stay3ScheduleBox').innerHTML = ttRowsHTMLByStayKey('stay-1517');
+  document.getElementById('stay3DinnerBoxes').innerHTML = `
+    <div class="card"><p><b data-editable-key="dinnerLabel1">1일차(15일) 저녁공양</b></p>${menuListHTML('dinner1')}</div>
+    <div class="card"><p><b data-editable-key="dinnerLabel2">2일차(16일) 저녁공양</b></p>${menuListHTML('dinner2')}</div>
+  `;
+  document.getElementById('stay3PrepBox').innerHTML = prepListHTML(g=>!g.rules);
+  document.getElementById('stay3RulesBox').innerHTML = rulesListHTML();
+
+  document.getElementById('moreActivityBox').innerHTML = activityListHTML();
+  renderMoreSchedule();
+  document.getElementById('moreMenuBoxes').innerHTML = `
+    <div class="card"><p><b data-editable-key="dinnerLabel1">1일차(15일) 저녁공양</b></p>${menuListHTML('dinner1')}</div>
+    <div class="card"><p><b data-editable-key="dinnerLabel2">2일차(16일) 저녁공양</b></p>${menuListHTML('dinner2')}</div>
+  `;
+  renderAugustSchedule();
+
+  applyAdminUI();
+  applyTextOverrides();
+
+  ['stay1ScheduleBox','stay2ScheduleBox','stay3ScheduleBox'].forEach(id=>{
+    const box = document.getElementById(id);
+    adjustPlaceWrap(box);
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>adjustPlaceWrap(box));
+  });
+}
+
+// 1박2일 신청자가 전체활동에서 일정표를 볼 때, 본인이 직접 겪지 않는 날짜는 흐리게 표시합니다
+function renderMoreSchedule(){
+  const box = document.getElementById('moreScheduleBox');
+  const noteEl = document.getElementById('moreScheduleNote');
+  if(!box) return;
+  if(!dataLoaded){ box.innerHTML = LOADING; return; }
+  const t = TIMETABLES[PROGRAM_ID];
+  if(!t || !t.days){ box.innerHTML = '<p class="empty-note">일정 정보가 아직 등록되지 않았습니다.</p>'; return; }
+  if(noteEl) noteEl.style.display = 'none';
+  box.innerHTML = t.days.map((day,dayIdx)=>`
+    <div class="day-label" data-editable-key="calDay${dayIdx}">${dayLabel(dayIdx)}</div>
+    ${day.rows.map(r=>formatRow(r)).join('')}
+  `).join('');
+  adjustPlaceWrap(box);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>adjustPlaceWrap(box));
+}
+
+// 메인앱 SCHEDULES에서 8월 일정만 골라 보여줍니다
+const WEEKDAY_KO = ['일','월','화','수','목','금','토'];
+function scheduleDayInfo(s){
+  const nums = (s.day||'').match(/\d+/g);
+  const info = { sortKey: s.month*100, dayLabel:'', durLabel:'' };
+  if(s.program==='seohaeng') info.durLabel = '1박 2일';
+  else if(s.program==='happy') info.durLabel = '2박 3일';
+  if(!nums || !nums.length) return info;
+  const startDay = parseInt(nums[0],10);
+  const endDay = nums.length>1 ? parseInt(nums[nums.length-1],10) : startDay;
+  info.sortKey = s.month*100 + startDay;
+  if(!info.durLabel && nums.length>1){
+    const nights = endDay - startDay;
+    if(nights===1) info.durLabel = '1박 2일';
+    else if(nights===2) info.durLabel = '2박 3일';
+    else if(nights>0) info.durLabel = `${nights}박 ${nights+1}일`;
+  }
+  try{
+    const w1 = WEEKDAY_KO[new Date(2026, s.month-1, startDay).getDay()];
+    if(nums.length>1){
+      const w2 = WEEKDAY_KO[new Date(2026, s.month-1, endDay).getDay()];
+      info.dayLabel = `${s.month}월 ${startDay}일(${w1})–${endDay}일(${w2})`;
+    }else{
+      info.dayLabel = `${s.month}월 ${startDay}일(${w1})`;
+    }
+  }catch(e){}
+  return info;
+}
+function renderAugustSchedule(){
+  const box = document.getElementById('moreAugustBox');
+  if(!box) return;
+  if(!dataLoaded){ box.innerHTML = LOADING; return; }
+  let items = (typeof SCHEDULES!=='undefined' ? SCHEDULES : []).filter(s=>s.month===8);
+  if(!items.length){
+    box.innerHTML = '<div class="step-placeholder">8월 일정은 아직 확정 전입니다. 확정되는 대로 이 자리에 안내해드릴게요.</div>';
+    return;
+  }
+  const withInfo = items.map(s=>({ s, info: scheduleDayInfo(s) })).sort((a,b)=>a.info.sortKey-b.info.sortKey);
+  box.innerHTML = withInfo.map(({s,info})=>`
+    <div class="card">
+      <p><b>${s.title}</b>${info.durLabel?` · ${info.durLabel}`:''}</p>
+      ${info.dayLabel?`<p style="color:var(--ink-soft); font-size:12.5px;">${info.dayLabel}</p>`:''}
+      ${s.place?`<p style="color:var(--ink-soft); font-size:12.5px;">${s.place}</p>`:''}
+    </div>
+  `).join('');
+}
+
+/* =========================================================
+   7. 관리자 모드 — 2박3일 원본 일정표를 수정하면
+      1박/2박 참가자 화면에도 즉시 반영됩니다.
+   ========================================================= */
+function checkAdminFromURL(){
+  const params = new URLSearchParams(location.search);
+  if(params.get('admin')==='1'){
+    isAdmin = true;
+    sessionStorage.setItem('barajiadminpw', params.get('pw')||ADMIN_PW_FALLBACK);
+  }
+  if(sessionStorage.getItem('barajiadminpw')) isAdmin = true;
+}
+function logoutAdmin(){
+  isAdmin = false;
+  sessionStorage.removeItem('barajiadminpw');
+  applyAdminUI();
+}
+function applyAdminUI(){
+  document.body.classList.toggle('admin-on', isAdmin);
+  document.getElementById('adminBadge').style.display = isAdmin ? 'block' : 'none';
+  ['adEditStay1','adEditStay2','adEditStay3'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.style.display = isAdmin ? 'block' : 'none';
+  });
+}
+
+/* =========================================================
+   7-1. 문구 수정 모드 — 비밀번호 없이 화면 우측 상단을 5번 탭하면
+   켜집니다. 메인앱과 동기화되지 않는, 이 서브앱에만 있는 고정
+   문구(제목/소개/안내 문구 등)만 그 자리에서 바로 고칠 수 있고,
+   이 기기의 localStorage에 저장됩니다. 메인앱에서 관리하는
+   일정표·레시피·준비물·활동 목록 등은 여기서 손댈 수 없습니다 —
+   그런 항목은 메인앱에서 고쳐야 한다는 뜻입니다.
+   ========================================================= */
+let textEditMode = false;
+let _secretTapCount = 0, _secretTapTimer = null;
+function handleSecretTap(){
+  _secretTapCount++;
+  clearTimeout(_secretTapTimer);
+  _secretTapTimer = setTimeout(()=>{ _secretTapCount = 0; }, 1200);
+  if(_secretTapCount >= 5){
+    _secretTapCount = 0;
+    toggleTextEditMode();
+  }
+}
+function toggleTextEditMode(){
+  textEditMode = !textEditMode;
+  document.body.classList.toggle('text-edit-on', textEditMode);
+  document.querySelectorAll('[data-editable-key]').forEach(el=>{
+    el.contentEditable = textEditMode ? 'true' : 'false';
+  });
+}
+let subappTextOverrides = {};
+function loadTextOverrides(){
+  try{ subappTextOverrides = JSON.parse(localStorage.getItem('subappTextOverrides')||'{}'); }
+  catch(e){ subappTextOverrides = {}; }
+  // 저장된 날짜 라벨(15일(수) 등)이 있으면 CALENDAR_DAYS에도 미리 반영해둡니다
+  CALENDAR_DAYS.forEach((_,i)=>{
+    if(subappTextOverrides['calDay'+i] !== undefined) CALENDAR_DAYS[i] = subappTextOverrides['calDay'+i];
+  });
+}
+function applyTextOverrides(){
+  document.querySelectorAll('[data-editable-key]').forEach(el=>{
+    if(el === document.activeElement) return; // 지금 편집 중인 필드는 건드리지 않습니다
+    const key = el.dataset.editableKey;
+    if(subappTextOverrides[key] !== undefined) el.innerHTML = subappTextOverrides[key];
+  });
+}
+// 날짜 라벨은 여러 화면(1박2일 각 페이지, 전체활동 등)에 똑같이 쓰이므로,
+// 한 곳에서 고치면 전부 다시 그려서 바로 맞춰줍니다.
+function refreshAllSchedules(){
+  const s1 = document.getElementById('stay1ScheduleBox');
+  const s2 = document.getElementById('stay2ScheduleBox');
+  const s3 = document.getElementById('stay3ScheduleBox');
+  if(s1) s1.innerHTML = ttRowsHTMLByStayKey('stay-1516');
+  if(s2) s2.innerHTML = ttRowsHTMLByStayKey('stay-1617');
+  if(s3) s3.innerHTML = ttRowsHTMLByStayKey('stay-1517');
+  renderMoreSchedule();
+}
+document.addEventListener('focusin', function(e){
+  if(textEditMode && e.target && e.target.dataset && e.target.dataset.editableKey){
+    isEditingNow = true;
+  }
+});
+// 여러 일정에 똑같이 등장하는 제목들 — 한 곳에서 고치면 나머지도 같이 바뀝니다
+const LINKED_KEY_GROUPS = [
+  ['hdgBagLunch','hdgBagDinner','hdgBagStay1','hdgBagStay2','hdgBagStay3'],
+  ['hdgCheckLunch','hdgRuleDinner','hdgRuleStay1','hdgRuleStay2','hdgRuleStay3'],
+  ['hdgHandStay1','hdgHandStay2','hdgHandStay3'],
+  ['hdgCalStay1','hdgCalStay2','hdgCalStay3'],
+  ['hdgBowlStay1','hdgBowlStay2','hdgBowlStay3'],
+];
+function linkedKeysFor(key){
+  const group = LINKED_KEY_GROUPS.find(g=>g.includes(key));
+  return group || [key];
+}
+document.addEventListener('blur', function(e){
+  if(!textEditMode) return;
+  const el = e.target;
+  if(el && el.dataset && el.dataset.editableKey){
+    const key = el.dataset.editableKey;
+    const val = el.innerHTML;
+    linkedKeysFor(key).forEach(k=>{ subappTextOverrides[k] = val; });
+    localStorage.setItem('subappTextOverrides', JSON.stringify(subappTextOverrides));
+    applyTextOverrides();
+    const m = key.match(/^calDay(\d+)$/);
+    if(m){
+      CALENDAR_DAYS[parseInt(m[1],10)] = el.textContent;
+      refreshAllSchedules();
+    }
+  }
+  isEditingNow = false;
+}, true);
+loadTextOverrides();
+
+let editorStayKey = null;
+function openScheduleEditor(stayKey){
+  if(!isAdmin) return;
+  isEditingNow = true;
+  editorStayKey = stayKey;
+  const ranges = STAY_RANGES[stayKey];
+  const body = document.getElementById('scheduleEditorBody');
+  let html = '';
+  ranges.forEach(seg=>{
+    const t = TIMETABLES[PROGRAM_ID];
+    const day = t.days[seg.dayIndex];
+    html += `<div class="day-label">${dayLabel(seg.dayIndex)}</div>`;
+    day.rows.forEach((r, ri)=>{
+      html += `<div class="admin-editrow" data-day="${seg.dayIndex}" data-row="${ri}">
+        <input class="time" value="${r.time}">
+        <input class="content" value="${r.content||''}">
+        <input class="place" value="${r.place||''}">
+        <button class="del" onclick="this.parentElement.remove()">삭제</button>
+      </div>`;
+    });
+    html += `<button class="admin-add-btn" onclick="addEditorRow(${seg.dayIndex})">+ 일정 추가</button>`;
+  });
+  body.innerHTML = html;
+  document.getElementById('scheduleEditorModal').classList.add('show');
+  pushNav({modal:'schedule'});
+}
+function addEditorRow(dayIndex){
+  const body = document.getElementById('scheduleEditorBody');
+  const rows = body.querySelectorAll(`.admin-editrow[data-day="${dayIndex}"]`);
+  const newRi = rows.length;
+  const div = document.createElement('div');
+  div.className = 'admin-editrow';
+  div.dataset.day = dayIndex; div.dataset.row = newRi;
+  div.innerHTML = `<input class="time" value="00:00"><input class="content" value=""><input class="place" value=""><button class="del" onclick="this.parentElement.remove()">삭제</button>`;
+  const addBtn = [...body.children].find(el=>el.tagName==='BUTTON' && el.getAttribute('onclick')===`addEditorRow(${dayIndex})`);
+  if(addBtn) body.insertBefore(div, addBtn); else body.appendChild(div);
+}
+function closeScheduleEditor(){
+  history.back();
+}
+function saveScheduleEditor(){
+  if(!editorStayKey) return;
+  const ranges = STAY_RANGES[editorStayKey];
+  const t = TIMETABLES[PROGRAM_ID];
+  const byDay = {};
+  ranges.forEach(seg=>{ byDay[seg.dayIndex] = []; });
+  document.querySelectorAll('#scheduleEditorBody .admin-editrow').forEach(row=>{
+    const d = parseInt(row.dataset.day,10);
+    const inputs = row.querySelectorAll('input');
+    byDay[d].push({ time:inputs[0].value.trim(), content:inputs[1].value.trim(), place:inputs[2].value.trim() });
+  });
+  Object.keys(byDay).forEach(d=>{ t.days[parseInt(d,10)].rows = byDay[d]; });
+  saveToSheetShared('timetables', TIMETABLES);
+  closeScheduleEditor();
+  renderAllContent();
+}
+
+/* =========================================================
+   8. 초기 실행
+   ========================================================= */
+checkAdminFromURL();
+loadLocalShared();
+renderAllContent();
+history.replaceState(buildNavState(), '');
+syncFromSheetShared();
+setInterval(syncFromSheetShared, 60000);
+</script>
+</body>
+</html>
