@@ -14,7 +14,9 @@ html,body{margin:0;background:#111}
 body{font-family:"Pretendard",sans-serif;color:var(--ink);line-height:1.65}
 .wrap{max-width:var(--maxw);margin:0 auto;min-height:100vh;background:var(--paper);position:relative;overflow:hidden;display:flex;flex-direction:column}
 
-.video-stage{position:fixed;inset:0;background:#000;z-index:1000;display:flex;align-items:center;justify-content:center}
+.video-stage{position:fixed;inset:0;background:#000;z-index:1000;overflow:hidden}
+#playerHost{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh;display:none}
+#playerHost iframe{width:100%;height:100%;display:block}
 .video-stage.hide{display:none}
 .video-stage iframe{width:100%;height:100%}
 .skip-btn{position:absolute;bottom:26px;right:18px;background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:8px 16px;font-size:12px;font-family:"Pretendard",sans-serif;cursor:pointer;z-index:1001}
@@ -171,7 +173,7 @@ body.admin-on .adm-toolbar{display:flex}
       <div class="play-circle">▶</div>
       <p>화면을 눌러 영상을 시작하세요</p>
     </div>
-    <div id="playerHost" style="width:100%;height:100%;display:none"></div>
+    <div id="playerHost"></div>
     <button class="skip-btn" onclick="skipVideo()">건너뛰기</button>
   </div>
 
@@ -973,16 +975,37 @@ function goPage(name){
   document.getElementById("page-"+name).classList.add("active");
   window.scrollTo(0,0);
 }
+let ytPlayer = null;
 function startVideo(){
   document.getElementById("tapToStart").classList.add("hide");
   const host = document.getElementById("playerHost");
   host.style.display = "block";
-  host.innerHTML = `<iframe id="ytIframe" width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/${YTVIDEOID}?autoplay=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1" referrerpolicy="strict-origin-when-cross-origin" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
-  window.addEventListener("message", onYTMessage);
-}
-function onYTMessage(e){
-  if(!e.data || typeof e.data !== "string") return;
-  try{ const data = JSON.parse(e.data); if(data.event === "onStateChange" && data.info === 0) goToPageFlow(); }catch(err){}
+  const div = document.createElement("div");
+  div.id = "ytIframe";
+  host.appendChild(div);
+
+  function createPlayer(){
+    ytPlayer = new YT.Player("ytIframe", {
+      videoId: YTVIDEOID,
+      playerVars: {
+        autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1,
+        cc_load_policy: 0, iv_load_policy: 3,
+        origin: location.origin
+      },
+      events: {
+        onReady: function(e){ e.target.playVideo(); },
+        onStateChange: function(e){ if(e.data === YT.PlayerState.ENDED) goToPageFlow(); }
+      }
+    });
+  }
+  if(window.YT && window.YT.Player){
+    createPlayer();
+  }else{
+    window.onYouTubeIframeAPIReady = createPlayer;
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+  }
 }
 function skipVideo(){ goToPageFlow(); }
 function goToPageFlow(){
