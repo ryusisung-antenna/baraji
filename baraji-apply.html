@@ -1025,6 +1025,9 @@ function showVideoEndOverlay(){
 function skipVideo(){ clearTimeout(videoEndTimer); goToPageFlow(); }
 function goToPageFlow(){
   clearTimeout(videoEndTimer);
+  try{ if(ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo(); }catch(e){}
+  const host=document.getElementById("playerHost");
+  if(host) host.innerHTML=""; // iframe 자체를 제거해서 백그라운드 재생/소리를 확실히 끊는다
   document.getElementById("videoStage").classList.add("hide");
   goPage("landing");
 }
