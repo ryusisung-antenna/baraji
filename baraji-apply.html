@@ -161,7 +161,7 @@ p.lead{font-size:13.5px;color:var(--ink-soft);text-align:center;margin:0 0 26px;
 .section-desc{font-size:12px;color:var(--ink-soft);line-height:1.55}
 /* 모집현황 (관리자 전용) */
 .rc-group{margin-bottom:18px}
-.rc-event{font-family:"Noto Serif KR",serif;font-weight:700;font-size:16px;color:var(--ink);padding-bottom:7px;border-bottom:2px solid var(--ink);margin-bottom:9px}
+.rc-event{font-family:"Noto Serif KR",serif;font-weight:700;font-size:16px;color:var(--ink);padding-bottom:7px;border-bottom:2px solid var(--ink);margin-bottom:10px}
 .rc-mini{border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:8px;background:#fff}
 .rc-date{font-family:"Noto Serif KR",serif;font-weight:700;font-size:12.5px;display:flex;flex-wrap:wrap;row-gap:3px;justify-content:space-between;align-items:baseline;margin-bottom:4px}
 .rc-date>span:first-child{flex:1 1 auto;min-width:0;}
@@ -174,10 +174,11 @@ p.lead{font-size:13.5px;color:var(--ink-soft);text-align:center;margin:0 0 26px;
 .rc-row span{color:var(--ink-soft)}
 .rc-row i{color:var(--ink-soft);opacity:.7;font-style:normal}
 .rc-fold{border:1px dashed var(--warm);border-radius:10px;padding:10px 12px;margin-top:10px}
-.rc-fold-head{font-size:12px;font-weight:700;color:var(--warm);display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.rc-fold-row{font-size:12px;color:var(--ink-soft);line-height:1.8}
+.rc-fold-head{font-size:12px;font-weight:700;color:var(--warm);display:flex;justify-content:space-between;align-items:baseline}
+.rc-fold-body{margin-top:7px;font-size:12px;color:var(--ink-soft);line-height:1.8}
 .rc-fold-row b{color:var(--ink);font-weight:600;margin-right:5px}
-.rc-fold-total{border-top:1px dashed var(--warm);margin-top:5px;padding-top:6px}
+.rc-fold-total{border-top:1px dashed var(--warm);margin-top:4px;padding-top:6px}
+.rc-fold-total b{color:var(--warm)}
 .rc-card{border:1px solid var(--line);border-radius:10px;padding:12px 13px;margin-bottom:8px;background:#fff}
 .rc-card-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .rc-name{font-family:"Noto Serif KR",serif;font-size:15px;font-weight:700}
@@ -189,6 +190,9 @@ p.lead{font-size:13.5px;color:var(--ink-soft);text-align:center;margin:0 0 26px;
 .rc-motive{margin-top:7px;font-size:12px;color:var(--ink-soft);line-height:1.5}
 .rc-route{margin-top:4px;font-size:11px;color:var(--ink-soft);opacity:.85}
 .rc-time{margin-top:6px;font-size:10.5px;color:var(--ink-soft);opacity:.7}
+.rc-day-btn{flex:1;min-width:44px;text-align:center;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:6px;padding:8px 6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.rc-day-btn.on{background:var(--warm);color:#fff;border-color:var(--warm)}
+.rc-day-cnt{font-size:11px;opacity:.8;font-weight:500}
 .group-label.strong{font-weight:800}
 .group-label:first-child{margin-top:0}
 .hint{font-size:11.5px;color:var(--ink-soft);margin-top:4px;line-height:1.7}
@@ -293,6 +297,7 @@ body.admin-on .adm-toolbar{display:flex}
       <div id="rcStateBox"><div class="loading-note">불러오는 중...</div></div>
       <div id="rcBody" style="display:none">
         <div id="rcSummary"></div>
+        <div id="rcDayFilter" style="display:flex;gap:6px;margin:14px 0 8px;flex-wrap:wrap"></div>
         <input type="text" id="rcSearch" placeholder="이름·전화·지회로 찾기" oninput="renderRecruitList()" style="width:100%;box-sizing:border-box;border:1px solid var(--line);background:var(--paper-2);border-radius:8px;padding:9px 11px;font-family:inherit;font-size:14px;color:var(--ink);margin:16px 0 8px">
         <div class="section-desc" id="rcCount" style="margin-bottom:8px"></div>
         <div id="rcList"></div>
@@ -1219,6 +1224,25 @@ function goToPageFlow(){
 
 /* ================= 모집현황 (관리자 전용 · 보기 전용) ================= */
 let RC_APPS=[], RC_OV={removed:{},added:{}}, RC_LOADED=false;
+let rcDayFilter="";
+const RC_DAY_BUTTONS=["수","목","금"];
+function rcExtractDays_(text){
+  const days=[];const re=/\(([월화수목금토일])\)/g;let m;
+  while(m=re.exec(text||"")){if(!days.includes(m[1]))days.push(m[1]);}
+  return days;
+}
+function rcApplicationDays_(a){
+  return rcExtractDays_(a.scheduleText).concat(rcExtractDays_(a.partText));
+}
+function rcRenderDayFilter(base){
+  const el=document.getElementById("rcDayFilter");if(!el)return;
+  el.innerHTML=RC_DAY_BUTTONS.map(d=>{
+    const cnt=base.filter(a=>rcApplicationDays_(a).includes(d)).length;
+    const on=rcDayFilter===d;
+    return `<button class="rc-day-btn ${on?'on':''}" onclick="rcSetDayFilter('${d}')">${d}<br><span class="rc-day-cnt">${cnt}명</span></button>`;
+  }).join("")+(rcDayFilter?`<button class="rc-day-btn" onclick="rcSetDayFilter('')">전체보기</button>`:"");
+}
+function rcSetDayFilter(d){ rcDayFilter=(rcDayFilter===d)?"":d; renderRecruitList(); }
 
 function rcClean_(n){ return String(n||"").trim()||"(이름없음)"; }
 function rcPushUniq_(arr,n){ if(!arr.includes(n))arr.push(n); }
@@ -1436,11 +1460,12 @@ function renderRecruitSummaryView(){
       return `<div class="rc-mini"><div class="rc-date"><span>${label}</span><span class="rc-date-right"><span class="rc-total">총 ${total}명</span>${closePill}</span></div>${lines.join("")}</div>`;
     }).join("");
     const uniq=[]; g.fold.filter(f=>!f.total).forEach(f=>f.names.forEach(n=>rcPushUniq_(uniq,n)));
-    const foldBody=g.fold.map(f=>
-      `<div class="rc-fold-row${f.total?" rc-fold-total":""}"><b>${rcEsc_(f.label)}</b><span>${f.names.length?rcEsc_(f.names.join(", ")):"아직 없음"}</span></div>`
-    ).join("");
+    const foldBody=g.fold.map(f=>{
+      const namesHtml=f.names.length?rcEsc_(f.names.join(", ")):(f.total?"아직 없음":"<i>아직 없음</i>");
+      return `<div class="rc-fold-row${f.total?" rc-fold-total":""}"><b>${rcEsc_(f.label)}</b><span>${namesHtml}</span></div>`;
+    }).join("");
     return `<div class="rc-group"><div class="rc-event">${rcEsc_(g.name)}</div>${minis}
-      <div class="rc-fold"><div class="rc-fold-head">바라지 신청자만 보기<span class="rc-total">총 ${uniq.length}명</span></div>${foldBody}</div></div>`;
+      <div class="rc-fold"><div class="rc-fold-head">바라지 신청자만 보기<span class="rc-total">총 ${uniq.length}명</span></div><div class="rc-fold-body">${foldBody}</div></div></div>`;
   }).join("");
 }
 function renderRecruitList(){
@@ -1452,7 +1477,9 @@ function renderRecruitList(){
     if(!all.length)return true;
     return all.some(x=>!rcIsPast_(x.month,x.day));
   });
+  rcRenderDayFilter(upcoming);
   let list=upcoming.filter(a=>!q||[a.name,a.phone,a.bu,a.ji].some(v=>(v||"").toLowerCase().includes(q)));
+  if(rcDayFilter)list=list.filter(a=>rcApplicationDays_(a).includes(rcDayFilter));
   list=list.slice().sort((a,b)=>rcParseDate_(b.submittedAt)-rcParseDate_(a.submittedAt));
   const hidden=RC_APPS.length-upcoming.length;
   document.getElementById("rcCount").innerHTML=`총 <b>${upcoming.length}</b>명 신청 · 지금 <b>${list.length}</b>명 표시${hidden?` · 지난 일정 ${hidden}명은 숨김`:""}`;
