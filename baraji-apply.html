@@ -55,7 +55,11 @@ p.lead{font-size:13.5px;color:var(--ink-soft);text-align:center;margin:0 0 26px;
 .cal-card .cc-name .dur{color:var(--ink-soft);font-weight:500}
 .cal-card .cc-date{font-size:13px;color:var(--ink-soft);margin-top:5px}
 .cal-card .cc-place{font-size:12.5px;color:var(--ink-soft);margin-top:3px}
-.cal-admin-row{display:flex;gap:5px;margin-top:9px}
+.cal-admin-row{display:flex;justify-content:space-between;gap:5px;margin-top:9px}
+.cal-admin-left,.cal-admin-right{display:flex;gap:5px}
+.sadm-icon{width:28px;height:28px;border-radius:6px;border:1px solid var(--line);background:#fff;font-size:12px;cursor:pointer;color:var(--ink-soft);display:flex;align-items:center;justify-content:center}
+.sadm-txt{height:28px;padding:0 12px;border-radius:6px;border:1px solid var(--line);background:#fff;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink-soft);white-space:nowrap}
+.sadm-txt.del{color:#c0392b;border-color:#c0392b}
 
 .sched-admin-btns{display:flex;gap:4px;flex:none}
 .sadm-btn{width:24px;height:24px;border-radius:5px;border:1px solid var(--line);background:#fff;font-size:10.5px;cursor:pointer;color:var(--ink-soft);display:flex;align-items:center;justify-content:center}
@@ -149,14 +153,18 @@ p.lead{font-size:13.5px;color:var(--ink-soft);text-align:center;margin:0 0 26px;
 .opt-item .opt-text{font-size:13.5px;font-weight:500;color:var(--ink);flex:1;cursor:pointer;line-height:1.5}
 .opt-item.sel .opt-text{font-weight:700}
 .opt-item .opt-tag{color:var(--warm);font-size:11.5px;margin-left:4px}
-.opt-admin-btns{display:flex;gap:4px}
+.opt-admin-btns{display:flex;gap:5px;flex:none}
+.b-icon{width:28px;height:28px;border-radius:6px;border:1px solid var(--line);background:#fff;font-size:11px;font-weight:600;cursor:pointer;color:var(--ink-soft);display:flex;align-items:center;justify-content:center}
+.b-icon.is-closed{background:#B5543E;color:#fff;border-color:#B5543E}
+.b-icon.del{color:#c0392b;border-color:#c0392b}
 .group-label{font-size:12px;color:var(--ink);margin:16px 0 8px;font-weight:700}
 .section-desc{font-size:12px;color:var(--ink-soft);line-height:1.55}
 /* 모집현황 (관리자 전용) */
 .rc-group{margin-bottom:18px}
 .rc-event{font-family:"Noto Serif KR",serif;font-weight:700;font-size:16px;color:var(--ink);padding-bottom:7px;border-bottom:2px solid var(--ink);margin-bottom:9px}
 .rc-mini{border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:8px;background:#fff}
-.rc-date{font-family:"Noto Serif KR",serif;font-weight:700;font-size:12.5px;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.rc-date{font-family:"Noto Serif KR",serif;font-weight:700;font-size:12.5px;display:flex;flex-wrap:wrap;row-gap:3px;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.rc-date>span:first-child{flex:1 1 auto;min-width:0;}
 .rc-total{font-family:inherit;font-weight:600;font-size:11px;color:var(--warm);display:inline-flex;align-items:center;gap:6px}
 .rc-date-right{display:flex;align-items:center;gap:7px;flex:none}
 .rc-pill{font-size:10.5px;font-weight:700;border-radius:20px;padding:3px 10px;cursor:pointer;border:1px solid var(--line);color:var(--ink-soft);background:#fff;font-family:inherit}
@@ -175,9 +183,9 @@ p.lead{font-size:13.5px;color:var(--ink-soft);text-align:center;margin:0 0 26px;
 .rc-name{font-family:"Noto Serif KR",serif;font-size:15px;font-weight:700}
 .rc-phone{font-size:12px;color:var(--ink-soft)}
 .rc-meta{font-size:12px;color:var(--ink-soft);margin-top:2px}
-.rc-tags{margin-top:7px;display:flex;flex-wrap:wrap;gap:5px}
-.rc-tag{font-size:11px;border:1px solid var(--line);border-radius:20px;padding:2px 9px;color:var(--ink)}
-.rc-tag b{color:var(--ink-soft);font-weight:600;margin-right:2px}
+.rc-tagbox{margin-top:9px;background:#F3E9DC;border-radius:8px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:5px}
+.rc-tag{font-size:11px;border-radius:20px;padding:2px 9px;background:#fff;color:var(--warm);font-weight:600}
+.rc-tag b{color:var(--ink);font-weight:700;margin-right:2px}
 .rc-motive{margin-top:7px;font-size:12px;color:var(--ink-soft);line-height:1.5}
 .rc-route{margin-top:4px;font-size:11px;color:var(--ink-soft);opacity:.85}
 .rc-time{margin-top:6px;font-size:10.5px;color:var(--ink-soft);opacity:.7}
@@ -556,7 +564,13 @@ function enableInlineTextEdit(){
 }
 {
   const savedPw = localStorage.getItem("baraji_admin_pw");
-  if(savedPw){ isAdmin = true; ADMIN_PW = savedPw; document.body.classList.add("admin-on"); enableInlineTextEdit(); }
+  if(savedPw){
+    isAdmin = true; ADMIN_PW = savedPw; document.body.classList.add("admin-on"); enableInlineTextEdit();
+    // 이 시점엔 REMOTE_DATA가 아직 안 불러와져 있어 renderAll은 못 하지만, 정적으로 존재하는 관리자 전용 버튼들은 바로 보여줄 수 있다
+    ["addLandingBtn","addMainBtn","addPartBtn","recruitStatusWrap"].forEach(id=>{
+      const el=document.getElementById(id); if(el)el.classList.remove("hidden");
+    });
+  }
 }
 
 /* ---------- 날짜 유틸 ---------- */
@@ -587,10 +601,8 @@ function renderLanding(){
     el.innerHTML = list.map(s => {
       const admBtns = isAdmin ? `
         <div class="cal-admin-row">
-          <button class="sadm-btn" onclick="moveSchedule('${s.id}',-1)">↑</button>
-          <button class="sadm-btn" onclick="moveSchedule('${s.id}',1)">↓</button>
-          <button class="sadm-btn" onclick="showLandingInlineForm('${s.id}')">✎ 수정</button>
-          <button class="sadm-btn del" onclick="deleteSchedule('${s.id}')">✕ 삭제</button>
+          <div class="cal-admin-left"><button class="sadm-icon" onclick="moveSchedule('${s.id}',-1)">↑</button><button class="sadm-icon" onclick="moveSchedule('${s.id}',1)">↓</button></div>
+          <div class="cal-admin-right"><button class="sadm-txt" onclick="showLandingInlineForm('${s.id}')">수정</button><button class="sadm-txt del" onclick="deleteSchedule('${s.id}')">삭제</button></div>
         </div>` : "";
       return `
       <div class="cal-card">
@@ -598,10 +610,11 @@ function renderLanding(){
         <div class="cc-date">${s.month}월 ${s.startDay}일(${wd(s.month,s.startDay)})–${s.endDay}일(${wd(s.month,s.endDay)})</div>
         <div class="cc-place">${s.place||""}</div>
         ${admBtns}
-      </div>`;
+      </div>
+      <div id="landingInlineForm-${s.id}"></div>`;
     }).join("");
   }
-  if(!isAdmin) document.getElementById("landingInlineForm").innerHTML = "";
+  if(!isAdmin) closeAllInlineForms_();
   renderLandingIntro();
 }
 const PROGRAM_INTRO_DEFAULTS = {
@@ -676,14 +689,23 @@ function mainInlineFormHtml(s, targetId, formType){
       </div>
     </div>`;
 }
+function closeAllInlineForms_(){
+  document.getElementById("landingInlineForm").innerHTML = "";
+  document.getElementById("mainInlineForm").innerHTML = "";
+  document.getElementById("partInlineForm").innerHTML = "";
+  document.querySelectorAll("[id^='landingInlineForm-'], [id^='mainInlineForm-'], [id^='partInlineForm-']").forEach(el=>el.innerHTML="");
+}
 function showLandingInlineForm(id){
+  closeAllInlineForms_();
   const s = id ? REMOTE_DATA.schedules.find(x=>x.id===id) : null;
-  document.getElementById("landingInlineForm").innerHTML = mainInlineFormHtml(s, "landingInlineFormBox", "main");
+  const target = id ? document.getElementById("landingInlineForm-"+id) : document.getElementById("landingInlineForm");
+  if(target) target.innerHTML = mainInlineFormHtml(s, "landingInlineFormBox", "main");
 }
 function showMainInlineForm(id){
+  closeAllInlineForms_();
   const s = id ? REMOTE_DATA.schedules.find(x=>x.id===id) : null;
-  document.getElementById("mainInlineForm").innerHTML = mainInlineFormHtml(s, "mainInlineFormBox", "applymain");
-  document.getElementById("landingInlineForm").innerHTML = "";
+  const target = id ? document.getElementById("mainInlineForm-"+id) : document.getElementById("mainInlineForm");
+  if(target) target.innerHTML = mainInlineFormHtml(s, "mainInlineFormBox", "applymain");
 }
 function hideInlineForm(targetId){
   const el = document.getElementById(targetId);
@@ -752,8 +774,10 @@ function partInlineFormHtml(s, targetId){
     </div>`;
 }
 function showPartInlineForm(id){
+  closeAllInlineForms_();
   const s = id ? REMOTE_DATA.schedules.find(x=>x.id===id) : null;
-  document.getElementById("partInlineForm").innerHTML = partInlineFormHtml(s, "partInlineFormBox");
+  const target = id ? document.getElementById("partInlineForm-"+id) : document.getElementById("partInlineForm");
+  if(target) target.innerHTML = partInlineFormHtml(s, "partInlineFormBox");
 }
 function savePartInline(existingId, targetId){
   const month = parseInt(document.getElementById("pf_month").value,10);
@@ -995,23 +1019,25 @@ function renderApplySchedules(){
 
   document.getElementById("scheduleMain").innerHTML = mains.map(s => {
     const blocked = isClosed(s) && !selectedMains.includes(s.id);
+    const closed = isClosed(s);
     return `
     <div class="opt-item ${selectedMains.includes(s.id)?'sel':''} ${blocked?'is-full':''}" data-id="${s.id}" data-status="${s.status||'recruiting'}">
-      ${isAdmin?`<div class="drag-handle">⠿</div>`:""}
-      <div class="opt-radio" ${blocked?'':`onclick="toggleMain('${s.id}')"`}></div>
+      ${isAdmin?`<div class="drag-handle">⠿</div>`:`<div class="opt-radio" ${blocked?'':`onclick="toggleMain('${s.id}')"`}></div>`}
       <div class="opt-text" ${blocked?'':`onclick="toggleMain('${s.id}')"`}>${mainApplyTitle(s)}${s.status==='planned'?' <span class="opt-tag">(일정 미확정)</span>':''}${closedBadge(s)}</div>
-      ${isAdmin?`<div class="opt-admin-btns"><button class="sadm-btn" onclick="toggleClosed('${s.id}')">${isClosed(s)?'열기':'마감'}</button><button class="sadm-btn" onclick="moveSchedule('${s.id}',-1)">↑</button><button class="sadm-btn" onclick="moveSchedule('${s.id}',1)">↓</button><button class="sadm-btn" onclick="showMainInlineForm('${s.id}')">✎</button><button class="sadm-btn del" onclick="deleteSchedule('${s.id}')">✕</button></div>`:""}
-    </div>`;
+      ${isAdmin?`<div class="opt-admin-btns"><button class="b-icon ${closed?'is-closed':''}" onclick="toggleClosed('${s.id}')">${closed?"마감":"모집"}</button><button class="b-icon" onclick="showMainInlineForm('${s.id}')">✎</button><button class="b-icon del" onclick="deleteSchedule('${s.id}')">✕</button></div>`:""}
+    </div>
+    <div id="mainInlineForm-${s.id}"></div>`;
   }).join("");
   document.getElementById("schedulePart").innerHTML = parts.map(s => {
     const blocked = isClosed(s) && !selectedParts.includes(s.id);
+    const closed = isClosed(s);
     return `
     <div class="opt-item ${selectedParts.includes(s.id)?'sel':''} ${blocked?'is-full':''}" data-id="${s.id}">
-      ${isAdmin?`<div class="drag-handle">⠿</div>`:""}
-      <div class="opt-radio" ${blocked?'':`onclick="togglePart('${s.id}')"`}></div>
+      ${isAdmin?`<div class="drag-handle">⠿</div>`:`<div class="opt-radio" ${blocked?'':`onclick="togglePart('${s.id}')"`}></div>`}
       <div class="opt-text" ${blocked?'':`onclick="togglePart('${s.id}')"`}>${partApplyTitle(s)}${closedBadge(s)}</div>
-      ${isAdmin?`<div class="opt-admin-btns"><button class="sadm-btn" onclick="toggleClosed('${s.id}')">${isClosed(s)?'열기':'마감'}</button><button class="sadm-btn" onclick="moveSchedule('${s.id}',-1)">↑</button><button class="sadm-btn" onclick="moveSchedule('${s.id}',1)">↓</button><button class="sadm-btn" onclick="showPartInlineForm('${s.id}')">✎</button><button class="sadm-btn del" onclick="deleteSchedule('${s.id}')">✕</button></div>`:""}
-    </div>`;
+      ${isAdmin?`<div class="opt-admin-btns"><button class="b-icon ${closed?'is-closed':''}" onclick="toggleClosed('${s.id}')">${closed?"마감":"모집"}</button><button class="b-icon" onclick="showPartInlineForm('${s.id}')">✎</button><button class="b-icon del" onclick="deleteSchedule('${s.id}')">✕</button></div>`:""}
+    </div>
+    <div id="partInlineForm-${s.id}"></div>`;
   }).join("");
 
   const pre = sessionStorage.getItem("baraji_selected_schedule");
@@ -1438,7 +1464,7 @@ function renderRecruitList(){
     return `<div class="rc-card">
       <div class="rc-card-top"><span class="rc-name">${rcEsc_(rcClean_(a.name))}</span>${rcPhoneLink_(a.phone)}</div>
       <div class="rc-meta">${rcEsc_(a.bu||"")} ${rcEsc_(a.ji||"")} · ${rcEsc_(a.memberType||"")} ${rcEsc_(a.gender||"")}${a.addr?` · ${rcEsc_(a.addr)}`:""}</div>
-      ${tags.length?`<div class="rc-tags">${tags.join("")}</div>`:""}
+      ${tags.length?`<div class="rc-tagbox">${tags.join("")}</div>`:""}
       ${a.motive?`<div class="rc-motive">${rcEsc_(a.motive)}</div>`:""}
       ${a.route?`<div class="rc-route">신청경로: ${rcEsc_(a.route)}</div>`:""}
       ${when?`<div class="rc-time">신청 ${when}${a.source?` · ${rcEsc_(a.source)}`:""}</div>`:""}
