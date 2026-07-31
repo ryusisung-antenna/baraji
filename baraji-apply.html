@@ -6,7 +6,7 @@
 <title>군청년 바라지 - 밥은 먹었니?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Gowun+Batang:wght@400;700&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#FAF9F5;--paper:#FAF9F5;--paper-2:#F3F2ED;--ink:#20211D;--ink-soft:#8A8A7E;--line:#E4E2D8;--accent:#20211D;--warm:#B5652E;--maxw:560px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -160,38 +160,50 @@ p.lead{font-size:13.5px;color:var(--ink-soft);text-align:center;margin:0 0 26px;
 .group-label{font-size:12px;color:var(--ink);margin:16px 0 8px;font-weight:700}
 .section-desc{font-size:12px;color:var(--ink-soft);line-height:1.55}
 /* 모집현황 (관리자 전용) */
+/* 모집현황 — 꼭지앱(공양꼭지)과 완전히 동일한 색·서체·간격을 쓴다 */
+#page-recruit{
+  --k-green:#8FB04E; --k-green-deep:#6E8C3A; --k-clay:#C77E4E;
+  --k-ink:#3A352E; --k-ink-soft:#7A7263; --k-ink-faint:#A99F8C;
+  --k-line:#E6DECF; --k-card:#FFFFFF;
+  --k-shadow:0 1px 2px rgba(58,53,46,.04),0 10px 30px rgba(58,53,46,.06);
+  --k-serif:'Gowun Batang',serif;
+  --k-sans:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Pretendard','Noto Sans KR',sans-serif;
+  background:#FBF8F1;color:var(--k-ink)
+}
+#page-recruit .page-scroll{padding-left:16px;padding-right:16px}
+#page-recruit .title,#page-recruit .lead,#page-recruit .kicker{color:var(--k-ink)}
 .rc-group{margin-bottom:18px}
-.rc-event{font-family:"Noto Serif KR",serif;font-weight:700;font-size:16px;color:var(--ink);padding-bottom:7px;border-bottom:2px solid var(--ink);margin-bottom:10px}
-.rc-mini{border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:8px;background:#fff}
-.rc-date{font-family:"Noto Serif KR",serif;font-weight:700;font-size:12.5px;display:flex;flex-wrap:wrap;row-gap:3px;justify-content:space-between;align-items:baseline;margin-bottom:4px}
-.rc-date>span:first-child{flex:1 1 auto;min-width:0;}
-.rc-total{font-family:inherit;font-weight:600;font-size:11px;color:var(--warm);display:inline-flex;align-items:center;gap:6px}
+.rc-event{font-family:var(--k-serif);font-weight:700;font-size:17px;color:var(--k-green-deep);padding-bottom:8px;border-bottom:2px solid var(--k-green-deep);margin-bottom:10px}
+.rc-mini{background:var(--k-card);border:1px solid var(--k-line);border-radius:10px;padding:11px 13px;margin-bottom:8px;box-shadow:var(--k-shadow)}
+.rc-date{font-family:var(--k-serif);font-weight:700;font-size:12.5px;color:var(--k-ink);display:flex;flex-wrap:wrap;row-gap:3px;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.rc-date>span:first-child{flex:1 1 auto;min-width:0}
+.rc-total{font-family:var(--k-sans);font-weight:600;font-size:11px;color:var(--k-green-deep);display:inline-flex;align-items:center;gap:6px}
 .rc-date-right{display:flex;align-items:center;gap:7px;flex:none}
-.rc-pill{font-size:10.5px;font-weight:700;border-radius:20px;padding:3px 10px;cursor:pointer;border:1px solid var(--line);color:var(--ink-soft);background:#fff;font-family:inherit}
-.rc-pill.is-closed{background:#B5543E;color:#fff;border-color:#B5543E}
+.rc-pill{font-size:10.5px;font-weight:700;border-radius:20px;padding:3px 10px;cursor:pointer;border:1px solid var(--k-line);color:var(--k-ink-soft);background:var(--k-card);font-family:var(--k-sans)}
+.rc-pill.is-closed{background:var(--k-clay);color:#fff;border-color:var(--k-clay)}
 .rc-row{font-size:12px;line-height:1.6;display:flex;gap:6px}
-.rc-row b{flex:none;color:var(--warm);font-weight:700;white-space:nowrap}
-.rc-row span{color:var(--ink-soft)}
-.rc-row i{color:var(--ink-soft);opacity:.7;font-style:normal}
-.rc-fold{border:1px dashed var(--warm);border-radius:10px;padding:10px 12px;margin-top:10px}
-.rc-fold-head{font-size:12px;font-weight:700;color:var(--warm);display:flex;justify-content:space-between;align-items:baseline}
-.rc-fold-body{margin-top:7px;font-size:12px;color:var(--ink-soft);line-height:1.8}
-.rc-fold-row b{color:var(--ink);font-weight:600;margin-right:5px}
-.rc-fold-total{border-top:1px dashed var(--warm);margin-top:4px;padding-top:6px}
-.rc-fold-total b{color:var(--warm)}
-.rc-card{border:1px solid var(--line);border-radius:10px;padding:12px 13px;margin-bottom:8px;background:#fff}
+.rc-row b{flex:none;color:var(--k-clay);font-weight:700;white-space:nowrap}
+.rc-row span{color:var(--k-ink-soft);word-break:keep-all;overflow-wrap:normal}
+.rc-row i{color:var(--k-ink-faint);font-style:normal}
+.rc-fold{border:1px dashed var(--k-green);border-radius:10px;padding:10px 12px;margin-top:10px}
+.rc-fold-head{font-size:12px;font-weight:700;color:var(--k-green-deep);display:flex;justify-content:space-between;align-items:baseline}
+.rc-fold-body{margin-top:7px;font-size:12px;color:var(--k-ink-soft);line-height:1.8}
+.rc-fold-row b{color:var(--k-ink);font-weight:600;margin-right:5px}
+.rc-fold-total{border-top:1px dashed var(--k-green);margin-top:4px;padding-top:6px}
+.rc-fold-total b{color:var(--k-green-deep)}
+.rc-card{border:1px solid var(--k-line);border-radius:12px;padding:12px 13px;margin-bottom:8px;background:var(--k-card);box-shadow:var(--k-shadow)}
 .rc-card-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-.rc-name{font-family:"Noto Serif KR",serif;font-size:15px;font-weight:700}
-.rc-phone{font-size:12px;color:var(--ink-soft)}
-.rc-meta{font-size:12px;color:var(--ink-soft);margin-top:2px}
+.rc-name{font-family:var(--k-serif);font-size:15px;font-weight:700;color:var(--k-ink)}
+.rc-phone{font-size:12px;color:var(--k-ink-soft);text-decoration:underline;text-decoration-color:var(--k-line);text-underline-offset:2px}
+.rc-meta{font-size:12px;color:var(--k-ink-soft);margin-top:2px}
 .rc-tagbox{margin-top:9px;background:#F3E9DC;border-radius:8px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:5px}
-.rc-tag{font-size:11px;border-radius:20px;padding:2px 9px;background:#fff;color:var(--warm);font-weight:600}
-.rc-tag b{color:var(--ink);font-weight:700;margin-right:2px}
-.rc-motive{margin-top:7px;font-size:12px;color:var(--ink-soft);line-height:1.5}
-.rc-route{margin-top:4px;font-size:11px;color:var(--ink-soft);opacity:.85}
-.rc-time{margin-top:6px;font-size:10.5px;color:var(--ink-soft);opacity:.7}
-.rc-day-btn{flex:1;min-width:44px;text-align:center;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:6px;padding:8px 6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
-.rc-day-btn.on{background:var(--warm);color:#fff;border-color:var(--warm)}
+.rc-tag{font-size:11px;border-radius:20px;padding:2px 9px;background:var(--k-card);color:var(--k-clay);font-weight:600}
+.rc-tag b{color:var(--k-ink);font-weight:700;margin-right:2px}
+.rc-motive{margin-top:7px;font-size:12px;color:var(--k-ink-soft);line-height:1.5}
+.rc-route{margin-top:4px;font-size:11px;color:var(--k-ink-soft);opacity:.85}
+.rc-time{margin-top:6px;font-size:10.5px;color:var(--k-ink-faint)}
+.rc-day-btn{flex:1;min-width:44px;text-align:center;border:1px solid var(--k-line);background:var(--k-card);color:var(--k-ink);border-radius:8px;padding:8px 6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--k-sans)}
+.rc-day-btn.on{background:var(--k-green);color:#fff;border-color:var(--k-green)}
 .rc-day-cnt{font-size:11px;opacity:.8;font-weight:500}
 .group-label.strong{font-weight:800}
 .group-label:first-child{margin-top:0}
@@ -1450,7 +1462,7 @@ function renderRecruitSummaryView(){
   if(!groups.length){ el.innerHTML=""; return; }
   el.innerHTML=groups.map(g=>{
     const minis=g.slots.map(s=>{
-      const label=`${s.month}/${s.day}(${rcWeekday_(s.month,s.day)})${s.activity?` — ${rcEsc_(s.activity)}`:""}`;
+      const label=`${s.month}/${s.day}(${rcWeekday_(s.month,s.day)})${s.activity?` · ${rcEsc_(s.activity)}`:""}`;
       const lines=[];
       if(s.바라지!==null)lines.push(`<div class="rc-row"><b>바라지</b><span>${s.바라지.length?rcEsc_(s.바라지.join(", ")):'<i>아직 없음</i>'}</span></div>`);
       if(s.hasPart)lines.push(`<div class="rc-row"><b>파트</b><span>${s.파트.length?rcEsc_(s.파트.join(", ")):'<i>아직 없음</i>'}</span></div>`);
