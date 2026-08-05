@@ -1002,25 +1002,36 @@ async function syncFromSheetShared(){
     renderAllContent();
   }catch(e){ console.warn('sync failed', e); }
 }
+// 지금 이 기기에서 서버 저장이 실제로 되는 상태인지 기억해둔다.
+// null = 아직 모름, true = 저장 가능, false = 저장 불가(비번 문제 등)
+let canSaveToServer = null;
+let _warnedCannotSave = false;
+function markCannotSave(reason){
+  canSaveToServer = false;
+  if(_warnedCannotSave) return; // 같은 경고를 반복해서 띄우지 않는다
+  _warnedCannotSave = true;
+  showToast('⚠️ ' + reason + ' — 지금 고치시는 내용은 이 기기에만 남고 다른 분들에게는 반영되지 않습니다.', true);
+}
 async function saveToSheetShared(key, value){
   saveLocalShared();
   if(!APPSSCRIPTURL || APPSSCRIPTURL.indexOf('http')!==0) return;
   const pw = sessionStorage.getItem('barajiadminpw');
   if(!pw){
-    // 관리자 비밀번호가 없는 상태 — 예전처럼 아무 비번이나 넣어서 조용히 실패하지 않고,
-    // 이 기기에만 저장한 뒤 명확히 알려줍니다.
-    showToast('⚠️ 관리자 로그인 상태가 아니라서 이 기기에만 저장됐습니다. 링크에 &pw=가 빠지지 않았는지 확인해주세요.', true);
+    markCannotSave('관리자 로그인 상태가 아닙니다');
     return;
   }
   try{
     const res = await fetch(APPSSCRIPTURL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({ password:pw, key:key, value:value }) });
     const json = await res.json();
     if(!json.ok){
-      showToast('⚠️ 저장 실패 — ' + (json.error||'비밀번호를 확인해주세요') + ' (다른 사람에게는 반영되지 않았습니다)', true);
+      markCannotSave(json.error || '비밀번호가 맞지 않습니다');
+    }else{
+      canSaveToServer = true;
+      _warnedCannotSave = false; // 다시 저장이 되기 시작하면 경고 상태를 푼다
     }
   }catch(e){
     console.warn('sheet save failed', e);
-    showToast('⚠️ 저장 실패 — 네트워크 오류. 다른 사람에게는 반영되지 않았습니다.', true);
+    markCannotSave('네트워크 오류로 서버에 저장하지 못했습니다');
   }
 }
 // 문구 수정·카테고리 추가/삭제도 이 기기 안에만 두지 않고 공유 저장소로 보내서,
@@ -1686,8 +1697,14 @@ async function checkAdminFromURL(){
   if(sessionStorage.getItem('barajiadminpw') && !params.get('pw')) isAdmin = true; // 세션에 이미 로그인되어 있던 경우(재확인 불필요)
 }
 function logoutAdmin(){
+  // 서버에 저장이 안 되는 상태였다면, 나가는 순간 고친 내용이 사라질 수 있으니 확실히 알린다
+  if(canSaveToServer === false){
+    if(!confirm('⚠️ 지금 고치신 내용이 서버에 저장되지 않았습니다.\n\n이 상태로 나가면 새로고침했을 때 원래대로 돌아갑니다.\n\n그래도 나가시겠습니까?\n\n[취소]를 누르면 머물러서, 올바른 비밀번호로 다시 들어와 저장할 수 있습니다.')) return;
+  }
   isAdmin = false;
   sessionStorage.removeItem('barajiadminpw');
+  canSaveToServer = null;
+  _warnedCannotSave = false;
   setTextEditMode(false); // 관리자 모드를 나가면 문구 수정도 같이 꺼서 헷갈리지 않게
   applyAdminUI();
   renderOptions();
@@ -1756,6 +1773,25 @@ function setTextEditMode(on){
     el.contentEditable = textEditMode ? 'true' : 'false';
   });
   renderOptions();
+  if(on) checkSaveability(); // 고치기 시작하기 전에 저장이 되는 상태인지 먼저 확인
+}
+// 수정을 시작하기 전에 "지금 저장이 되는 상태인가"를 미리 확인한다.
+// 예전엔 다 고치고 나서야 저장 실패를 알게 돼서, 그동안 작업한 게 날아갔다.
+async function checkSaveability(){
+  const pw = sessionStorage.getItem('barajiadminpw');
+  if(!pw){ markCannotSave('관리자 로그인 상태가 아닙니다'); return; }
+  try{
+    const res = await fetch(APPSSCRIPTURL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({ password: pw, action:'verify' }) });
+    const json = await res.json();
+    if(json.ok){
+      canSaveToServer = true;
+      _warnedCannotSave = false;
+    }else{
+      markCannotSave('비밀번호가 맞지 않습니다');
+    }
+  }catch(e){
+    markCannotSave('서버에 연결하지 못했습니다');
+  }
 }
 let subappTextOverrides = {};
 function loadTextOverrides(){

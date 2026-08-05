@@ -1422,6 +1422,20 @@ function rcPhoneLink_(phone){
   return `<a class="rc-phone" href="sms:${digits}" onclick="copyText('${safe}')">${rcEsc_(phone)}</a>`;
 }
 
+// 구글 앱스크립트는 동시에 여러 요청이 몰리면 가끔 일시적으로 거절한다.
+// 그럴 때 바로 실패로 처리하지 않고 잠깐 쉬었다 한 번 더 시도한다.
+async function rcFetchRetry_(url,tries=2){
+  let lastErr;
+  for(let i=0;i<tries;i++){
+    try{
+      const res=await fetch(url,{cache:"no-store"});
+      if(res.ok)return res;
+      lastErr=new Error("HTTP "+res.status);
+    }catch(e){ lastErr=e; }
+    if(i<tries-1)await new Promise(r=>setTimeout(r,700));
+  }
+  throw lastErr;
+}
 async function loadRecruitStatus(){
   const box=document.getElementById("rcStateBox"), body=document.getElementById("rcBody");
   if(!box)return;
@@ -1431,8 +1445,8 @@ async function loadRecruitStatus(){
     const pw=ADMIN_PW;
     if(!pw){ box.innerHTML=`<div class="empty-note">관리자 인증이 필요합니다.</div>`; return; }
     const [appRes,ovRes]=await Promise.all([
-      fetch(APPSSCRIPTURL+"?action=listApplications&pw="+encodeURIComponent(pw)+"&t="+Date.now(),{cache:"no-store"}),
-      fetch(APPSSCRIPTURL+"?action=getRecruitOverrides&pw="+encodeURIComponent(pw)+"&t="+Date.now(),{cache:"no-store"})
+      rcFetchRetry_(APPSSCRIPTURL+"?action=listApplications&pw="+encodeURIComponent(pw)+"&t="+Date.now()),
+      rcFetchRetry_(APPSSCRIPTURL+"?action=getRecruitOverrides&pw="+encodeURIComponent(pw)+"&t="+Date.now())
     ]);
     const text=await appRes.text();
     if(text==="UNAUTHORIZED"){ box.innerHTML=`<div class="empty-note">권한이 없습니다. 관리자 모드를 다시 확인해주세요.</div>`; return; }
