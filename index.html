@@ -43,6 +43,12 @@ p.lead{ font-size:13px; color:var(--ink-soft); margin:0 0 26px; line-height:1.7;
 .opt-group{ margin-bottom:26px; }
 .opt-group:last-child{ margin-bottom:0; }
 .opt-group-label{ font-size:12px; font-weight:700; color:var(--ink); margin-bottom:2px; padding-left:2px; }
+.opt-group-head{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:2px; }
+.opt-group-head .opt-group-label{ margin-bottom:0; flex:1; }
+.opt-group-del{ flex:none; border:1px solid #c0392b; background:none; color:#c0392b; font-size:11px; padding:4px 9px; border-radius:20px; cursor:pointer; }
+.opt-add-group-row{ display:flex; flex-wrap:wrap; gap:6px; padding:14px 2px 4px; align-items:center; border-top:1px dashed var(--line); margin-top:10px; }
+.opt-add-group-row input{ flex:1; min-width:160px; }
+.opt-add-group-row button{ flex:none; }
 .opt-item{ display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid var(--line); padding:15px 2px; cursor:pointer; transition:opacity .15s ease; }
 .opt-item:active{ opacity:.6; }
 .opt-radio{ width:16px; height:16px; border-radius:50%; border:1.4px solid #C7C4B4; flex:none; position:relative; order:2; }
@@ -970,6 +976,15 @@ async function syncFromSheetShared(){
     if(d.prep_groups && d.prep_groups.length) PREPGROUPS = d.prep_groups;
     if(d.activities && d.activities.length) ACTIVITIES = d.activities;
     if(d.schedules && d.schedules.length) SCHEDULES = d.schedules;
+    if(d.subapp_text_overrides && Object.keys(d.subapp_text_overrides).length){
+      subappTextOverrides = d.subapp_text_overrides;
+      localStorage.setItem('subappTextOverrides', JSON.stringify(subappTextOverrides));
+      CALENDAR_DAYS.forEach((_,i)=>{ if(subappTextOverrides['calDay'+i] !== undefined) CALENDAR_DAYS[i] = subappTextOverrides['calDay'+i]; });
+    }
+    if(d.subapp_options && Array.isArray(d.subapp_options) && d.subapp_options.length){
+      OPTIONS = d.subapp_options;
+      localStorage.setItem('subappOptions', JSON.stringify(OPTIONS));
+    }
     dataLoaded = true;
     saveLocalShared();
     renderAllContent();
@@ -982,6 +997,17 @@ async function saveToSheetShared(key, value){
   try{
     await fetch(APPSSCRIPTURL, { method:'POST', body: JSON.stringify({ password:pw, key:key, value:value }) });
   }catch(e){ console.warn('sheet save failed', e); }
+}
+// 문구 수정·카테고리 추가/삭제도 이 기기 안에만 두지 않고 공유 저장소로 보내서,
+// 링크를 가진 다른 사람들 화면에도 자동으로 반영되게 합니다. 매 글자마다 보내면
+// 너무 잦으니, 마지막 수정 후 1.2초 조용하면 그때 한 번 보냅니다(디바운스).
+let _subappSyncTimer = null;
+function queueSubappSync(){
+  clearTimeout(_subappSyncTimer);
+  _subappSyncTimer = setTimeout(()=>{
+    saveToSheetShared('subapp_text_overrides', subappTextOverrides);
+    saveToSheetShared('subapp_options', OPTIONS);
+  }, 1200);
 }
 
 function findMenu(name){ return MENUS.find(m=>m.name===name); }
@@ -1174,6 +1200,7 @@ document.querySelectorAll('.step-track').forEach(track=>{
 });
 
 function showPage(id){
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); // 옮기기 전에 지금 쓰던 칸을 확실히 저장
   renderPageAndStep(id, 0);
   pushNav();
 }
@@ -1197,7 +1224,10 @@ function renderOptions(){
   const box = document.getElementById('optGroups');
   box.innerHTML = OPTIONS.map((g,gi)=>`
     <div class="opt-group">
-      <div class="opt-group-label">${g.group}</div>
+      <div class="opt-group-head">
+        <div class="opt-group-label"${textEditMode?` contenteditable="true" onclick="event.stopPropagation()" onfocus="isEditingNow=true" onblur="saveGroupLabel(${gi},this)"`:''}>${g.group}</div>
+        ${textEditMode?`<button class="opt-group-del" onclick="deleteGroup(${gi})">카테고리 삭제</button>`:''}
+      </div>
       ${g.items.map((it,ii)=>`
         <div class="opt-item${it.id===selectedOptionId?' sel':''}" data-id="${it.id}" onclick="selectOption('${it.id}','${it.route}')">
           <div class="opt-radio"></div>
@@ -1219,10 +1249,36 @@ function renderOptions(){
         </div>
       `:''}
     </div>
-  `).join('');
+  `).join('') + (textEditMode?`
+    <div class="opt-add-group-row">
+      <input type="text" id="optAddGroupLabel" placeholder="새 카테고리 이름 (예: 아침공양지원 · 파트봉사)" onfocus="isEditingNow=true" onblur="isEditingNow=false">
+      <button onclick="addGroup()">+ 카테고리 추가</button>
+    </div>
+  `:'');
+}
+function saveGroupLabel(gi, el){
+  OPTIONS[gi].group = el.textContent.trim();
+  saveOptionsToStorage();
+  isEditingNow = false;
+}
+function deleteGroup(gi){
+  const g = OPTIONS[gi];
+  if(!confirm(`"${g.group}" 카테고리를 통째로 삭제할까요?\n안에 있는 선택지 ${g.items.length}개도 함께 사라집니다.`)) return;
+  OPTIONS.splice(gi,1);
+  saveOptionsToStorage();
+  renderOptions();
+}
+function addGroup(){
+  const input = document.getElementById('optAddGroupLabel');
+  const label = input.value.trim();
+  if(!label){ alert('카테고리 이름을 입력해주세요.'); return; }
+  OPTIONS.push({ group: label, items: [] });
+  saveOptionsToStorage();
+  renderOptions();
 }
 function saveOptionsToStorage(){
   localStorage.setItem('subappOptions', JSON.stringify(OPTIONS));
+  queueSubappSync();
 }
 function loadOptionsOverride(){
   try{
@@ -1583,6 +1639,7 @@ function checkAdminFromURL(){
 function logoutAdmin(){
   isAdmin = false;
   sessionStorage.removeItem('barajiadminpw');
+  setTextEditMode(false); // 관리자 모드를 나가면 문구 수정도 같이 꺼서 헷갈리지 않게
   applyAdminUI();
   renderOptions();
 }
@@ -1615,7 +1672,10 @@ function handleSecretTap(){
   }
 }
 function toggleTextEditMode(){
-  textEditMode = !textEditMode;
+  setTextEditMode(!textEditMode);
+}
+function setTextEditMode(on){
+  textEditMode = on;
   document.body.classList.toggle('text-edit-on', textEditMode);
   document.querySelectorAll('[data-editable-key]').forEach(el=>{
     el.contentEditable = textEditMode ? 'true' : 'false';
@@ -1680,20 +1740,35 @@ function linkedKeysFor(key){
   const group = LINKED_KEY_GROUPS.find(g=>g.includes(key));
   return group || [key];
 }
+// 저장 로직을 함수로 분리 — blur(칸을 벗어날 때) 뿐 아니라 input(글자를 치는 즉시)에도 써서,
+// 페이지를 옮기다가 blur가 제때 안 걸려도 이미 저장이 끝나있게 만듭니다.
+function saveEditableField(el, alsoRefreshCalendar){
+  if(!el || !el.dataset || !el.dataset.editableKey) return;
+  const key = el.dataset.editableKey;
+  const val = el.innerHTML;
+  linkedKeysFor(key).forEach(k=>{ subappTextOverrides[k] = val; });
+  localStorage.setItem('subappTextOverrides', JSON.stringify(subappTextOverrides));
+  queueSubappSync(); // 공용 저장소로도 동기화(디바운스)
+  const m = key.match(/^calDay(\d+)$/);
+  if(m){
+    CALENDAR_DAYS[parseInt(m[1],10)] = el.textContent;
+    if(alsoRefreshCalendar!==false) refreshAllSchedules();
+  }
+}
+document.addEventListener('input', function(e){
+  if(!textEditMode) return;
+  const el = e.target;
+  if(el && el.dataset && el.dataset.editableKey){
+    saveEditableField(el, false); // 타이핑 중엔 달력 재계산까지는 매 글자마다 할 필요 없음
+    applyTextOverrides(); // 지금 포커스된 칸은 건너뛰므로, 같은 문구를 쓰는 다른 화면에만 바로 반영됨
+  }
+});
 document.addEventListener('blur', function(e){
   if(!textEditMode) return;
   const el = e.target;
   if(el && el.dataset && el.dataset.editableKey){
-    const key = el.dataset.editableKey;
-    const val = el.innerHTML;
-    linkedKeysFor(key).forEach(k=>{ subappTextOverrides[k] = val; });
-    localStorage.setItem('subappTextOverrides', JSON.stringify(subappTextOverrides));
+    saveEditableField(el, true);
     applyTextOverrides();
-    const m = key.match(/^calDay(\d+)$/);
-    if(m){
-      CALENDAR_DAYS[parseInt(m[1],10)] = el.textContent;
-      refreshAllSchedules();
-    }
   }
   isEditingNow = false;
 }, true);
@@ -1763,215 +1838,10 @@ checkAdminFromURL();
 loadOptionsOverride();
 loadLocalShared();
 renderAllContent();
+if(isAdmin) setTextEditMode(true); // 관리자 모드면 문구 수정도 따로 5번 탭 안 해도 바로 됨
 history.replaceState(buildNavState(), '');
 syncFromSheetShared();
 setInterval(syncFromSheetShared, 60000);
-
-  (() => {
-  'use strict';
-
-  const CONFIG_KEY = 'subappConfig';
-  const DEFAULT_YEAR = 2026;
-  let sharedConfig = { version: 1, textOverrides: {}, options: null };
-  let saving = false;
-
-  function apiAvailable() {
-    return typeof APPSSCRIPTURL === 'string' && APPSSCRIPTURL.startsWith('http');
-  }
-
-  function clone(value) {
-    return JSON.parse(JSON.stringify(value));
-  }
-
-  function setStatus(message, tone = '') {
-    let el = document.getElementById('subappSaveStatus');
-    if (!el) {
-      el = document.createElement('span');
-      el.id = 'subappSaveStatus';
-      el.style.cssText = 'font-size:11px;margin-left:auto;color:#6f6d63;';
-      const toolbar = document.getElementById('admToolbar');
-      if (toolbar) toolbar.appendChild(el);
-    }
-    if (el) {
-      el.textContent = message;
-      el.style.color = tone === 'error' ? '#b3261e' : tone === 'ok' ? '#32633b' : '#6f6d63';
-    }
-  }
-
-  async function ensurePassword() {
-    let pw = sessionStorage.getItem('barajiadminpw');
-    if (!pw || pw === 'baraji2026') {
-      pw = window.prompt('공용 데이터를 저장하려면 관리자 비밀번호를 입력하세요.');
-      if (!pw) return null;
-    }
-    if (!apiAvailable()) return pw;
-
-    const res = await fetch(APPSSCRIPTURL, {
-      method: 'POST',
-      body: JSON.stringify({ password: pw, action: 'verify' })
-    });
-    const json = await res.json();
-    if (!json.ok) {
-      alert(json.error || '관리자 비밀번호가 올바르지 않습니다.');
-      return null;
-    }
-    sessionStorage.setItem('barajiadminpw', pw);
-    return pw;
-  }
-
-  function applySharedConfig() {
-    const text = sharedConfig.textOverrides || {};
-    subappTextOverrides = Object.assign({}, subappTextOverrides || {}, text);
-    if (Array.isArray(sharedConfig.options) && sharedConfig.options.length) {
-      OPTIONS = clone(sharedConfig.options);
-    }
-    if (text.selectKicker) {
-      const match = text.selectKicker.replace(/<[^>]*>/g, '').match(/(\d{4})\D+(\d{1,2})/);
-      if (match) sharedConfig.year = Number(match[1]);
-    }
-    localStorage.setItem('subappTextOverrides', JSON.stringify(subappTextOverrides));
-    localStorage.setItem('subappOptions', JSON.stringify(OPTIONS));
-    renderAllContent();
-  }
-
-  async function loadSharedConfig() {
-    if (!apiAvailable()) return;
-    try {
-      const res = await fetch(APPSSCRIPTURL, { cache: 'no-store' });
-      const json = await res.json();
-      if (!json.ok || !json.data || !json.data[CONFIG_KEY]) return;
-      sharedConfig = Object.assign(sharedConfig, json.data[CONFIG_KEY]);
-      applySharedConfig();
-    } catch (error) {
-      console.warn('subappConfig load failed', error);
-    }
-  }
-
-  async function saveSharedConfig() {
-    if (saving) return;
-    const pw = await ensurePassword();
-    if (!pw) return;
-    saving = true;
-    setStatus('저장 중…');
-    try {
-      sharedConfig.version = 1;
-      sharedConfig.updatedAt = new Date().toISOString();
-      sharedConfig.textOverrides = clone(subappTextOverrides || {});
-      sharedConfig.options = clone(OPTIONS || []);
-      const res = await fetch(APPSSCRIPTURL, {
-        method: 'POST',
-        body: JSON.stringify({ password: pw, key: CONFIG_KEY, value: sharedConfig })
-      });
-      const json = await res.json();
-      if (!json.ok) throw new Error(json.error || '저장에 실패했습니다.');
-      setStatus('✓ 공용 저장됨', 'ok');
-    } catch (error) {
-      console.error(error);
-      setStatus('저장 실패 — 다시 시도', 'error');
-      alert('공용 저장에 실패했습니다. 인터넷 연결과 관리자 비밀번호를 확인해주세요.');
-    } finally {
-      saving = false;
-    }
-  }
-
-  function syncKicker(year, month) {
-    const value = `${year}년 ${month}월`;
-    subappTextOverrides.selectKicker = value;
-    sharedConfig.textOverrides = sharedConfig.textOverrides || {};
-    sharedConfig.textOverrides.selectKicker = value;
-    const el = document.querySelector('[data-editable-key="selectKicker"]');
-    if (el) el.innerHTML = value;
-  }
-
-  function openSharedSettings() {
-    if (!isAdmin) {
-      alert('먼저 기존 관리자 모드로 들어가 주세요.');
-      return;
-    }
-    const old = document.getElementById('subappSharedSettings');
-    if (old) old.remove();
-    const kicker = (subappTextOverrides && subappTextOverrides.selectKicker) || document.querySelector('[data-editable-key="selectKicker"]')?.textContent || `${DEFAULT_YEAR}년 7월`;
-    const parts = kicker.match(/(\d{4})\D+(\d{1,2})/) || [null, DEFAULT_YEAR, 7];
-    const title = (subappTextOverrides && subappTextOverrides.selectTitle) || document.querySelector('[data-editable-key="selectTitle"]')?.innerHTML || '';
-    const modal = document.createElement('div');
-    modal.id = 'subappSharedSettings';
-    modal.className = 'modal show';
-    modal.innerHTML = `
-      <div class="modal-box">
-        <h3>서브앱 공용 설정</h3>
-        <p style="font-size:12.5px;color:#6f6d63;margin:0 0 14px;">여기서 저장한 내용은 새로고침하거나 다른 기기에서 열어도 유지됩니다.</p>
-        <label>연도</label><input id="subappCfgYear" type="number" value="${parts[1]}">
-        <label>월</label><input id="subappCfgMonth" type="number" min="1" max="12" value="${parts[2]}">
-        <label>첫 화면 제목</label><input id="subappCfgTitle" value="${title.replace(/"/g, '&quot;')}">
-        <div class="m-actions">
-          <button class="btn-cancel" id="subappCfgCancel">취소</button>
-          <button class="btn-ok" id="subappCfgSave">저장</button>
-        </div>
-        <button id="subappCfgEditText" style="width:100%;margin-top:10px;padding:10px;border:1px dashed #20211d;background:#fff;border-radius:6px;cursor:pointer;">다른 화면 문구 직접 수정하기</button>
-      </div>`;
-    document.body.appendChild(modal);
-    modal.querySelector('#subappCfgCancel').onclick = () => modal.remove();
-    modal.querySelector('#subappCfgSave').onclick = async () => {
-      const year = Number(modal.querySelector('#subappCfgYear').value);
-      const month = Number(modal.querySelector('#subappCfgMonth').value);
-      const nextTitle = modal.querySelector('#subappCfgTitle').value.trim();
-      if (!Number.isInteger(year) || !Number.isInteger(month) || month < 1 || month > 12) {
-        alert('연도와 월을 올바르게 입력해주세요.');
-        return;
-      }
-      syncKicker(year, month);
-      if (nextTitle) subappTextOverrides.selectTitle = nextTitle;
-      sharedConfig.year = year;
-      sharedConfig.month = month;
-      applySharedConfig();
-      await saveSharedConfig();
-      modal.remove();
-    };
-    modal.querySelector('#subappCfgEditText').onclick = () => {
-      modal.remove();
-      if (!textEditMode) toggleTextEditMode();
-      setStatus('문구 수정 후 화면 밖을 누르면 공용 저장됩니다.');
-    };
-  }
-
-  function addAdminButton() {
-    const toolbar = document.getElementById('admToolbar');
-    if (!toolbar || document.getElementById('subappSharedSettingsBtn')) return;
-    const btn = document.createElement('button');
-    btn.id = 'subappSharedSettingsBtn';
-    btn.textContent = '공용 설정·문구 수정';
-    btn.onclick = openSharedSettings;
-    toolbar.insertBefore(btn, toolbar.firstChild);
-  }
-
-  // 기존 숨김 문구/선택지 편집의 blur 이후 값을 공용 data 시트에도 저장한다.
-  document.addEventListener('blur', (event) => {
-    const target = event.target;
-    if (!isAdmin) return;
-    if (target?.dataset?.editableKey || target?.classList?.contains('opt-text')) {
-      window.setTimeout(() => saveSharedConfig(), 0);
-    }
-  }, true);
-
-  document.addEventListener('click', (event) => {
-    if (!isAdmin) return;
-    if (event.target?.classList?.contains('opt-del') || event.target?.closest('.opt-add-row')) {
-      window.setTimeout(() => saveSharedConfig(), 0);
-    }
-  });
-
-  const originalApplyAdminUI = applyAdminUI;
-  applyAdminUI = function () {
-    originalApplyAdminUI();
-    if (isAdmin) addAdminButton();
-  };
-
-  window.setTimeout(() => {
-    if (isAdmin) addAdminButton();
-    loadSharedConfig();
-  }, 0);
-})();
-  
 </script>
 </body>
 </html>
