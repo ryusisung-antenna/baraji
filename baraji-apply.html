@@ -1412,56 +1412,36 @@ function rcPhoneLink_(phone){
   return `<a class="rc-phone" href="sms:${digits}" onclick="copyText('${safe}')">${rcEsc_(phone)}</a>`;
 }
 
-async function loadRecruitStatus() {
-  const box = document.getElementById('rcStateBox'), body = document.getElementById('rcBody');
-  if (!box) return;
-  body.style.display = 'none';
-  box.innerHTML = '<div class="loading-note">불러오는 중...</div>';
-  try {
-    const pw = ADMINPW;
-    if (!pw) {
-      box.innerHTML = '<div class="empty-note">관리자 인증이 필요합니다.</div>';
-      return;
-    }
-
-    // 순차 처리 1: 신청 목록 조회
-    const appRes = await fetch(
-      APPSSCRIPTURL + '?action=listApplications&pw=' + encodeURIComponent(pw) + '&t=' + Date.now(),
-      { cache: 'no-store' }
-    );
-    const text = await appRes.text();
-    if (text === 'UNAUTHORIZED') {
-      box.innerHTML = '<div class="empty-note">인증에 실패했습니다.</div>';
-      return;
-    }
-    const json = JSON.parse(text);
-    if (!json.ok) throw new Error(json.error || 'NOTREADY');
-    RCAPPS = json.data;
-
-    // 순차 처리 2: 모집 오버라이드 조회 (신청 목록 성공 후 실행)
-    try {
-      const ovRes = await fetch(
-        APPSSCRIPTURL + '?action=getRecruitOverrides&pw=' + encodeURIComponent(pw) + '&t=' + Date.now(),
-        { cache: 'no-store' }
-      );
-      const ovText = await ovRes.text();
-      RCOV = (ovText === 'UNAUTHORIZED')
-        ? { removed: [], added: {} }
-        : (JSON.parse(ovText).data || { removed: [], added: {} });
-    } catch (e) {
-      RCOV = { removed: [], added: {} };
-    }
-    if (!RCOV.removed) RCOV.removed = [];
-    if (!RCOV.added) RCOV.added = {};
-
-    RCLOADED = true;
-    box.innerHTML = '';
-    body.style.display = 'block';
+async function loadRecruitStatus(){
+  const box=document.getElementById("rcStateBox"), body=document.getElementById("rcBody");
+  if(!box)return;
+  body.style.display="none";
+  box.innerHTML=`<div class="loading-note">불러오는 중...</div>`;
+  try{
+    const pw=ADMIN_PW;
+    if(!pw){ box.innerHTML=`<div class="empty-note">관리자 인증이 필요합니다.</div>`; return; }
+    const [appRes,ovRes]=await Promise.all([
+      fetch(APPSSCRIPTURL+"?action=listApplications&pw="+encodeURIComponent(pw)+"&t="+Date.now(),{cache:"no-store"}),
+      fetch(APPSSCRIPTURL+"?action=getRecruitOverrides&pw="+encodeURIComponent(pw)+"&t="+Date.now(),{cache:"no-store"})
+    ]);
+    const text=await appRes.text();
+    if(text==="UNAUTHORIZED"){ box.innerHTML=`<div class="empty-note">권한이 없습니다. 관리자 모드를 다시 확인해주세요.</div>`; return; }
+    const json=JSON.parse(text);
+    if(!json.ok)throw new Error("NOTREADY");
+    RC_APPS=json.data||[];
+    try{
+      const ovText=await ovRes.text();
+      RC_OV=(ovText==="UNAUTHORIZED")?{removed:{},added:{}}:(JSON.parse(ovText).data||{removed:{},added:{}});
+    }catch(e){ RC_OV={removed:{},added:{}}; }
+    if(!RC_OV.removed)RC_OV.removed={};
+    if(!RC_OV.added)RC_OV.added={};
+    RC_LOADED=true;
+    box.innerHTML="";
+    body.style.display="block";
     renderRecruitSummaryView();
     renderRecruitList();
-  } catch (e) {
-    box.innerHTML = '<div class="empty-note">불러오기에 실패했습니다.</div>' +
-      '<button class="admin-add-btn" onclick="loadRecruitStatus()" style="margin-top:8px">다시 시도</button>';
+  }catch(e){
+    box.innerHTML=`<div class="empty-note">불러오지 못했습니다.</div><button class="admin-add-btn" onclick="loadRecruitStatus()" style="margin-top:8px">다시 시도</button>`;
   }
 }
 async function rcToggleClosed_(ids,closed){
