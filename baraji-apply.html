@@ -460,7 +460,17 @@ async function loadRemoteData(){
     REMOTE_DATA.meals      = (d.meals && Object.keys(d.meals).length) ? d.meals : FALLBACK_DATA.meals;
     REMOTE_DATA.menus      = (d.menus && d.menus.length) ? d.menus : [];
     REMOTE_DATA.activities = (d.activities && d.activities.length) ? d.activities : FALLBACK_DATA.activities;
-    REMOTE_DATA.schedules  = (d.schedules && d.schedules.length) ? d.schedules : FALLBACK_DATA.schedules;
+    // 일정은 신청앱 전용 칸(apply_schedules)에서 읽는다. 예전엔 메인앱과 같은 'schedules' 칸을
+    // 함께 써서 서로 덮어쓰는 문제가 있었다. 아직 전용 칸이 없으면(첫 전환), 옛 칸에서
+    // 신청앱 형식(type이 있는 것)만 골라서 이어받는다.
+    if(d.apply_schedules && d.apply_schedules.length){
+      REMOTE_DATA.schedules = d.apply_schedules;
+    }else if(d.schedules && d.schedules.length){
+      const mine = d.schedules.filter(x=>x && x.type);
+      REMOTE_DATA.schedules = mine.length ? mine : FALLBACK_DATA.schedules;
+    }else{
+      REMOTE_DATA.schedules = FALLBACK_DATA.schedules;
+    }
     REMOTE_DATA.siteconfig = d.siteconfig || FALLBACK_DATA.siteconfig;
   }catch(e){
     console.warn("Sheets 연동 실패, fallback 데이터 사용", e);
@@ -844,7 +854,7 @@ async function persistData(){
   if(!ADMIN_PW){ showToast("관리자 인증이 필요합니다"); return; }
   try{
     const [r1, r2] = await Promise.all([
-      fetch(APPSSCRIPTURL, { method:"POST", body: JSON.stringify({ password: ADMIN_PW, key:"schedules", value: REMOTE_DATA.schedules }) }),
+      fetch(APPSSCRIPTURL, { method:"POST", body: JSON.stringify({ password: ADMIN_PW, key:"apply_schedules", value: REMOTE_DATA.schedules }) }),
       fetch(APPSSCRIPTURL, { method:"POST", body: JSON.stringify({ password: ADMIN_PW, key:"meals", value: REMOTE_DATA.meals }) })
     ]);
     const [j1, j2] = await Promise.all([r1.json(), r2.json()]);
