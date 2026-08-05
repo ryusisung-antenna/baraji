@@ -977,7 +977,7 @@ async function syncFromSheetShared(){
   if(isEditingNow) return;
   if(!APPSSCRIPTURL || APPSSCRIPTURL.indexOf('http')!==0) return;
   try{
-    const res = await fetch(APPSSCRIPTURL, {cache:'no-store'});
+    const res = await fetch(APPSSCRIPTURL+'?t='+Date.now(), {cache:'no-store'}); // t= : 캐시된 옛 응답이 오지 않도록
     const json = await res.json();
     if(!json.ok) return;
     if(isEditingNow) return; // 응답을 기다리는 사이에 편집을 시작했을 수도 있으니 한 번 더 확인
@@ -1013,7 +1013,7 @@ async function saveToSheetShared(key, value){
     return;
   }
   try{
-    const res = await fetch(APPSSCRIPTURL, { method:'POST', body: JSON.stringify({ password:pw, key:key, value:value }) });
+    const res = await fetch(APPSSCRIPTURL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({ password:pw, key:key, value:value }) });
     const json = await res.json();
     if(!json.ok){
       showToast('⚠️ 저장 실패 — ' + (json.error||'비밀번호를 확인해주세요') + ' (다른 사람에게는 반영되지 않았습니다)', true);
@@ -1664,12 +1664,16 @@ async function checkAdminFromURL(){
       // 똑같이 서버에 먼저 확인합니다.
       const pw = params.get('pw');
       try{
-        const res = await fetch(APPSSCRIPTURL, { method:'POST', body: JSON.stringify({ password: pw, action:'verify' }) });
+        const res = await fetch(APPSSCRIPTURL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({ password: pw, action:'verify' }) });
         const json = await res.json();
         if(json.ok){
           isAdmin = true;
           sessionStorage.setItem('barajiadminpw', pw);
         }else{
+          // 틀린 비번으로 들어오면, 예전에 저장돼 있던 로그인 기록도 지운다.
+          // 안 그러면 틀린 링크인데도 옛 기록 때문에 관리자 모드가 켜져버린다.
+          isAdmin = false;
+          sessionStorage.removeItem('barajiadminpw');
           setTimeout(()=>showToast('⚠️ 이 링크의 비밀번호가 맞지 않습니다. 관리자 링크를 다시 확인해주세요.', true), 300);
         }
       }catch(e){
@@ -1726,7 +1730,7 @@ async function loginAdmin(){
   if(!pw) return;
   showToast('확인 중…');
   try{
-    const res = await fetch(APPSSCRIPTURL, { method:'POST', body: JSON.stringify({ password: pw, action:'verify' }) });
+    const res = await fetch(APPSSCRIPTURL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({ password: pw, action:'verify' }) });
     const json = await res.json();
     if(json.ok){
       isAdmin = true;

@@ -453,7 +453,7 @@ const FALLBACK_DATA = {
 
 async function loadRemoteData(){
   try{
-    const res = await fetch(APPSSCRIPTURL, {cache:"no-store"});
+    const res = await fetch(APPSSCRIPTURL+"?t="+Date.now(), {cache:"no-store"}); // t= : 캐시된 옛 응답이 오지 않도록
     const json = await res.json();
     if(!json.ok) throw new Error(json.error||"load fail");
     const d = json.data || {};
@@ -496,7 +496,7 @@ async function handleSecretTap(){
 }
 async function verifyAdminPw_(pw){
   try{
-    const res = await fetch(APPSSCRIPTURL, { method:"POST", body: JSON.stringify({ password: pw, action:"verify" }) });
+    const res = await fetch(APPSSCRIPTURL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({ password: pw, action:"verify" }) });
     const json = await res.json();
     if(json.ok){
       isAdmin = true;
@@ -546,7 +546,7 @@ function applySiteTexts(){
 async function persistSiteconfig(){
   if(!ADMIN_PW){ showToast("관리자 인증이 필요합니다"); return; }
   try{
-    const res = await fetch(APPSSCRIPTURL, { method:"POST", body: JSON.stringify({ password: ADMIN_PW, key:"siteconfig", value: REMOTE_DATA.siteconfig }) });
+    const res = await fetch(APPSSCRIPTURL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({ password: ADMIN_PW, key:"siteconfig", value: REMOTE_DATA.siteconfig }) });
     const json = await res.json();
     if(!json.ok){ showToast("저장 실패 — 비밀번호를 다시 확인해주세요"); logoutAdmin(); }
   }catch(e){ showToast("저장 실패 — 네트워크 오류"); }
@@ -854,8 +854,8 @@ async function persistData(){
   if(!ADMIN_PW){ showToast("관리자 인증이 필요합니다"); return; }
   try{
     const [r1, r2] = await Promise.all([
-      fetch(APPSSCRIPTURL, { method:"POST", body: JSON.stringify({ password: ADMIN_PW, key:"apply_schedules", value: REMOTE_DATA.schedules }) }),
-      fetch(APPSSCRIPTURL, { method:"POST", body: JSON.stringify({ password: ADMIN_PW, key:"meals", value: REMOTE_DATA.meals }) })
+      fetch(APPSSCRIPTURL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({ password: ADMIN_PW, key:"apply_schedules", value: REMOTE_DATA.schedules }) }),
+      fetch(APPSSCRIPTURL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({ password: ADMIN_PW, key:"meals", value: REMOTE_DATA.meals }) })
     ]);
     const [j1, j2] = await Promise.all([r1.json(), r2.json()]);
     if(!j1.ok || !j2.ok){
@@ -1166,7 +1166,7 @@ async function submitApply(){
   const btn = document.getElementById("submitBtn");
   btn.disabled = true; btn.textContent = "제출 중...";
   try{
-    const res = await fetch(APPSSCRIPTURL, { method:"POST", body: JSON.stringify({ action:"applyForm", value: payload }) });
+    const res = await fetch(APPSSCRIPTURL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({ action:"applyForm", value: payload }) });
     const json = await res.json();
     if(json.ok){
       if(selectedIsPending){
