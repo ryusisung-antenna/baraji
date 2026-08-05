@@ -19,7 +19,7 @@ body{ color:var(--ink); font-family:'Pretendard',sans-serif; line-height:1.65; }
 .wrap{ max-width:var(--maxw); margin:0 auto; min-height:100vh; background:var(--paper); position:relative; display:flex; flex-direction:column; }
 .icon{ display:inline-flex; width:1em; height:1em; vertical-align:-0.15em; }
 .icon svg{ width:100%; height:100%; }
-.page{ display:none; flex:1; flex-direction:column; min-height:100vh; }
+.page{ display:none; flex:1; flex-direction:column; min-height:0; }
 .page.active{ display:flex; animation:fadeIn .35s ease; }
 @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
 .page-scroll{ flex:1; overflow-y:auto; padding:30px 26px 18px; -webkit-overflow-scrolling:touch; }
@@ -132,13 +132,11 @@ body.admin-on .adm-toolbar{ display:flex; }
 /* 문구 수정 모드 (동기화되지 않는 서브앱 전용 텍스트만 대상) */
 #secretTapZone{ position:fixed; top:0; right:0; width:52px; height:52px; z-index:999; }
 #textEditBadge{
-  display:none; position:fixed; top:0; left:0; right:0; z-index:998;
-  background:var(--ink); color:#fff; font-size:11px; text-align:center;
-  padding:calc(9px + env(safe-area-inset-top)) 16px 9px;
+  display:none; position:fixed; top:8px; left:8px; z-index:998;
+  background:var(--ink); color:#fff; font-size:10px; opacity:.75;
+  padding:4px 10px; border-radius:10px;
 }
 body.text-edit-on #textEditBadge{ display:block; }
-body.text-edit-on{ padding-top:0; }
-body.text-edit-on .wrap{ margin-top:52px; }
 body.text-edit-on [data-editable-key]{
   outline:1px dashed #B7B29E; outline-offset:3px; border-radius:2px; cursor:text;
 }
@@ -155,7 +153,7 @@ body.admin-on .opt-text[contenteditable]:focus{ outline:2px solid var(--ink); ba
 <body>
 <div id="adminBadge" style="display:none;">ADMIN</div>
 <div id="secretTapZone" onclick="handleSecretTap()" title=""></div>
-<div id="textEditBadge">문구 수정 모드 · 점선 테두리를 탭해서 고치세요 · 같은 자리 5번 탭하면 종료 <button onclick="exportTextOverrides()" style="margin-left:8px; padding:4px 10px; border-radius:20px; border:1px solid #fff; background:none; color:#fff; font-size:11px; cursor:pointer;">고친 문구 내려받기</button></div>
+<div id="textEditBadge">문구 수정 중 · 5번 탭하면 종료</div>
 <div class="wrap" id="mainWrap">
 
   <div class="adm-toolbar" id="admToolbar">
@@ -458,7 +456,21 @@ setIcons({
    1. 설정 영역 — 매달 여기만 고치면 됩니다
    ========================================================= */
 const APPSSCRIPTURL = "https://script.google.com/macros/s/AKfycbypbINZxPPOTBCSPZL39LOWgZnqcRaxo0akj9fDN4Rsv6kZ3-dkUfhJ0ctV9CBF87Rs/exec";
-const ADMIN_PW_FALLBACK = "baraji2026";
+// 저장 실패(비밀번호 오류·네트워크 오류 등)를 화면에 조용히 숨기지 않고 바로 알려줍니다.
+function showToast(msg, isError){
+  let el = document.getElementById('subappToast');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'subappToast';
+    el.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:88vw;text-align:center;transition:opacity .2s;pointer-events:none;';
+    document.body.appendChild(el);
+  }
+  el.style.background = isError ? '#c0392b' : 'var(--ink)';
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>{ el.style.opacity = '0'; }, isError ? 4500 : 1800);
+}
 
 const PROGRAM_INFO = {
   title: "2026년 7월 군청년 행복학교 바라지",
@@ -993,10 +1005,23 @@ async function syncFromSheetShared(){
 async function saveToSheetShared(key, value){
   saveLocalShared();
   if(!APPSSCRIPTURL || APPSSCRIPTURL.indexOf('http')!==0) return;
-  const pw = sessionStorage.getItem('barajiadminpw') || ADMIN_PW_FALLBACK;
+  const pw = sessionStorage.getItem('barajiadminpw');
+  if(!pw){
+    // 관리자 비밀번호가 없는 상태 — 예전처럼 아무 비번이나 넣어서 조용히 실패하지 않고,
+    // 이 기기에만 저장한 뒤 명확히 알려줍니다.
+    showToast('⚠️ 관리자 로그인 상태가 아니라서 이 기기에만 저장됐습니다. 링크에 &pw=가 빠지지 않았는지 확인해주세요.', true);
+    return;
+  }
   try{
-    await fetch(APPSSCRIPTURL, { method:'POST', body: JSON.stringify({ password:pw, key:key, value:value }) });
-  }catch(e){ console.warn('sheet save failed', e); }
+    const res = await fetch(APPSSCRIPTURL, { method:'POST', body: JSON.stringify({ password:pw, key:key, value:value }) });
+    const json = await res.json();
+    if(!json.ok){
+      showToast('⚠️ 저장 실패 — ' + (json.error||'비밀번호를 확인해주세요') + ' (다른 사람에게는 반영되지 않았습니다)', true);
+    }
+  }catch(e){
+    console.warn('sheet save failed', e);
+    showToast('⚠️ 저장 실패 — 네트워크 오류. 다른 사람에게는 반영되지 않았습니다.', true);
+  }
 }
 // 문구 수정·카테고리 추가/삭제도 이 기기 안에만 두지 않고 공유 저장소로 보내서,
 // 링크를 가진 다른 사람들 화면에도 자동으로 반영되게 합니다. 매 글자마다 보내면
@@ -1231,7 +1256,7 @@ function renderOptions(){
       ${g.items.map((it,ii)=>`
         <div class="opt-item${it.id===selectedOptionId?' sel':''}" data-id="${it.id}" onclick="selectOption('${it.id}','${it.route}')">
           <div class="opt-radio"></div>
-          <div class="opt-text"${textEditMode?` contenteditable="true" onclick="event.stopPropagation()" onfocus="isEditingNow=true" onblur="saveOptionLabel(${gi},${ii},this)"`:''}>${it.label}</div>
+          <div class="opt-text"${textEditMode?` contenteditable="true" onfocus="isEditingNow=true" onblur="saveOptionLabel(${gi},${ii},this)"`:''}>${it.label}</div>
           ${textEditMode?`<button class="opt-del" onclick="event.stopPropagation(); deleteOption(${gi},${ii})">삭제</button>`:''}
         </div>
       `).join('')}
@@ -1627,12 +1652,20 @@ function renderAugustSchedule(){
 /* =========================================================
    7. 관리자 모드 — 2박3일 원본 일정표를 수정하면
       1박/2박 참가자 화면에도 즉시 반영됩니다.
+      우측 상단 5번 탭 → 비밀번호 입력 (다른 앱들과 동일한 방식).
+      예전처럼 ?admin=1&pw=... 링크로 바로 들어오는 것도 계속 됩니다.
    ========================================================= */
 function checkAdminFromURL(){
   const params = new URLSearchParams(location.search);
   if(params.get('admin')==='1'){
-    isAdmin = true;
-    sessionStorage.setItem('barajiadminpw', params.get('pw')||ADMIN_PW_FALLBACK);
+    if(params.get('pw')){
+      isAdmin = true;
+      sessionStorage.setItem('barajiadminpw', params.get('pw'));
+    }else{
+      // 예전엔 여기서 가짜 비밀번호(ADMIN_PW_FALLBACK)로 조용히 관리자 모드에 들어갔지만,
+      // 그러면 화면은 관리자처럼 보여도 저장은 계속 실패했습니다. 이제는 바로 알려줍니다.
+      setTimeout(()=>showToast('⚠️ 이 링크에 비밀번호(&pw=)가 빠져있습니다. 관리자 링크를 다시 확인해주세요.', true), 300);
+    }
   }
   if(sessionStorage.getItem('barajiadminpw')) isAdmin = true;
 }
@@ -1653,12 +1686,14 @@ function applyAdminUI(){
 }
 
 /* =========================================================
-   7-1. 문구 수정 모드 — 비밀번호 없이 화면 우측 상단을 5번 탭하면
-   켜집니다. 메인앱과 동기화되지 않는, 이 서브앱에만 있는 고정
-   문구(제목/소개/안내 문구 등)만 그 자리에서 바로 고칠 수 있고,
-   이 기기의 localStorage에 저장됩니다. 메인앱에서 관리하는
-   일정표·레시피·준비물·활동 목록 등은 여기서 손댈 수 없습니다 —
-   그런 항목은 메인앱에서 고쳐야 한다는 뜻입니다.
+   7-1. 문구 수정 모드 — 관리자 모드에서만 켜집니다. 관리자 로그인
+   직후엔 자동으로 켜져 있고, 우측 상단 5번 탭으로 껐다 켰다 할 수
+   있습니다(관리자가 아닐 땐 같은 5번 탭이 로그인 창을 띄웁니다).
+   메인앱과 동기화되지 않는, 이 서브앱에만 있는 고정 문구(제목/소개/
+   안내 문구 등)를 그 자리에서 바로 고칠 수 있고, 공용 시트로도
+   동기화됩니다. 메인앱에서 관리하는 일정표·레시피·준비물·활동
+   목록 등은 여기서 손댈 수 없습니다 — 그런 항목은 메인앱에서
+   고쳐야 한다는 뜻입니다.
    ========================================================= */
 let textEditMode = false;
 let _secretTapCount = 0, _secretTapTimer = null;
@@ -1668,7 +1703,31 @@ function handleSecretTap(){
   _secretTapTimer = setTimeout(()=>{ _secretTapCount = 0; }, 1200);
   if(_secretTapCount >= 5){
     _secretTapCount = 0;
-    toggleTextEditMode();
+    if(isAdmin) toggleTextEditMode();
+    else loginAdmin();
+  }
+}
+// 우측 상단을 5번 탭하면 비밀번호를 물어보고, 서버에 바로 맞는지 확인한 뒤
+// 관리자 모드로 들어갑니다. 다른 앱들(공양꼭지 콘솔 등)과 같은 방식입니다.
+async function loginAdmin(){
+  const pw = prompt('관리자 비밀번호를 입력해주세요');
+  if(!pw) return;
+  showToast('확인 중…');
+  try{
+    const res = await fetch(APPSSCRIPTURL, { method:'POST', body: JSON.stringify({ password: pw, action:'verify' }) });
+    const json = await res.json();
+    if(json.ok){
+      isAdmin = true;
+      sessionStorage.setItem('barajiadminpw', pw);
+      applyAdminUI();
+      setTextEditMode(true);
+      renderOptions();
+      showToast('관리자 모드로 들어왔습니다');
+    }else{
+      showToast('⚠️ 비밀번호가 맞지 않습니다', true);
+    }
+  }catch(e){
+    showToast('⚠️ 확인 중 네트워크 오류가 발생했습니다', true);
   }
 }
 function toggleTextEditMode(){
@@ -1690,20 +1749,6 @@ function loadTextOverrides(){
   CALENDAR_DAYS.forEach((_,i)=>{
     if(subappTextOverrides['calDay'+i] !== undefined) CALENDAR_DAYS[i] = subappTextOverrides['calDay'+i];
   });
-}
-// 이 기기에서 고친 문구들을 파일로 내려받습니다 — 이 파일을 Claude에게 보내면
-// 실제 앱 파일(깃허브에 올리는 파일) 안에 그대로 반영해줄 수 있습니다.
-function exportTextOverrides(){
-  const data = JSON.stringify(subappTextOverrides, null, 2);
-  const blob = new Blob([data], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'baraji-text-overrides.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
 }
 function applyTextOverrides(){
   document.querySelectorAll('[data-editable-key]').forEach(el=>{
