@@ -1842,6 +1842,212 @@ if(isAdmin) setTextEditMode(true); // 관리자 모드면 문구 수정도 따�
 history.replaceState(buildNavState(), '');
 syncFromSheetShared();
 setInterval(syncFromSheetShared, 60000);
+(() => {
+  'use strict';
+
+  const CONFIG_KEY = 'subappConfig';
+  const DEFAULT_YEAR = 2026;
+  let sharedConfig = { version: 1, textOverrides: {}, options: null };
+  let saving = false;
+
+  function apiAvailable() {
+    return typeof APPSSCRIPTURL === 'string' && APPSSCRIPTURL.startsWith('http');
+  }
+
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function setStatus(message, tone = '') {
+    let el = document.getElementById('subappSaveStatus');
+    if (!el) {
+      el = document.createElement('span');
+      el.id = 'subappSaveStatus';
+      el.style.cssText = 'font-size:11px;margin-left:auto;color:#6f6d63;';
+      const toolbar = document.getElementById('admToolbar');
+      if (toolbar) toolbar.appendChild(el);
+    }
+    if (el) {
+      el.textContent = message;
+      el.style.color = tone === 'error' ? '#b3261e' : tone === 'ok' ? '#32633b' : '#6f6d63';
+    }
+  }
+
+  async function ensurePassword() {
+    let pw = sessionStorage.getItem('barajiadminpw');
+    if (!pw || pw === 'baraji2026') {
+      pw = window.prompt('공용 데이터를 저장하려면 관리자 비밀번호를 입력하세요.');
+      if (!pw) return null;
+    }
+    if (!apiAvailable()) return pw;
+
+    const res = await fetch(APPSSCRIPTURL, {
+      method: 'POST',
+      body: JSON.stringify({ password: pw, action: 'verify' })
+    });
+    const json = await res.json();
+    if (!json.ok) {
+      alert(json.error || '관리자 비밀번호가 올바르지 않습니다.');
+      return null;
+    }
+    sessionStorage.setItem('barajiadminpw', pw);
+    return pw;
+  }
+
+  function applySharedConfig() {
+    const text = sharedConfig.textOverrides || {};
+    subappTextOverrides = Object.assign({}, subappTextOverrides || {}, text);
+    if (Array.isArray(sharedConfig.options) && sharedConfig.options.length) {
+      OPTIONS = clone(sharedConfig.options);
+    }
+    if (text.selectKicker) {
+      const match = text.selectKicker.replace(/<[^>]*>/g, '').match(/(\d{4})\D+(\d{1,2})/);
+      if (match) sharedConfig.year = Number(match[1]);
+    }
+    localStorage.setItem('subappTextOverrides', JSON.stringify(subappTextOverrides));
+    localStorage.setItem('subappOptions', JSON.stringify(OPTIONS));
+    renderAllContent();
+  }
+
+  async function loadSharedConfig() {
+    if (!apiAvailable()) return;
+    try {
+      const res = await fetch(APPSSCRIPTURL, { cache: 'no-store' });
+      const json = await res.json();
+      if (!json.ok || !json.data || !json.data[CONFIG_KEY]) return;
+      sharedConfig = Object.assign(sharedConfig, json.data[CONFIG_KEY]);
+      applySharedConfig();
+    } catch (error) {
+      console.warn('subappConfig load failed', error);
+    }
+  }
+
+  async function saveSharedConfig() {
+    if (saving) return;
+    const pw = await ensurePassword();
+    if (!pw) return;
+    saving = true;
+    setStatus('저장 중…');
+    try {
+      sharedConfig.version = 1;
+      sharedConfig.updatedAt = new Date().toISOString();
+      sharedConfig.textOverrides = clone(subappTextOverrides || {});
+      sharedConfig.options = clone(OPTIONS || []);
+      const res = await fetch(APPSSCRIPTURL, {
+        method: 'POST',
+        body: JSON.stringify({ password: pw, key: CONFIG_KEY, value: sharedConfig })
+      });
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error || '저장에 실패했습니다.');
+      setStatus('✓ 공용 저장됨', 'ok');
+    } catch (error) {
+      console.error(error);
+      setStatus('저장 실패 — 다시 시도', 'error');
+      alert('공용 저장에 실패했습니다. 인터넷 연결과 관리자 비밀번호를 확인해주세요.');
+    } finally {
+      saving = false;
+    }
+  }
+
+  function syncKicker(year, month) {
+    const value = `${year}년 ${month}월`;
+    subappTextOverrides.selectKicker = value;
+    sharedConfig.textOverrides = sharedConfig.textOverrides || {};
+    sharedConfig.textOverrides.selectKicker = value;
+    const el = document.querySelector('[data-editable-key="selectKicker"]');
+    if (el) el.innerHTML = value;
+  }
+
+  function openSharedSettings() {
+    if (!isAdmin) {
+      alert('먼저 기존 관리자 모드로 들어가 주세요.');
+      return;
+    }
+    const old = document.getElementById('subappSharedSettings');
+    if (old) old.remove();
+    const kicker = (subappTextOverrides && subappTextOverrides.selectKicker) || document.querySelector('[data-editable-key="selectKicker"]')?.textContent || `${DEFAULT_YEAR}년 7월`;
+    const parts = kicker.match(/(\d{4})\D+(\d{1,2})/) || [null, DEFAULT_YEAR, 7];
+    const title = (subappTextOverrides && subappTextOverrides.selectTitle) || document.querySelector('[data-editable-key="selectTitle"]')?.innerHTML || '';
+    const modal = document.createElement('div');
+    modal.id = 'subappSharedSettings';
+    modal.className = 'modal show';
+    modal.innerHTML = `
+      <div class="modal-box">
+        <h3>서브앱 공용 설정</h3>
+        <p style="font-size:12.5px;color:#6f6d63;margin:0 0 14px;">여기서 저장한 내용은 새로고침하거나 다른 기기에서 열어도 유지됩니다.</p>
+        <label>연도</label><input id="subappCfgYear" type="number" value="${parts[1]}">
+        <label>월</label><input id="subappCfgMonth" type="number" min="1" max="12" value="${parts[2]}">
+        <label>첫 화면 제목</label><input id="subappCfgTitle" value="${title.replace(/"/g, '&quot;')}">
+        <div class="m-actions">
+          <button class="btn-cancel" id="subappCfgCancel">취소</button>
+          <button class="btn-ok" id="subappCfgSave">저장</button>
+        </div>
+        <button id="subappCfgEditText" style="width:100%;margin-top:10px;padding:10px;border:1px dashed #20211d;background:#fff;border-radius:6px;cursor:pointer;">다른 화면 문구 직접 수정하기</button>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.querySelector('#subappCfgCancel').onclick = () => modal.remove();
+    modal.querySelector('#subappCfgSave').onclick = async () => {
+      const year = Number(modal.querySelector('#subappCfgYear').value);
+      const month = Number(modal.querySelector('#subappCfgMonth').value);
+      const nextTitle = modal.querySelector('#subappCfgTitle').value.trim();
+      if (!Number.isInteger(year) || !Number.isInteger(month) || month < 1 || month > 12) {
+        alert('연도와 월을 올바르게 입력해주세요.');
+        return;
+      }
+      syncKicker(year, month);
+      if (nextTitle) subappTextOverrides.selectTitle = nextTitle;
+      sharedConfig.year = year;
+      sharedConfig.month = month;
+      applySharedConfig();
+      await saveSharedConfig();
+      modal.remove();
+    };
+    modal.querySelector('#subappCfgEditText').onclick = () => {
+      modal.remove();
+      if (!textEditMode) toggleTextEditMode();
+      setStatus('문구 수정 후 화면 밖을 누르면 공용 저장됩니다.');
+    };
+  }
+
+  function addAdminButton() {
+    const toolbar = document.getElementById('admToolbar');
+    if (!toolbar || document.getElementById('subappSharedSettingsBtn')) return;
+    const btn = document.createElement('button');
+    btn.id = 'subappSharedSettingsBtn';
+    btn.textContent = '공용 설정·문구 수정';
+    btn.onclick = openSharedSettings;
+    toolbar.insertBefore(btn, toolbar.firstChild);
+  }
+
+  // 기존 숨김 문구/선택지 편집의 blur 이후 값을 공용 data 시트에도 저장한다.
+  document.addEventListener('blur', (event) => {
+    const target = event.target;
+    if (!isAdmin) return;
+    if (target?.dataset?.editableKey || target?.classList?.contains('opt-text')) {
+      window.setTimeout(() => saveSharedConfig(), 0);
+    }
+  }, true);
+
+  document.addEventListener('click', (event) => {
+    if (!isAdmin) return;
+    if (event.target?.classList?.contains('opt-del') || event.target?.closest('.opt-add-row')) {
+      window.setTimeout(() => saveSharedConfig(), 0);
+    }
+  });
+
+  const originalApplyAdminUI = applyAdminUI;
+  applyAdminUI = function () {
+    originalApplyAdminUI();
+    if (isAdmin) addAdminButton();
+  };
+
+  window.setTimeout(() => {
+    if (isAdmin) addAdminButton();
+    loadSharedConfig();
+  }, 0);
+})();
+
+  
 </script>
 </body>
 </html>
