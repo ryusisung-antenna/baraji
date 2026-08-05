@@ -1655,19 +1655,31 @@ function renderAugustSchedule(){
       우측 상단 5번 탭 → 비밀번호 입력 (다른 앱들과 동일한 방식).
       예전처럼 ?admin=1&pw=... 링크로 바로 들어오는 것도 계속 됩니다.
    ========================================================= */
-function checkAdminFromURL(){
+async function checkAdminFromURL(){
   const params = new URLSearchParams(location.search);
   if(params.get('admin')==='1'){
     if(params.get('pw')){
-      isAdmin = true;
-      sessionStorage.setItem('barajiadminpw', params.get('pw'));
+      // 예전엔 여기서 주소의 pw값을 확인 없이 그냥 믿었지만, 그러면 비밀번호가 틀려도
+      // 화면은 관리자처럼 보이면서 저장만 조용히 실패했습니다. 이제는 5번 탭 로그인과
+      // 똑같이 서버에 먼저 확인합니다.
+      const pw = params.get('pw');
+      try{
+        const res = await fetch(APPSSCRIPTURL, { method:'POST', body: JSON.stringify({ password: pw, action:'verify' }) });
+        const json = await res.json();
+        if(json.ok){
+          isAdmin = true;
+          sessionStorage.setItem('barajiadminpw', pw);
+        }else{
+          setTimeout(()=>showToast('⚠️ 이 링크의 비밀번호가 맞지 않습니다. 관리자 링크를 다시 확인해주세요.', true), 300);
+        }
+      }catch(e){
+        setTimeout(()=>showToast('⚠️ 비밀번호 확인 중 네트워크 오류가 발생했습니다.', true), 300);
+      }
     }else{
-      // 예전엔 여기서 가짜 비밀번호(ADMIN_PW_FALLBACK)로 조용히 관리자 모드에 들어갔지만,
-      // 그러면 화면은 관리자처럼 보여도 저장은 계속 실패했습니다. 이제는 바로 알려줍니다.
       setTimeout(()=>showToast('⚠️ 이 링크에 비밀번호(&pw=)가 빠져있습니다. 관리자 링크를 다시 확인해주세요.', true), 300);
     }
   }
-  if(sessionStorage.getItem('barajiadminpw')) isAdmin = true;
+  if(sessionStorage.getItem('barajiadminpw') && !params.get('pw')) isAdmin = true; // 세션에 이미 로그인되어 있던 경우(재확인 불필요)
 }
 function logoutAdmin(){
   isAdmin = false;
@@ -1879,14 +1891,16 @@ function saveScheduleEditor(){
 /* =========================================================
    8. 초기 실행
    ========================================================= */
-checkAdminFromURL();
-loadOptionsOverride();
-loadLocalShared();
-renderAllContent();
-if(isAdmin) setTextEditMode(true); // 관리자 모드면 문구 수정도 따로 5번 탭 안 해도 바로 됨
-history.replaceState(buildNavState(), '');
-syncFromSheetShared();
-setInterval(syncFromSheetShared, 60000);
+(async function initApp(){
+  await checkAdminFromURL();
+  loadOptionsOverride();
+  loadLocalShared();
+  renderAllContent();
+  if(isAdmin) setTextEditMode(true); // 관리자 모드면 문구 수정도 따로 5번 탭 안 해도 바로 됨
+  history.replaceState(buildNavState(), '');
+  syncFromSheetShared();
+  setInterval(syncFromSheetShared, 60000);
+})();
 </script>
 </body>
 </html>
