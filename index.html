@@ -1842,6 +1842,10 @@ if(isAdmin) setTextEditMode(true); // 관리자 모드면 문구 수정도 따�
 history.replaceState(buildNavState(), '');
 syncFromSheetShared();
 setInterval(syncFromSheetShared, 60000);
+/*
+ * 바라지 서브앱 공용 관리자 저장 패치
+ * index.html의 마지막 </script> 바로 앞에 이 파일 전체를 붙여 넣으세요.
+ */
 (() => {
   'use strict';
 
@@ -2047,7 +2051,6 @@ setInterval(syncFromSheetShared, 60000);
   }, 0);
 })();
 
-  
 </script>
 </body>
 </html>
