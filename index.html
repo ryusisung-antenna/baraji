@@ -114,6 +114,9 @@ body.admin-on .adm-toolbar{ display:flex; }
 .adm-toolbar{ display:none; gap:8px; padding:10px 26px; background:#FFF6D8; border-bottom:1px solid #E9DDA8; font-size:12px; align-items:center; }
 .adm-toolbar button{ font-size:11.5px; padding:5px 10px; border-radius:14px; border:1px solid var(--ink); background:#fff; cursor:pointer; }
 .admin-editrow{ display:flex; gap:6px; align-items:center; padding:8px 0; border-bottom:1px dashed var(--line); }
+.admin-editrow input{ flex:1; min-width:0; }
+.admin-editgroup{ margin-bottom:16px; padding-bottom:8px; border-bottom:2px solid var(--line); }
+.admin-editgroup .ce-group{ width:100%; font-weight:700; margin-bottom:4px; }
 .admin-editrow input{ font-size:12.5px; padding:6px 8px; border:1px solid var(--line); border-radius:6px; }
 .admin-editrow input.time{ width:56px; }
 .admin-editrow input.content{ flex:1; min-width:60px; }
@@ -412,6 +415,19 @@ body.admin-on .opt-text[contenteditable]:focus{ outline:2px solid var(--ink); ba
     <div class="m-actions">
       <button class="btn-cancel" onclick="closeScheduleEditor()">닫기</button>
       <button class="btn-ok" onclick="saveScheduleEditor()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 내용 수정 모달 (관리자) — 메뉴·준비물·활동 -->
+<div class="modal" id="contentEditorModal">
+  <div class="modal-box">
+    <h3 id="contentEditorTitle">내용 수정</h3>
+    <p id="contentEditorHint" style="font-size:12.5px; color:var(--ink-soft); margin:0 0 14px;"></p>
+    <div id="contentEditorBody"></div>
+    <div class="m-actions">
+      <button class="btn-cancel" onclick="closeContentEditor()">닫기</button>
+      <button class="btn-ok" onclick="saveContentEditor()">저장</button>
     </div>
   </div>
 </div>
@@ -1010,11 +1026,26 @@ async function syncFromSheetShared(){
     if(!json.ok) return;
     if(isEditingNow || _subappDirty) return; // 응답을 기다리는 사이에 수정이 시작됐을 수도 있으니 한 번 더 확인
     const d = json.data;
-    if(d.menus && d.menus.length) MENUS = d.menus;
-    if(d.meals && Object.keys(d.meals).length) MEALS = d.meals;
-    if(d.timetables && Object.keys(d.timetables).length) Object.assign(TIMETABLES, d.timetables);
-    if(d.prep_groups && d.prep_groups.length) PREPGROUPS = d.prep_groups;
-    if(d.activities && d.activities.length) ACTIVITIES = d.activities;
+    // 서브앱은 이제 메인앱과 데이터를 나눠 쓴다. subapp_* 전용 칸을 먼저 보고,
+    // 아직 없으면(처음 분리한 직후) 예전에 함께 쓰던 칸에서 이어받는다.
+    // 이렇게 하면 서브앱에서 뭘 고쳐도 메인앱 데이터가 안 바뀌고, 그 반대도 마찬가지다.
+    const pick = (own, shared) => {
+      if(own !== undefined && own !== null){
+        if(Array.isArray(own) ? own.length : Object.keys(own).length) return own;
+      }
+      return shared;
+    };
+    const menus_      = pick(d.subapp_menus,       d.menus);
+    const meals_      = pick(d.subapp_meals,       d.meals);
+    const timetables_ = pick(d.subapp_timetables,  d.timetables);
+    const prep_       = pick(d.subapp_prep_groups, d.prep_groups);
+    const acts_       = pick(d.subapp_activities,  d.activities);
+
+    if(menus_ && menus_.length) MENUS = menus_;
+    if(meals_ && Object.keys(meals_).length) MEALS = meals_;
+    if(timetables_ && Object.keys(timetables_).length) Object.assign(TIMETABLES, timetables_);
+    if(prep_ && prep_.length) PREPGROUPS = prep_;
+    if(acts_ && acts_.length) ACTIVITIES = acts_;
     if(d.schedules && d.schedules.length) SCHEDULES = d.schedules;
     if(d.subapp_text_overrides && Object.keys(d.subapp_text_overrides).length){
       subappTextOverrides = d.subapp_text_overrides;
@@ -1056,8 +1087,10 @@ async function saveToSheetShared(key, value){
     let json;
     try{ json = JSON.parse(txt); }
     catch(e){
-      // 로그인 페이지 HTML 등이 돌아온 경우 — 배포 권한 설정 문제일 가능성이 높다
-      setSaveStatus('저장 실패 · 서버 응답 이상 (배포 권한 확인 필요)', 'fail');
+      // 서버가 JSON이 아닌 걸 돌려준 경우 — 실제로 뭘 받았는지 알아야 원인을 잡을 수 있다
+      console.error('[저장 실패] 서버 응답 전문:', txt);
+      const hint = txt.indexOf('<')===0 ? '로그인/권한 페이지가 돌아옴' : ('응답 앞부분: '+txt.slice(0,60));
+      setSaveStatus('저장 실패 · ' + hint, 'fail');
       markCannotSave('서버가 이상한 응답을 보냈습니다');
       return false;
     }
@@ -1441,6 +1474,11 @@ const LOADING = '<p class="empty-note">불러오는 중입니다…</p>';
 // 그룹명·항목명에 '숙박'이나 '1박 이상' 같은 문구가 들어간 것도 함께 걸러냅니다.
 // (구글시트에 옛 구조의 데이터가 남아있어도 놓치지 않도록 이름 기반으로도 한 번 더 확인합니다)
 function looksStayOnly(s){ return /숙박|1박\s*이상/.test(s||''); }
+// 관리자일 때만 각 목록 아래에 수정 버튼을 붙인다
+function ceBtn(kind, label){
+  if(!isAdmin) return '';
+  return `<div class="admin-add-btn" onclick="openContentEditor('${kind}')">${label}</div>`;
+}
 function prepListHTML(filterFn, excludeStayOnly){
   if(!dataLoaded) return LOADING;
   if(!PREPGROUPS.length) return '<p class="empty-note">준비물 정보가 아직 등록되지 않았습니다.</p>';
@@ -1453,7 +1491,7 @@ function prepListHTML(filterFn, excludeStayOnly){
     return `<div class="prep-group"><p class="prep-group-label">${g.group}</p><ul class="plain">${items.map(it=>`<li><b>${it.t}</b>${it.s?(' — '+it.s):''}</li>`).join('')}</ul></div>`;
   }).filter(Boolean);
   if(!blocks.length) return '<p class="empty-note">준비물 정보가 아직 등록되지 않았습니다.</p>';
-  return blocks.join('');
+  return blocks.join('') + ceBtn('prep','준비물 수정하기');
 }
 function kitchenGuideHTML(){
   return `<a class="kitchen-link" href="${KITCHEN_GUIDE.videoUrl}" target="_blank" rel="noopener">
@@ -1469,13 +1507,13 @@ function rulesListHTML(){
   if(!dataLoaded) return LOADING;
   const ruleGroup = PREPGROUPS.find(g=>g.rules);
   if(!ruleGroup) return '<p class="empty-note">안내가 아직 등록되지 않았습니다.</p>';
-  return `<ul class="plain">${ruleGroup.items.map(it=>`<li><b>${it.t}</b>${it.s?(' — '+it.s):''}</li>`).join('')}</ul>`;
+  return `<ul class="plain">${ruleGroup.items.map(it=>`<li><b>${it.t}</b>${it.s?(' — '+it.s):''}</li>`).join('')}</ul>` + ceBtn('prep','약속 수정하기');
 }
 function activityListHTML(limit){
   if(!dataLoaded) return LOADING;
   if(!ACTIVITIES.length) return '<p class="empty-note">활동 정보가 아직 등록되지 않았습니다.</p>';
   const arr = limit ? ACTIVITIES.slice(0,limit) : ACTIVITIES;
-  return `<ul class="plain">${arr.map(a=>`<li><b>${a.title}</b>${a.desc?(' — '+a.desc):''}</li>`).join('')}</ul>`;
+  return `<ul class="plain">${arr.map(a=>`<li><b>${a.title}</b>${a.desc?(' — '+a.desc):''}</li>`).join('')}</ul>` + ceBtn('activity','활동 소개 수정하기');
 }
 function menuMiniHTML(name){
   const m = findMenu(name);
@@ -1488,8 +1526,8 @@ function menuMiniHTML(name){
 function menuListHTML(mealKey){
   if(!dataLoaded) return LOADING;
   const meal = MEALS[mealKey];
-  if(!meal || !meal.menus || !meal.menus.length) return '<p class="empty-note">메뉴 정보가 아직 등록되지 않았습니다.</p>';
-  return meal.menus.map(n=>menuMiniHTML(n)).join('');
+  if(!meal || !meal.menus || !meal.menus.length) return '<p class="empty-note">메뉴 정보가 아직 등록되지 않았습니다.</p>' + ceBtn('meals','메뉴 수정하기');
+  return meal.menus.map(n=>menuMiniHTML(n)).join('') + ceBtn('meals','메뉴 수정하기');
 }
 // '표고버섯 2kg 기준' 처럼 분량 숫자만 반복하는 문구는 위의 "50인분 기준" 안내와 중복이라 표시하지 않습니다.
 // (실제 시트에 옛날 데이터가 남아있어도, 화면에는 항상 걸러져서 나갑니다)
@@ -1994,7 +2032,7 @@ function addEditorRow(dayIndex){
 function closeScheduleEditor(){
   history.back();
 }
-function saveScheduleEditor(){
+async function saveScheduleEditor(){
   if(!editorStayKey) return;
   const ranges = STAY_RANGES[editorStayKey];
   const t = TIMETABLES[PROGRAM_ID];
@@ -2006,14 +2044,131 @@ function saveScheduleEditor(){
     byDay[d].push({ time:inputs[0].value.trim(), content:inputs[1].value.trim(), place:inputs[2].value.trim() });
   });
   Object.keys(byDay).forEach(d=>{ t.days[parseInt(d,10)].rows = byDay[d]; });
-  saveToSheetShared('timetables', TIMETABLES);
+  const ok = await saveToSheetShared('subapp_timetables', TIMETABLES);
+  if(!ok){
+    alert('시간표를 서버에 저장하지 못했습니다.\n\n창을 닫지 않았으니 잠시 후 다시 [저장]을 눌러보세요.');
+    return; // 저장 실패하면 편집창을 닫지 않는다 — 고친 내용을 잃지 않도록
+  }
   closeScheduleEditor();
   renderAllContent();
 }
 
 /* =========================================================
-   8. 초기 실행
+   내용 수정 (관리자) — 준비물 · 활동 · 공양메뉴
+   메인앱과 데이터를 나눠 쓰므로, 여기서 고친 것은 서브앱에만 반영됩니다.
    ========================================================= */
+let contentEditorKind = null;
+function openContentEditor(kind){
+  if(!isAdmin) return;
+  contentEditorKind = kind;
+  isEditingNow = true;
+  const titleEl = document.getElementById('contentEditorTitle');
+  const hintEl  = document.getElementById('contentEditorHint');
+  const body    = document.getElementById('contentEditorBody');
+  let html = '';
+
+  if(kind === 'prep'){
+    titleEl.textContent = '준비물 · 약속 수정';
+    hintEl.textContent = '묶음별로 항목을 고치거나 지울 수 있습니다. 제목을 비우면 그 항목이 삭제됩니다.';
+    html = PREPGROUPS.map((g,gi)=>`
+      <div class="admin-editgroup">
+        <input class="ce-group" data-gi="${gi}" value="${escAttr(g.group)}" placeholder="묶음 이름">
+        ${g.items.map((it,ii)=>`
+          <div class="admin-editrow" data-gi="${gi}" data-ii="${ii}">
+            <input class="ce-t" value="${escAttr(it.t)}" placeholder="항목">
+            <input class="ce-s" value="${escAttr(it.s||'')}" placeholder="설명(선택)">
+          </div>`).join('')}
+        <button class="admin-add-btn" onclick="ceAddRow(${gi})">+ 항목 추가</button>
+      </div>`).join('');
+
+  }else if(kind === 'activity'){
+    titleEl.textContent = '바라지 활동 소개 수정';
+    hintEl.textContent = '제목을 비우면 그 활동이 삭제됩니다.';
+    html = ACTIVITIES.map((a,ai)=>`
+      <div class="admin-editrow" data-ai="${ai}">
+        <input class="ce-t" value="${escAttr(a.title)}" placeholder="활동 제목">
+        <input class="ce-s" value="${escAttr(a.desc||'')}" placeholder="설명">
+      </div>`).join('') + `<button class="admin-add-btn" onclick="ceAddActivity()">+ 활동 추가</button>`;
+
+  }else if(kind === 'meals'){
+    titleEl.textContent = '공양 메뉴 수정';
+    hintEl.textContent = '끼니별 메뉴 이름을 쉼표(,)로 구분해 적어주세요. 레시피가 등록된 메뉴는 이름이 같으면 그대로 연결됩니다.';
+    html = Object.keys(MEALS).map(k=>`
+      <div class="admin-editrow" data-mealkey="${k}">
+        <input class="ce-t" value="${escAttr(MEALS[k].label||k)}" placeholder="끼니 이름">
+        <input class="ce-s" value="${escAttr((MEALS[k].menus||[]).join(', '))}" placeholder="메뉴들 (쉼표로 구분)">
+      </div>`).join('');
+  }
+
+  body.innerHTML = html;
+  document.getElementById('contentEditorModal').classList.add('show');
+}
+function escAttr(s){ return String(s==null?'':s).replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function ceAddRow(gi){
+  const groups = document.querySelectorAll('#contentEditorBody .admin-editgroup');
+  const g = groups[gi];
+  const div = document.createElement('div');
+  div.className = 'admin-editrow';
+  div.dataset.gi = gi;
+  div.innerHTML = `<input class="ce-t" placeholder="항목"><input class="ce-s" placeholder="설명(선택)">`;
+  g.insertBefore(div, g.querySelector('.admin-add-btn'));
+}
+function ceAddActivity(){
+  const body = document.getElementById('contentEditorBody');
+  const div = document.createElement('div');
+  div.className = 'admin-editrow';
+  div.innerHTML = `<input class="ce-t" placeholder="활동 제목"><input class="ce-s" placeholder="설명">`;
+  body.insertBefore(div, body.querySelector('.admin-add-btn'));
+}
+function closeContentEditor(){
+  document.getElementById('contentEditorModal').classList.remove('show');
+  isEditingNow = false;
+  contentEditorKind = null;
+}
+async function saveContentEditor(){
+  const body = document.getElementById('contentEditorBody');
+  let ok = false;
+
+  if(contentEditorKind === 'prep'){
+    const groups = [...body.querySelectorAll('.admin-editgroup')].map((gEl,gi)=>{
+      const name = gEl.querySelector('.ce-group').value.trim();
+      const items = [...gEl.querySelectorAll('.admin-editrow')].map(r=>({
+        t: r.querySelector('.ce-t').value.trim(),
+        s: r.querySelector('.ce-s').value.trim()
+      })).filter(it=>it.t); // 제목이 빈 항목은 삭제된 것으로 본다
+      const old = PREPGROUPS[gi] || {};
+      return name ? { group:name, rules: old.rules, items } : null;
+    }).filter(Boolean);
+    PREPGROUPS = groups;
+    ok = await saveToSheetShared('subapp_prep_groups', PREPGROUPS);
+
+  }else if(contentEditorKind === 'activity'){
+    ACTIVITIES = [...body.querySelectorAll('.admin-editrow')].map((r,ai)=>{
+      const old = ACTIVITIES[ai] || {};
+      return { emoji: old.emoji, photo: old.photo,
+               title: r.querySelector('.ce-t').value.trim(),
+               desc:  r.querySelector('.ce-s').value.trim() };
+    }).filter(a=>a.title);
+    ok = await saveToSheetShared('subapp_activities', ACTIVITIES);
+
+  }else if(contentEditorKind === 'meals'){
+    [...body.querySelectorAll('.admin-editrow')].forEach(r=>{
+      const k = r.dataset.mealkey;
+      if(!MEALS[k]) MEALS[k] = {};
+      MEALS[k].label = r.querySelector('.ce-t').value.trim();
+      MEALS[k].menus = r.querySelector('.ce-s').value.split(',').map(s=>s.trim()).filter(Boolean);
+    });
+    ok = await saveToSheetShared('subapp_meals', MEALS);
+  }
+
+  if(!ok){
+    alert('서버에 저장하지 못했습니다.\n\n창을 닫지 않았으니 잠시 후 다시 [저장]을 눌러보세요.');
+    return;
+  }
+  closeContentEditor();
+  renderAllContent();
+}
+
 (async function initApp(){
   await checkAdminFromURL();
   loadOptionsOverride();
