@@ -990,9 +990,8 @@ function setSaveStatus(text, kind){
   if(!el){
     el = document.createElement('div');
     el.id = 'saveStatusBar';
-    el.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:9999;font-size:11px;padding:6px 12px;border-radius:20px;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,.2);max-width:calc(100vw - 16px);cursor:pointer;';
-    el.title = '눌러서 고친 내용을 파일로 저장';
-    el.onclick = exportSubappEdits;
+    el.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:9999;font-size:13px;font-weight:700;padding:11px 22px;border-radius:24px;font-family:inherit;box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:calc(100vw - 24px);cursor:pointer;text-align:center;';
+    el.onclick = onSaveBarClick;
     document.body.appendChild(el);
   }
   const colors = {
@@ -1003,7 +1002,13 @@ function setSaveStatus(text, kind){
   };
   el.style.cssText = el.style.cssText.replace(/background:[^;]*;?|color:[^;]*;?/g,'') + ';' + (colors[kind]||colors.saving);
   el.textContent = text;
+  el.title = _subappDirty ? '눌러서 저장하기' : '길게 누르면 고친 내용을 파일로 내려받기';
   el.style.display = isAdmin ? 'block' : 'none';
+}
+// 저장할 게 있으면 저장하고, 없으면 파일로 내려받기
+function onSaveBarClick(){
+  if(_subappDirty) flushSubappSync();
+  else exportSubappEdits();
 }
 // 서버 저장이 계속 안 될 때, 고친 내용을 파일로 뽑아둘 수 있게 한다.
 // 이 파일을 주시면 제가 직접 반영해드릴 수 있습니다.
@@ -1110,23 +1115,43 @@ async function saveToSheetShared(key, value){
     return false;
   }
 }
-// 문구 수정·카테고리 추가/삭제도 이 기기 안에만 두지 않고 공유 저장소로 보내서,
-// 링크를 가진 다른 사람들 화면에도 자동으로 반영되게 합니다.
-// 매 글자마다 보내면 너무 잦으니 잠깐 모았다 보내되(디바운스), 나가거나 창을 닫을 때는
-// 기다리지 않고 즉시 보냅니다. (예전엔 기다리는 사이에 로그아웃하면 그대로 날아갔습니다)
-let _subappSyncTimer = null;
-function queueSubappSync(){
+// 수정한 내용은 우선 이 기기에만 모아둡니다.
+// 시트에는 [저장] 버튼을 눌렀을 때 한 번만 기록합니다 —
+// 글자 하나 고칠 때마다 기록하면 시트의 백업 기록이 금세 넘쳐서
+// 정작 중요한 옛 기록이 밀려나가기 때문입니다.
+// 어떤 항목이 바뀌었는지 표시해둔다 — 저장할 때 바뀐 것만 시트에 기록하기 위해서
+let _dirtyKeys = new Set();
+function queueSubappSync(kind){
   _subappDirty = true;
-  setSaveStatus('수정됨 · 곧 저장합니다', 'pending');
-  clearTimeout(_subappSyncTimer);
-  _subappSyncTimer = setTimeout(()=>{ flushSubappSync(); }, 1200);
+  if(kind) _dirtyKeys.add(kind);
+  else _dirtyKeys.add('text'); // 어디서 왔는지 안 알려주면 문구 수정으로 본다
+  saveLocalShared();
+  setSaveStatus('수정한 내용 있음 · 눌러서 저장', 'pending');
 }
+// 지금까지 고친 것을 시트에 한꺼번에 기록합니다. 바뀐 항목만 기록해서
+// 시트의 백업 기록이 불필요하게 쌓이지 않게 합니다.
 async function flushSubappSync(){
-  clearTimeout(_subappSyncTimer);
   if(!_subappDirty) return true;
-  const ok1 = await saveToSheetShared('subapp_text_overrides', subappTextOverrides);
-  const ok2 = await saveToSheetShared('subapp_options', OPTIONS);
-  if(ok1 && ok2){ _subappDirty = false; return true; }
+  setSaveStatus('저장 중…', 'saving');
+  const targets = {
+    text:     ['subapp_text_overrides', subappTextOverrides],
+    options:  ['subapp_options',        OPTIONS],
+    timetable:['subapp_timetables',     TIMETABLES],
+    meals:    ['subapp_meals',          MEALS],
+    prep:     ['subapp_prep_groups',    PREPGROUPS],
+    activity: ['subapp_activities',     ACTIVITIES]
+  };
+  const jobs = [...(_dirtyKeys.size ? _dirtyKeys : Object.keys(targets))]
+    .filter(k => targets[k])
+    .map(k => saveToSheetShared(targets[k][0], targets[k][1]));
+  const results = await Promise.all(jobs);
+  if(results.every(Boolean)){
+    _subappDirty = false;
+    _dirtyKeys.clear();
+    setSaveStatus('저장됨 · ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}), 'ok');
+    return true;
+  }
+  setSaveStatus('저장 실패 · 눌러서 다시 시도', 'fail');
   return false;
 }
 // 창을 닫거나 새로고침할 때, 아직 안 보낸 수정이 있으면 마지막으로 보낸다
@@ -1408,7 +1433,7 @@ function addGroup(){
 }
 function saveOptionsToStorage(){
   localStorage.setItem('subappOptions', JSON.stringify(OPTIONS));
-  queueSubappSync();
+  queueSubappSync('options');
 }
 function loadOptionsOverride(){
   try{
@@ -1966,7 +1991,7 @@ function saveEditableField(el, alsoRefreshCalendar){
   const val = el.innerHTML;
   linkedKeysFor(key).forEach(k=>{ subappTextOverrides[k] = val; });
   localStorage.setItem('subappTextOverrides', JSON.stringify(subappTextOverrides));
-  queueSubappSync(); // 공용 저장소로도 동기화(디바운스)
+  queueSubappSync('text'); // 시트에는 [저장]을 누를 때 한 번만 기록됩니다
   const m = key.match(/^calDay(\d+)$/);
   if(m){
     CALENDAR_DAYS[parseInt(m[1],10)] = el.textContent;
@@ -2044,11 +2069,7 @@ async function saveScheduleEditor(){
     byDay[d].push({ time:inputs[0].value.trim(), content:inputs[1].value.trim(), place:inputs[2].value.trim() });
   });
   Object.keys(byDay).forEach(d=>{ t.days[parseInt(d,10)].rows = byDay[d]; });
-  const ok = await saveToSheetShared('subapp_timetables', TIMETABLES);
-  if(!ok){
-    alert('시간표를 서버에 저장하지 못했습니다.\n\n창을 닫지 않았으니 잠시 후 다시 [저장]을 눌러보세요.');
-    return; // 저장 실패하면 편집창을 닫지 않는다 — 고친 내용을 잃지 않도록
-  }
+  queueSubappSync('timetable'); // 시트에는 [저장]을 누를 때 한 번만 기록됩니다
   closeScheduleEditor();
   renderAllContent();
 }
@@ -2127,7 +2148,6 @@ function closeContentEditor(){
 }
 async function saveContentEditor(){
   const body = document.getElementById('contentEditorBody');
-  let ok = false;
 
   if(contentEditorKind === 'prep'){
     const groups = [...body.querySelectorAll('.admin-editgroup')].map((gEl,gi)=>{
@@ -2140,7 +2160,7 @@ async function saveContentEditor(){
       return name ? { group:name, rules: old.rules, items } : null;
     }).filter(Boolean);
     PREPGROUPS = groups;
-    ok = await saveToSheetShared('subapp_prep_groups', PREPGROUPS);
+    queueSubappSync('prep');
 
   }else if(contentEditorKind === 'activity'){
     ACTIVITIES = [...body.querySelectorAll('.admin-editrow')].map((r,ai)=>{
@@ -2149,7 +2169,7 @@ async function saveContentEditor(){
                title: r.querySelector('.ce-t').value.trim(),
                desc:  r.querySelector('.ce-s').value.trim() };
     }).filter(a=>a.title);
-    ok = await saveToSheetShared('subapp_activities', ACTIVITIES);
+    queueSubappSync('activity');
 
   }else if(contentEditorKind === 'meals'){
     [...body.querySelectorAll('.admin-editrow')].forEach(r=>{
@@ -2158,13 +2178,9 @@ async function saveContentEditor(){
       MEALS[k].label = r.querySelector('.ce-t').value.trim();
       MEALS[k].menus = r.querySelector('.ce-s').value.split(',').map(s=>s.trim()).filter(Boolean);
     });
-    ok = await saveToSheetShared('subapp_meals', MEALS);
+    queueSubappSync('meals');
   }
 
-  if(!ok){
-    alert('서버에 저장하지 못했습니다.\n\n창을 닫지 않았으니 잠시 후 다시 [저장]을 눌러보세요.');
-    return;
-  }
   closeContentEditor();
   renderAllContent();
 }
