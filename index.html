@@ -1423,8 +1423,16 @@ function selectOption(id, route){
    6. 콘텐츠 렌더링
    ========================================================= */
 function renderIntro(){
-  document.getElementById('introTitle').textContent = PROGRAM_INFO.title;
-  document.getElementById('introBody').innerHTML = PROGRAM_INFO.intro.map(t=>`<p>${t}</p>`).join('');
+  // 고쳐서 저장해둔 문구가 있으면 그것을 우선한다.
+  // (예전엔 여기서 파일에 박힌 기본값으로 무조건 덮어써서, 새로고침하면 늘 옛 내용으로 돌아갔습니다)
+  const savedTitle = subappTextOverrides['introTitle'];
+  const savedBody  = subappTextOverrides['introBody'];
+  const titleEl = document.getElementById('introTitle');
+  const bodyEl  = document.getElementById('introBody');
+  if(savedTitle !== undefined) titleEl.innerHTML = savedTitle;
+  else titleEl.textContent = PROGRAM_INFO.title;
+  if(savedBody !== undefined) bodyEl.innerHTML = savedBody;
+  else bodyEl.innerHTML = PROGRAM_INFO.intro.map(t=>`<p>${t}</p>`).join('');
 }
 
 const LOADING = '<p class="empty-note">불러오는 중입니다…</p>';
