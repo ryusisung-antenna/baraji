@@ -2,6 +2,10 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<!-- 파일을 새로 올렸을 때 브라우저가 예전 파일을 계속 쓰지 않도록 -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>2026년 7월 군청년 바라지 · 행복학교</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1021,15 +1025,16 @@ function exportSubappEdits(){
   a.click();
   URL.revokeObjectURL(a.href);
 }
-async function syncFromSheetShared(){
-  if(isEditingNow) return;
-  if(_subappDirty) return; // 아직 서버에 못 보낸 수정이 있으면, 서버의 옛 값으로 덮어쓰지 않는다
-  if(!APPSSCRIPTURL || APPSSCRIPTURL.indexOf('http')!==0) return;
+async function syncFromSheetShared(opts){
+  const silent = opts && opts.silent;
+  if(isEditingNow) return false;
+  if(_subappDirty) return false; // 아직 서버에 못 보낸 수정이 있으면, 서버의 옛 값으로 덮어쓰지 않는다
+  if(!APPSSCRIPTURL || APPSSCRIPTURL.indexOf('http')!==0) return false;
   try{
     const res = await fetch(APPSSCRIPTURL+'?t='+Date.now(), {cache:'no-store'}); // t= : 캐시된 옛 응답이 오지 않도록
     const json = await res.json();
-    if(!json.ok) return;
-    if(isEditingNow || _subappDirty) return; // 응답을 기다리는 사이에 수정이 시작됐을 수도 있으니 한 번 더 확인
+    if(!json.ok) return false;
+    if(isEditingNow || _subappDirty) return false; // 응답을 기다리는 사이에 수정이 시작됐을 수도 있으니 한 번 더 확인
     const d = json.data;
     // 서브앱은 이제 메인앱과 데이터를 나눠 쓴다. subapp_* 전용 칸을 먼저 보고,
     // 아직 없으면(처음 분리한 직후) 예전에 함께 쓰던 칸에서 이어받는다.
@@ -1064,7 +1069,8 @@ async function syncFromSheetShared(){
     dataLoaded = true;
     saveLocalShared();
     renderAllContent();
-  }catch(e){ console.warn('sync failed', e); }
+    return true;
+  }catch(e){ console.warn('sync failed', e); return false; }
 }
 // 지금 이 기기에서 서버 저장이 실제로 되는 상태인지 기억해둔다.
 // null = 아직 모름, true = 저장 가능, false = 저장 불가(비번 문제 등)
@@ -2189,10 +2195,10 @@ async function saveContentEditor(){
   await checkAdminFromURL();
   loadOptionsOverride();
   loadLocalShared();
-  renderAllContent();               // 우선 이 기기에 있는 걸로 빠르게 화면을 채우고
-  await syncFromSheetShared();      // 곧바로 서버 최신 내용을 받아 덮어쓴다
-  // (예전엔 이 순서가 거꾸로여서, 다른 기기·시크릿모드에서는 서버에 저장된 최신 내용 대신
-  //  파일에 박혀있는 기본값이 그대로 보였습니다)
+  renderAllContent();               // 화면이 비어 보이지 않게 우선 그려두고
+  // 서버 최신 내용을 받아 곧바로 덮어쓴다. 아래 await로 확실히 기다리기 때문에,
+  // 다른 브라우저·다른 기기에서도 항상 최신 내용이 반영된다.
+  await syncFromSheetShared();
   if(isAdmin) setTextEditMode(true); // 관리자 모드면 문구 수정도 따로 5번 탭 안 해도 바로 됨
   history.replaceState(buildNavState(), '');
   setInterval(syncFromSheetShared, 60000);
