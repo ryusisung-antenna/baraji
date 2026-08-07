@@ -87,14 +87,10 @@ ul.plain li::before{ content:''; position:absolute; left:0; top:9px; width:4px; 
 .recipe-mini .rm-name{ font-size:14px; font-weight:500; }
 .recipe-mini .rm-arrow{ color:var(--ink-soft); font-size:12px; display:flex; align-items:center; gap:3px; }
 .day-label{ display:block; font-family:'Noto Serif KR',serif; font-size:13px; font-weight:600; margin:20px 0 10px; color:var(--ink); }
-.tt-row{ display:flex; gap:14px; padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px; }
+.tt-row{ display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px; align-items:flex-start; }
 .tt-row:last-child{ border-bottom:none; }
-.tt-time{ flex:none; width:74px; color:var(--ink-soft); font-weight:600; font-size:12.5px; white-space:nowrap; }
-.tt-content{ flex:1; line-height:1.5; min-width:0; }
-@media (max-width:400px){
-  .tt-row{ flex-direction:column; gap:3px; }
-  .tt-time{ width:auto; font-size:12px; }
-}
+.tt-time{ flex:0 0 auto; width:auto; min-width:58px; max-width:min(30%,80px); color:var(--ink-soft); font-weight:600; font-size:clamp(10.5px,3vw,12px); line-height:1.35; white-space:normal; overflow-wrap:break-word; word-break:keep-all; }
+.tt-content{ flex:1 1 0; line-height:1.5; min-width:0; overflow-wrap:break-word; word-break:break-word; }
 .tt-content b.prog{ color:var(--ink); font-weight:700; }
 .tt-place-f-divider{ display:inline-block; margin:0 8px; color:var(--line); font-weight:400; }
 .tt-place-f{ font-size:12.5px; font-weight:400; color:var(--ink-soft); }
@@ -1683,7 +1679,7 @@ function formatRow(r){
   const noteHTML = r.note ? `<span class="tt-place-f-divider">|</span><span class="tt-place-f">${r.note}</span>` : '';
   const extra = placeHTML + noteHTML;
   return `<div class="tt-row">
-    <div class="tt-time">${r.time}</div>
+    <div class="tt-time">${r.time.replace(/~/g,"~<wbr>")}</div>
     <div class="tt-content"><span class="tt-activity">${activityHTML}</span>${extra?`<span class="tt-extra">${extra}</span>`:''}</div>
   </div>`;
 }
