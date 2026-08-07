@@ -962,7 +962,7 @@ let isAdmin = false;
 /* =========================================================
    3. 로컬 저장 / 시트 동기화
    ========================================================= */
-const BUILD_TAG = '2026-08-06-b'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
+const BUILD_TAG = '2026-08-06-d'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
 const DATA_VERSION = 3; // 기본 데이터를 크게 바꿀 때마다 올려주세요. 오래된 기기 캐시를 자동으로 무시하게 됩니다.
 function loadLocalShared(){
   try{
@@ -1007,8 +1007,13 @@ function setSaveStatus(text, kind){
   };
   el.style.cssText = el.style.cssText.replace(/background:[^;]*;?|color:[^;]*;?/g,'') + ';' + (colors[kind]||colors.saving);
   el.textContent = text;
-  el.title = _subappDirty ? '눌러서 저장하기' : '길게 누르면 고친 내용을 파일로 내려받기';
+  el.title = _subappDirty ? '눌러서 저장하기' : '눌러서 고친 내용을 파일로 내려받기';
+  // 저장할 게 있거나 문제가 생겼을 때만 보여준다. 저장이 끝나면 잠시 뒤 사라진다.
   el.style.display = isAdmin ? 'block' : 'none';
+  clearTimeout(el._hideTimer);
+  if(kind === 'ok'){
+    el._hideTimer = setTimeout(()=>{ el.style.display = 'none'; }, 2000);
+  }
 }
 // 저장할 게 있으면 저장하고, 없으면 파일로 내려받기
 function onSaveBarClick(){
@@ -1026,17 +1031,24 @@ function exportSubappEdits(){
   a.click();
   URL.revokeObjectURL(a.href);
 }
-async function syncFromSheetShared(opts){
-  const silent = opts && opts.silent;
-  if(isEditingNow) return false;
-  if(_subappDirty) return false; // 아직 서버에 못 보낸 수정이 있으면, 서버의 옛 값으로 덮어쓰지 않는다
-  if(!APPSSCRIPTURL || APPSSCRIPTURL.indexOf('http')!==0) return false;
+// 서버에서 최신 내용을 받아오기만 한다(화면에 적용하지는 않음).
+// 페이지가 열리자마자 가장 먼저 호출해서, 다른 준비 작업과 동시에 진행되게 한다.
+async function fetchLatestData(){
+  if(!APPSSCRIPTURL || APPSSCRIPTURL.indexOf('http')!==0) return null;
   try{
     const res = await fetch(APPSSCRIPTURL+'?t='+Date.now(), {cache:'no-store'}); // t= : 캐시된 옛 응답이 오지 않도록
     const json = await res.json();
-    if(!json.ok){ showSyncBadge('서버가 데이터를 주지 않음', false); return false; }
-    if(isEditingNow || _subappDirty) return false; // 응답을 기다리는 사이에 수정이 시작됐을 수도 있으니 한 번 더 확인
-    const d = json.data;
+    return json.ok ? json.data : null;
+  }catch(e){ console.warn('sync failed', e); return null; }
+}
+// 받아온 내용을 화면에 적용한다.
+async function applyLatestData(d){
+  if(!d){
+    if(!dataLoaded) showSyncBadge('서버 연결 실패 — 옛 내용이 보이는 중', false);
+    return false;
+  }
+  if(isEditingNow || _subappDirty) return false; // 고치는 중이면 덮어쓰지 않는다
+  try{
     // 서브앱은 이제 메인앱과 데이터를 나눠 쓴다. subapp_* 전용 칸을 먼저 보고,
     // 아직 없으면(처음 분리한 직후) 예전에 함께 쓰던 칸에서 이어받는다.
     // 이렇게 하면 서브앱에서 뭘 고쳐도 메인앱 데이터가 안 바뀌고, 그 반대도 마찬가지다.
@@ -1069,21 +1081,33 @@ async function syncFromSheetShared(opts){
     }
     dataLoaded = true;
     saveLocalShared();
-    // 화면 그리는 중 오류가 나더라도 "서버 연결 실패"로 잘못 표시되지 않도록 따로 감싼다.
-    // (데이터는 이미 제대로 받았으므로, 그리기 문제와 통신 문제를 구분해야 한다)
+    // 화면 그리는 중 오류가 나더라도 통신 문제로 잘못 표시되지 않도록 따로 감싼다.
     try{ renderAllContent(); }
     catch(err){ console.error('화면 그리기 실패:', err); }
-    showSyncBadge('최신 내용 반영됨 · ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}), true);
     return true;
   }catch(e){
-    console.warn('sync failed', e);
-    showSyncBadge('서버 연결 실패 — 이 기기에 저장된 옛 내용이 보이는 중', false);
+    console.error('내용 적용 실패:', e);
     return false;
   }
+}
+// 주기적으로(1분마다) 바뀐 내용이 있는지 확인한다.
+// 실제로 바뀐 게 있을 때만 화면을 다시 그리고, 아무 알림도 띄우지 않는다.
+let _lastDataSignature = null;
+async function syncFromSheetShared(){
+  if(isEditingNow || _subappDirty) return false;
+  const d = await fetchLatestData();
+  if(!d) return false;
+  const sig = JSON.stringify([d.subapp_text_overrides, d.subapp_options, d.subapp_timetables,
+                              d.subapp_meals, d.subapp_prep_groups, d.subapp_activities]);
+  if(sig === _lastDataSignature) return true; // 바뀐 게 없으면 아무것도 하지 않는다
+  _lastDataSignature = sig;
+  return applyLatestData(d);
 }
 // 서버에서 최신 내용을 받아왔는지 화면 위에 잠깐 보여준다.
 // (그동안 실패해도 아무 표시가 없어서, 옛 내용을 보면서도 모르고 계셨습니다)
 function showSyncBadge(text, ok){
+  // 이 안내는 관리자에게만 필요합니다. 일반 신청자에게는 보이지 않게 합니다.
+  if(!isAdmin) return;
   let el = document.getElementById('syncBadge');
   if(!el){
     el = document.createElement('div');
@@ -1847,6 +1871,7 @@ async function checkAdminFromURL(){
         const json = await res.json();
         if(json.ok){
           isAdmin = true;
+          canSaveToServer = true; // 방금 확인했으므로 다시 확인할 필요 없다
           sessionStorage.setItem('barajiadminpw', pw);
         }else{
           // 틀린 비번으로 들어오면, 예전에 저장돼 있던 로그인 기록도 지운다.
@@ -1880,6 +1905,11 @@ async function logoutAdmin(){
   sessionStorage.removeItem('barajiadminpw');
   canSaveToServer = null;
   _warnedCannotSave = false;
+  // 관리자 모드를 나가면 저장 상태 표시도 함께 치운다
+  const sb = document.getElementById('saveStatusBar');
+  if(sb) sb.style.display = 'none';
+  const yb = document.getElementById('syncBadge');
+  if(yb) yb.style.display = 'none';
   setTextEditMode(false); // 관리자 모드를 나가면 문구 수정도 같이 꺼서 헷갈리지 않게
   applyAdminUI();
   renderOptions();
@@ -1926,9 +1956,10 @@ async function loginAdmin(){
     const json = await res.json();
     if(json.ok){
       isAdmin = true;
+      canSaveToServer = true; // 방금 비밀번호를 확인했으므로 저장 가능한 상태가 확실하다
       sessionStorage.setItem('barajiadminpw', pw);
       applyAdminUI();
-      setTextEditMode(true);
+      setTextEditMode(true, true); // 중복 확인 건너뛰기
       renderOptions();
       showToast('관리자 모드로 들어왔습니다');
     }else{
@@ -1941,14 +1972,15 @@ async function loginAdmin(){
 function toggleTextEditMode(){
   setTextEditMode(!textEditMode);
 }
-function setTextEditMode(on){
+function setTextEditMode(on, skipCheck){
   textEditMode = on;
   document.body.classList.toggle('text-edit-on', textEditMode);
   document.querySelectorAll('[data-editable-key]').forEach(el=>{
     el.contentEditable = textEditMode ? 'true' : 'false';
   });
   renderOptions();
-  if(on) checkSaveability(); // 고치기 시작하기 전에 저장이 되는 상태인지 먼저 확인
+  // 방금 비밀번호를 확인하고 들어온 경우엔 또 확인할 필요가 없다(그만큼 기다리게 되므로)
+  if(on && !skipCheck) checkSaveability();
 }
 // 수정을 시작하기 전에 "지금 저장이 되는 상태인가"를 미리 확인한다.
 // 예전엔 다 고치고 나서야 저장 실패를 알게 돼서, 그동안 작업한 게 날아갔다.
@@ -2228,14 +2260,22 @@ async function saveContentEditor(){
   vt.textContent = 'v' + BUILD_TAG;
   document.body.appendChild(vt);
 
-  await checkAdminFromURL();
+  // 서버 최신 내용 받아오기를 가장 먼저 시작한다. 관리자 비밀번호 확인과 동시에 진행되므로,
+  // 링크를 여신 분들이 옛 내용을 보고 있는 시간이 없어진다.
+  const dataPromise = fetchLatestData();
+
   loadOptionsOverride();
   loadLocalShared();
-  renderAllContent();               // 화면이 비어 보이지 않게 우선 그려두고
-  // 서버 최신 내용을 받아 곧바로 덮어쓴다. 아래 await로 확실히 기다리기 때문에,
-  // 다른 브라우저·다른 기기에서도 항상 최신 내용이 반영된다.
-  await syncFromSheetShared();
-  if(isAdmin) setTextEditMode(true); // 관리자 모드면 문구 수정도 따로 5번 탭 안 해도 바로 됨
+  renderAllContent();          // 화면이 비어 보이지 않게 우선 그려두고
+  const latest = await dataPromise;
+  await applyLatestData(latest);  // 서버 내용이 오는 즉시 덮어쓴다
+  if(latest){
+    _lastDataSignature = JSON.stringify([latest.subapp_text_overrides, latest.subapp_options,
+      latest.subapp_timetables, latest.subapp_meals, latest.subapp_prep_groups, latest.subapp_activities]);
+  }
+
+  await checkAdminFromURL();   // 관리자 확인은 화면이 다 뜬 뒤에 해도 늦지 않다
+  if(isAdmin) setTextEditMode(true, canSaveToServer === true); // 이미 확인됐으면 중복 확인 건너뛰기
   history.replaceState(buildNavState(), '');
   setInterval(syncFromSheetShared, 60000);
 })();
