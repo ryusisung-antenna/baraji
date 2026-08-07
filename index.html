@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>2026년 7월 군청년 바라지 · 행복학교</title>
+<title>군청년 바라지 안내서</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Pretendard&display=swap" rel="stylesheet">
@@ -89,8 +89,12 @@ ul.plain li::before{ content:''; position:absolute; left:0; top:9px; width:4px; 
 .day-label{ display:block; font-family:'Noto Serif KR',serif; font-size:13px; font-weight:600; margin:20px 0 10px; color:var(--ink); }
 .tt-row{ display:flex; gap:14px; padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px; }
 .tt-row:last-child{ border-bottom:none; }
-.tt-time{ flex:none; width:74px; color:var(--ink-soft); font-weight:600; font-size:12.5px; }
-.tt-content{ flex:1; line-height:1.5; }
+.tt-time{ flex:none; width:74px; color:var(--ink-soft); font-weight:600; font-size:12.5px; white-space:nowrap; }
+.tt-content{ flex:1; line-height:1.5; min-width:0; }
+@media (max-width:400px){
+  .tt-row{ flex-direction:column; gap:3px; }
+  .tt-time{ width:auto; font-size:12px; }
+}
 .tt-content b.prog{ color:var(--ink); font-weight:700; }
 .tt-place-f-divider{ display:inline-block; margin:0 8px; color:var(--line); font-weight:400; }
 .tt-place-f{ font-size:12.5px; font-weight:400; color:var(--ink-soft); }
@@ -1901,18 +1905,70 @@ function openNextEventsEditor(){
     <button class="admin-add-btn" onclick="neAddRow()">+ 일정 추가</button>`;
   document.getElementById('contentEditorModal').classList.add('show');
 }
+function neProgramLabel(id){
+  return id==='seohaeng' ? '서울여행' : (id==='happy' ? '행복학교' : '');
+}
+function neDurForProgram(id){
+  return id==='seohaeng' ? '1박 2일' : (id==='happy' ? '2박 3일' : '');
+}
+function neNightsForProgram(id){
+  return id==='seohaeng' ? 1 : (id==='happy' ? 2 : 0);
+}
+function neFormatDateLabel(startDateStr, nights){
+  if(!startDateStr) return '';
+  const start = new Date(startDateStr+'T00:00:00');
+  if(isNaN(start.getTime())) return '';
+  const end = new Date(start);
+  end.setDate(end.getDate()+nights);
+  const w1 = WEEKDAY_KO[start.getDay()];
+  const w2 = WEEKDAY_KO[end.getDay()];
+  const sm = start.getMonth()+1, sd = start.getDate();
+  const em = end.getMonth()+1, ed = end.getDate();
+  if(nights<=0) return `${sm}월 ${sd}일(${w1})`;
+  if(sm===em) return `${sm}월 ${sd}일(${w1})–${ed}일(${w2})`;
+  return `${sm}월 ${sd}일(${w1})–${em}월 ${ed}일(${w2})`;
+}
 function neRowHTML(s){
   s = s || {};
+  const program = s.program || 'seohaeng';
+  const startDate = s.startDate || '';
+  const dur = s.dur || neDurForProgram(program);
+  const dateLabel = s.date || neFormatDateLabel(startDate, neNightsForProgram(program));
+  const place = (s.place !== undefined && s.place !== null && s.place !== '') ? s.place : '정토사회문화회관';
   return `<div class="admin-editgroup ne-row">
-    <label class="re-label">행사 이름</label>
-    <input class="ne-title re-input" value="${escAttr(s.title||'')}" placeholder="예: 서울여행 바라지">
-    <label class="re-label">날짜</label>
-    <input class="ne-date re-input" value="${escAttr(s.date||'')}" placeholder="예: 9월 10일(목)–11일(금)">
-    <label class="re-label">기간 (선택)</label>
-    <input class="ne-dur re-input" value="${escAttr(s.dur||'')}" placeholder="예: 1박 2일">
-    <label class="re-label">장소 (선택)</label>
-    <input class="ne-place re-input" value="${escAttr(s.place||'')}" placeholder="예: 정토사회문화회관">
+    <label class="re-label">일정 선택</label>
+    <select class="ne-program re-input" onchange="neOnProgramChange(this)">
+      <option value="seohaeng" ${program==='happy'?'':'selected'}>서울여행 (1박 2일)</option>
+      <option value="happy" ${program==='happy'?'selected':''}>행복학교 (2박 3일)</option>
+    </select>
+    <label class="re-label">시작 날짜</label>
+    <input type="date" class="ne-startdate re-input" value="${escAttr(startDate)}" onchange="neOnDateChange(this)">
+    <label class="re-label">기간 (자동)</label>
+    <input class="ne-dur re-input" value="${escAttr(dur)}" readonly style="background:#f4f3ee;color:var(--ink-soft);">
+    <label class="re-label">날짜 표시 (자동)</label>
+    <input class="ne-date re-input" value="${escAttr(dateLabel)}" readonly style="background:#f4f3ee;color:var(--ink-soft);">
+    <label class="re-label">장소</label>
+    <input class="ne-place re-input" value="${escAttr(place)}" placeholder="예: 정토사회문화회관">
+    <button class="admin-add-btn" style="margin-top:8px;border-color:#c0392b;color:#c0392b;" onclick="this.closest('.ne-row').remove()">이 일정 삭제</button>
   </div>`;
+}
+function neOnProgramChange(select){
+  const row = select.closest('.ne-row');
+  const dur = row.querySelector('.ne-dur');
+  const dateInp = row.querySelector('.ne-startdate');
+  const dateLabelInp = row.querySelector('.ne-date');
+  const program = select.value;
+  dur.value = neDurForProgram(program);
+  dateLabelInp.value = neFormatDateLabel(dateInp.value, neNightsForProgram(program));
+}
+function neOnDateChange(input){
+  const row = input.closest('.ne-row');
+  const select = row.querySelector('.ne-program');
+  const dur = row.querySelector('.ne-dur');
+  const dateLabelInp = row.querySelector('.ne-date');
+  const program = select.value;
+  dur.value = neDurForProgram(program);
+  dateLabelInp.value = neFormatDateLabel(input.value, neNightsForProgram(program));
 }
 function neAddRow(){
   const wrap = document.getElementById('ne_list');
@@ -1921,14 +1977,22 @@ function neAddRow(){
   wrap.appendChild(div.firstElementChild);
 }
 function saveNextEventsEditor(){
-  NEXT_EVENTS = [...document.querySelectorAll('#ne_list .ne-row')].map(el=>({
-    title: el.querySelector('.ne-title').value.trim(),
-    date:  el.querySelector('.ne-date').value.trim(),
-    dur:   el.querySelector('.ne-dur').value.trim(),
-    place: el.querySelector('.ne-place').value.trim()
-  })).filter(s=>s.title); // 이름이 빈 것은 삭제된 것으로 본다
+  NEXT_EVENTS = [...document.querySelectorAll('#ne_list .ne-row')].map(el=>{
+    const program = el.querySelector('.ne-program').value;
+    const startDate = el.querySelector('.ne-startdate').value;
+    const place = el.querySelector('.ne-place').value.trim();
+    return {
+      title: neProgramLabel(program),
+      program: program,
+      startDate: startDate,
+      dur: neDurForProgram(program),
+      date: neFormatDateLabel(startDate, neNightsForProgram(program)),
+      place: place
+    };
+  }).filter(s=>s.startDate); // 시작 날짜가 없으면 삭제된 것으로 본다
   queueSubappSync('nextevents');
 }
+
 
 /* =========================================================
    7. 관리자 모드 — 2박3일 원본 일정표를 수정하면
