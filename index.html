@@ -121,6 +121,9 @@ body.admin-on .adm-toolbar{ display:flex; }
 .admin-editrow input{ flex:1; min-width:0; }
 .admin-editgroup{ margin-bottom:16px; padding-bottom:8px; border-bottom:2px solid var(--line); }
 .admin-editgroup .ce-group{ width:100%; font-weight:700; margin-bottom:4px; }
+.re-label{ display:block; font-size:11.5px; color:var(--ink-soft); margin:10px 0 3px; font-weight:600; }
+.re-input{ width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid var(--line); border-radius:6px; font-family:inherit; font-size:13px; }
+.re-textarea{ width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid var(--line); border-radius:6px; font-family:inherit; font-size:13px; line-height:1.6; resize:vertical; }
 .admin-editrow input{ font-size:12.5px; padding:6px 8px; border:1px solid var(--line); border-radius:6px; }
 .admin-editrow input.time{ width:56px; }
 .admin-editrow input.content{ flex:1; min-width:60px; }
@@ -962,7 +965,7 @@ let isAdmin = false;
 /* =========================================================
    3. 로컬 저장 / 시트 동기화
    ========================================================= */
-const BUILD_TAG = '2026-08-06-d'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
+const BUILD_TAG = '2026-08-06-e'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
 const DATA_VERSION = 3; // 기본 데이터를 크게 바꿀 때마다 올려주세요. 오래된 기기 캐시를 자동으로 무시하게 됩니다.
 function loadLocalShared(){
   try{
@@ -1195,7 +1198,8 @@ async function flushSubappSync(){
     timetable:['subapp_timetables',     TIMETABLES],
     meals:    ['subapp_meals',          MEALS],
     prep:     ['subapp_prep_groups',    PREPGROUPS],
-    activity: ['subapp_activities',     ACTIVITIES]
+    activity: ['subapp_activities',     ACTIVITIES],
+    menus:    ['subapp_menus',          MENUS]
   };
   const jobs = [...(_dirtyKeys.size ? _dirtyKeys : Object.keys(targets))]
     .filter(k => targets[k])
@@ -1636,6 +1640,7 @@ function openRecipeModal(name){
         <ul class="plain">${(s.items||[]).map(x=>`<li>${x}</li>`).join('')}</ul>
       </div>
     `).join('')}
+    ${isAdmin?`<div class="admin-add-btn" onclick="openRecipeEditor('${m.name.replace(/'/g,"\\'")}')">이 레시피 수정하기</div>`:''}
   `;
   document.getElementById('recipeModal').classList.add('show');
   const box = document.getElementById('recipeModalBox');
@@ -2146,6 +2151,67 @@ async function saveScheduleEditor(){
    내용 수정 (관리자) — 준비물 · 활동 · 공양메뉴
    메인앱과 데이터를 나눠 쓰므로, 여기서 고친 것은 서브앱에만 반영됩니다.
    ========================================================= */
+// 레시피(재료·조리법) 수정 — 줄바꿈으로 구분해서 편하게 고칠 수 있게 합니다
+let recipeEditorName = null;
+function openRecipeEditor(name){
+  if(!isAdmin) return;
+  const m = findMenu(name);
+  if(!m) return;
+  if(!m.recipe) m.recipe = { serving:'', ingredients:[], steps:[] };
+  recipeEditorName = name;
+  isEditingNow = true;
+  const r = m.recipe;
+  document.getElementById('contentEditorTitle').textContent = m.name + ' 레시피 수정';
+  document.getElementById('contentEditorHint').textContent = '한 줄에 하나씩 적어주세요. 굵게 표시하려면 <b>글자</b> 처럼 감싸면 됩니다.';
+  document.getElementById('contentEditorBody').innerHTML = `
+    <div class="admin-editgroup">
+      <label class="re-label">메뉴 이름</label>
+      <input id="re_name" class="re-input" value="${escAttr(m.name)}">
+      <label class="re-label">분량 안내 (선택)</label>
+      <input id="re_serving" class="re-input" value="${escAttr(r.serving||'')}" placeholder="예: 유부 60장 기준">
+      <label class="re-label">재료 (한 줄에 하나씩)</label>
+      <textarea id="re_ing" class="re-textarea" rows="8">${escAttr((r.ingredients||[]).join('\n'))}</textarea>
+    </div>
+    <div id="re_steps">
+      ${(r.steps||[]).map((s,si)=>`
+        <div class="admin-editgroup re-step" data-si="${si}">
+          <label class="re-label">단계 ${si+1} 제목 (비우면 삭제됩니다)</label>
+          <input class="re-step-title re-input" value="${escAttr(s.title||'')}">
+          <label class="re-label">내용 (한 줄에 하나씩)</label>
+          <textarea class="re-step-items re-textarea" rows="6">${escAttr((s.items||[]).join('\n'))}</textarea>
+        </div>`).join('')}
+    </div>
+    <button class="admin-add-btn" onclick="reAddStep()">+ 조리 단계 추가</button>
+  `;
+  contentEditorKind = 'recipe';
+  document.getElementById('contentEditorModal').classList.add('show');
+}
+function reAddStep(){
+  const wrap = document.getElementById('re_steps');
+  const si = wrap.querySelectorAll('.re-step').length;
+  const div = document.createElement('div');
+  div.className = 'admin-editgroup re-step';
+  div.innerHTML = `
+    <label class="re-label">단계 ${si+1} 제목 (비우면 삭제됩니다)</label>
+    <input class="re-step-title re-input" placeholder="예: 재료 준비">
+    <label class="re-label">내용 (한 줄에 하나씩)</label>
+    <textarea class="re-step-items re-textarea" rows="6"></textarea>`;
+  wrap.appendChild(div);
+}
+function saveRecipeEditor(){
+  const m = findMenu(recipeEditorName);
+  if(!m) return;
+  const newName = document.getElementById('re_name').value.trim();
+  if(newName) m.name = newName;
+  m.recipe.serving = document.getElementById('re_serving').value.trim();
+  m.recipe.ingredients = document.getElementById('re_ing').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  m.recipe.steps = [...document.querySelectorAll('#re_steps .re-step')].map(el=>({
+    title: el.querySelector('.re-step-title').value.trim(),
+    items: el.querySelector('.re-step-items').value.split('\n').map(s=>s.trim()).filter(Boolean)
+  })).filter(s=>s.title); // 제목이 빈 단계는 삭제된 것으로 본다
+  queueSubappSync('menus');
+}
+
 let contentEditorKind = null;
 function openContentEditor(kind){
   if(!isAdmin) return;
@@ -2238,6 +2304,9 @@ async function saveContentEditor(){
                desc:  r.querySelector('.ce-s').value.trim() };
     }).filter(a=>a.title);
     queueSubappSync('activity');
+
+  }else if(contentEditorKind === 'recipe'){
+    saveRecipeEditor();
 
   }else if(contentEditorKind === 'meals'){
     [...body.querySelectorAll('.admin-editrow')].forEach(r=>{
