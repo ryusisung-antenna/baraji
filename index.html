@@ -296,7 +296,7 @@ body.admin-on .opt-text[contenteditable]:focus{ outline:2px solid var(--ink); ba
       <div class="step-slide" data-step="4">
         <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icRuleStay1"></span><span data-editable-key="hdgRuleStay1">봉사하면서 이것은 꼭 지켜주세요</span></h2>
         <div class="card" id="stay1RulesBox"></div>
-        <a class="footer-link" onclick="goToMoreInfo('page-stay1')">바라지 전체 활동이 궁금하시다면<span class="icon" id="icChevStay1"></span></a>
+        <a class="footer-link" id="moreLinkStay1" onclick="goToMoreInfo('page-stay1')">바라지 전체 활동이 궁금하시다면<span class="icon" id="icChevStay1"></span></a>
       </div>
     </div>
     <div class="page-footer">
@@ -979,7 +979,7 @@ let isAdmin = false;
 /* =========================================================
    3. 로컬 저장 / 시트 동기화
    ========================================================= */
-const BUILD_TAG = '2026-08-06-g'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
+const BUILD_TAG = '2026-08-06-h'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
 const DATA_VERSION = 3; // 기본 데이터를 크게 바꿀 때마다 올려주세요. 오래된 기기 캐시를 자동으로 무시하게 됩니다.
 function loadLocalShared(){
   try{
@@ -1797,6 +1797,11 @@ function renderAllContent(){
   `;
   renderAugustSchedule();
 
+  // 서울여행(1박2일)은 이 페이지에 이미 전체 일정이 다 담기므로 "전체 활동" 링크가 필요 없다.
+  // 행복학교(2박3일)일 때만 보여준다.
+  const moreLink = document.getElementById('moreLinkStay1');
+  if(moreLink) moreLink.style.display = (PROGRAM_ID === 'seohaeng') ? 'none' : '';
+
   applyAdminUI();
   applyTextOverrides();
 
@@ -2129,7 +2134,9 @@ function openScheduleEditor(stayKey){
   ranges.forEach(seg=>{
     const t = TIMETABLES[PROGRAM_ID];
     const day = t.days[seg.dayIndex];
-    html += `<div class="day-label">${dayLabel(seg.dayIndex)}</div>`;
+    // 날짜도 여기서 바로 고칠 수 있게 입력칸으로 (예: "15일(수) - 1일차")
+    html += `<label class="re-label">날짜</label>
+      <input class="re-input editor-daylabel" data-dayidx="${seg.dayIndex}" value="${escAttr(dayLabel(seg.dayIndex))}" placeholder="예: 13일(목) - 1일차">`;
     day.rows.forEach((r, ri)=>{
       html += `<div class="admin-editrow" data-day="${seg.dayIndex}" data-row="${ri}">
         <input class="time" value="${r.time}">
@@ -2170,6 +2177,16 @@ async function saveScheduleEditor(){
     byDay[d].push({ time:inputs[0].value.trim(), content:inputs[1].value.trim(), place:inputs[2].value.trim() });
   });
   Object.keys(byDay).forEach(d=>{ t.days[parseInt(d,10)].rows = byDay[d]; });
+  // 날짜 라벨도 함께 저장한다 (다른 화면의 날짜 표시와 같은 곳에 저장되어 서로 연동됨)
+  document.querySelectorAll('#scheduleEditorBody .editor-daylabel').forEach(inp=>{
+    const idx = parseInt(inp.dataset.dayidx, 10);
+    const v = inp.value.trim();
+    if(!v) return;
+    CALENDAR_DAYS[idx] = v;
+    subappTextOverrides['calDay' + idx] = v;
+  });
+  localStorage.setItem('subappTextOverrides', JSON.stringify(subappTextOverrides));
+  queueSubappSync('text');      // 날짜 라벨
   queueSubappSync('timetable'); // 시트에는 [저장]을 누를 때 한 번만 기록됩니다
   closeScheduleEditor();
   renderAllContent();
