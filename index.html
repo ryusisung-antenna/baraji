@@ -297,6 +297,7 @@ body.admin-on .opt-text[contenteditable]:focus{ outline:2px solid var(--ink); ba
         <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icRuleStay1"></span><span data-editable-key="hdgRuleStay1">봉사하면서 이것은 꼭 지켜주세요</span></h2>
         <div class="card" id="stay1RulesBox"></div>
         <a class="footer-link" id="moreLinkStay1" onclick="goToMoreInfo('page-stay1')">바라지 전체 활동이 궁금하시다면<span class="icon" id="icChevStay1"></span></a>
+        <a class="footer-link" id="nextLinkStay1" style="display:none" onclick="goToAugustSchedule('page-stay1')">다음 봉사 일정 확인하기<span class="icon" id="icNextStay1"></span></a>
       </div>
     </div>
     <div class="page-footer">
@@ -979,7 +980,7 @@ let isAdmin = false;
 /* =========================================================
    3. 로컬 저장 / 시트 동기화
    ========================================================= */
-const BUILD_TAG = '2026-08-06-h'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
+const BUILD_TAG = '2026-08-06-i'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
 const DATA_VERSION = 3; // 기본 데이터를 크게 바꿀 때마다 올려주세요. 오래된 기기 캐시를 자동으로 무시하게 됩니다.
 function loadLocalShared(){
   try{
@@ -1099,6 +1100,7 @@ async function applyLatestData(d){
     if(d.subapp_program === 'seohaeng' || d.subapp_program === 'happy'){
       PROGRAM_ID = d.subapp_program; // 관리자가 고른 이번 달 행사 종류
     }
+    if(Array.isArray(d.subapp_next_events)) NEXT_EVENTS = d.subapp_next_events;
     dataLoaded = true;
     saveLocalShared();
     // 화면 그리는 중 오류가 나더라도 통신 문제로 잘못 표시되지 않도록 따로 감싼다.
@@ -1118,7 +1120,7 @@ async function syncFromSheetShared(){
   const d = await fetchLatestData();
   if(!d) return false;
   const sig = JSON.stringify([d.subapp_text_overrides, d.subapp_options, d.subapp_timetables,
-                              d.subapp_meals, d.subapp_prep_groups, d.subapp_activities, d.subapp_program]);
+                              d.subapp_meals, d.subapp_prep_groups, d.subapp_activities, d.subapp_program, d.subapp_next_events]);
   if(sig === _lastDataSignature) return true; // 바뀐 게 없으면 아무것도 하지 않는다
   _lastDataSignature = sig;
   return applyLatestData(d);
@@ -1217,7 +1219,8 @@ async function flushSubappSync(){
     prep:     ['subapp_prep_groups',    PREPGROUPS],
     activity: ['subapp_activities',     ACTIVITIES],
     menus:    ['subapp_menus',          MENUS],
-    program:  ['subapp_program',        PROGRAM_ID]
+    program:  ['subapp_program',        PROGRAM_ID],
+    nextevents:['subapp_next_events',   NEXT_EVENTS]
   };
   const jobs = [...(_dirtyKeys.size ? _dirtyKeys : Object.keys(targets))]
     .filter(k => targets[k])
@@ -1791,16 +1794,20 @@ function renderAllContent(){
 
   document.getElementById('moreActivityBox').innerHTML = activityListHTML();
   renderMoreSchedule();
+  // 서울여행(1박2일)은 저녁이 한 번뿐이므로 둘째날 저녁 메뉴는 보여주지 않는다
   document.getElementById('moreMenuBoxes').innerHTML = `
     <div class="card"><p><b data-editable-key="dinnerLabel1">1일차(15일) 저녁공양</b></p>${menuListHTML('dinner1')}</div>
-    <div class="card"><p><b data-editable-key="dinnerLabel2">2일차(16일) 저녁공양</b></p>${menuListHTML('dinner2')}</div>
+    ${PROGRAM_ID === 'happy' ? `<div class="card"><p><b data-editable-key="dinnerLabel2">2일차(16일) 저녁공양</b></p>${menuListHTML('dinner2')}</div>` : ''}
   `;
   renderAugustSchedule();
 
-  // 서울여행(1박2일)은 이 페이지에 이미 전체 일정이 다 담기므로 "전체 활동" 링크가 필요 없다.
-  // 행복학교(2박3일)일 때만 보여준다.
+  // 서울여행(1박2일)은 이 페이지에 이미 전체 일정이 다 담기므로 "전체 활동" 링크 대신
+  // "다음 봉사 일정"을 보여준다. 행복학교(2박3일)일 때는 반대로 전체 활동 링크를 보여준다.
+  const isSeo = (PROGRAM_ID === 'seohaeng');
   const moreLink = document.getElementById('moreLinkStay1');
-  if(moreLink) moreLink.style.display = (PROGRAM_ID === 'seohaeng') ? 'none' : '';
+  if(moreLink) moreLink.style.display = isSeo ? 'none' : '';
+  const nextLink = document.getElementById('nextLinkStay1');
+  if(nextLink) nextLink.style.display = isSeo ? '' : 'none';
 
   applyAdminUI();
   applyTextOverrides();
@@ -1861,23 +1868,66 @@ function scheduleDayInfo(s){
   }catch(e){}
   return info;
 }
+// 다음 봉사 일정 — 관리자가 직접 등록·수정·삭제할 수 있습니다.
+let NEXT_EVENTS = [];
 function renderAugustSchedule(){
   const box = document.getElementById('moreAugustBox');
   if(!box) return;
   if(!dataLoaded){ box.innerHTML = LOADING; return; }
-  let items = (typeof SCHEDULES!=='undefined' ? SCHEDULES : []).filter(s=>s.month===8);
-  if(!items.length){
-    box.innerHTML = '<div class="step-placeholder">8월 일정은 아직 확정 전입니다. 확정되는 대로 이 자리에 안내해드릴게요.</div>';
+  const editBtn = isAdmin ? `<div class="admin-add-btn" onclick="openNextEventsEditor()">다음 일정 수정하기</div>` : '';
+  if(!NEXT_EVENTS.length){
+    box.innerHTML = '<div class="step-placeholder">다음 일정은 아직 확정 전입니다. 확정되는 대로 이 자리에 안내해드릴게요.</div>' + editBtn;
     return;
   }
-  const withInfo = items.map(s=>({ s, info: scheduleDayInfo(s) })).sort((a,b)=>a.info.sortKey-b.info.sortKey);
-  box.innerHTML = withInfo.map(({s,info})=>`
+  box.innerHTML = NEXT_EVENTS.map(s=>`
     <div class="card">
-      <p><b>${s.title}</b>${info.durLabel?` · ${info.durLabel}`:''}</p>
-      ${info.dayLabel?`<p style="color:var(--ink-soft); font-size:12.5px;">${info.dayLabel}</p>`:''}
+      <p><b>${s.title||''}</b>${s.dur?` · ${s.dur}`:''}</p>
+      ${s.date?`<p style="color:var(--ink-soft); font-size:12.5px;">${s.date}</p>`:''}
       ${s.place?`<p style="color:var(--ink-soft); font-size:12.5px;">${s.place}</p>`:''}
     </div>
-  `).join('');
+  `).join('') + editBtn;
+}
+// 다음 봉사 일정 수정창
+function openNextEventsEditor(){
+  if(!isAdmin) return;
+  isEditingNow = true;
+  contentEditorKind = 'nextevents';
+  document.getElementById('contentEditorTitle').textContent = '다음 봉사 일정 수정';
+  document.getElementById('contentEditorHint').textContent = '행사 이름을 비우면 그 일정이 삭제됩니다.';
+  document.getElementById('contentEditorBody').innerHTML = `
+    <div id="ne_list">
+      ${NEXT_EVENTS.map(s=>neRowHTML(s)).join('')}
+    </div>
+    <button class="admin-add-btn" onclick="neAddRow()">+ 일정 추가</button>`;
+  document.getElementById('contentEditorModal').classList.add('show');
+}
+function neRowHTML(s){
+  s = s || {};
+  return `<div class="admin-editgroup ne-row">
+    <label class="re-label">행사 이름</label>
+    <input class="ne-title re-input" value="${escAttr(s.title||'')}" placeholder="예: 서울여행 바라지">
+    <label class="re-label">날짜</label>
+    <input class="ne-date re-input" value="${escAttr(s.date||'')}" placeholder="예: 9월 10일(목)–11일(금)">
+    <label class="re-label">기간 (선택)</label>
+    <input class="ne-dur re-input" value="${escAttr(s.dur||'')}" placeholder="예: 1박 2일">
+    <label class="re-label">장소 (선택)</label>
+    <input class="ne-place re-input" value="${escAttr(s.place||'')}" placeholder="예: 정토사회문화회관">
+  </div>`;
+}
+function neAddRow(){
+  const wrap = document.getElementById('ne_list');
+  const div = document.createElement('div');
+  div.innerHTML = neRowHTML({});
+  wrap.appendChild(div.firstElementChild);
+}
+function saveNextEventsEditor(){
+  NEXT_EVENTS = [...document.querySelectorAll('#ne_list .ne-row')].map(el=>({
+    title: el.querySelector('.ne-title').value.trim(),
+    date:  el.querySelector('.ne-date').value.trim(),
+    dur:   el.querySelector('.ne-dur').value.trim(),
+    place: el.querySelector('.ne-place').value.trim()
+  })).filter(s=>s.title); // 이름이 빈 것은 삭제된 것으로 본다
+  queueSubappSync('nextevents');
 }
 
 /* =========================================================
@@ -2378,6 +2428,9 @@ async function saveContentEditor(){
     }).filter(a=>a.title);
     queueSubappSync('activity');
 
+  }else if(contentEditorKind === 'nextevents'){
+    saveNextEventsEditor();
+
   }else if(contentEditorKind === 'recipe'){
     saveRecipeEditor();
 
@@ -2413,7 +2466,7 @@ async function saveContentEditor(){
   await applyLatestData(latest);  // 서버 내용이 오는 즉시 덮어쓴다
   if(latest){
     _lastDataSignature = JSON.stringify([latest.subapp_text_overrides, latest.subapp_options,
-      latest.subapp_timetables, latest.subapp_meals, latest.subapp_prep_groups, latest.subapp_activities, latest.subapp_program]);
+      latest.subapp_timetables, latest.subapp_meals, latest.subapp_prep_groups, latest.subapp_activities, latest.subapp_program, latest.subapp_next_events]);
   }
 
   await checkAdminFromURL();   // 관리자 확인은 화면이 다 뜬 뒤에 해도 늦지 않다
