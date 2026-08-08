@@ -63,21 +63,22 @@ p.lead{ font-size:13px; color:var(--ink-soft); margin:0 0 26px; line-height:1.7;
 .kitchen-link .kchev svg{ width:100%; height:100%; }
 .card p{ font-size:14px; margin:0 0 10px; color:var(--ink); line-height:1.7; }
 .card p:last-child{ margin-bottom:0; }
-.opt-group{ margin-bottom:26px; }
+.opt-group{ margin-bottom:20px; }
 .opt-group:last-child{ margin-bottom:0; }
-.opt-group-label{ font-size:12px; font-weight:700; color:var(--ink); margin-bottom:2px; padding-left:2px; }
-.opt-group-head{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:2px; }
+.opt-group-label{ font-family:"Gowun Batang",serif; font-size:13px; font-weight:700; color:var(--sage); margin-bottom:8px; padding-left:4px; }
+.opt-group-head{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
 .opt-group-head .opt-group-label{ margin-bottom:0; flex:1; }
 .opt-group-del{ flex:none; border:1px solid #c0392b; background:none; color:#c0392b; font-size:11px; padding:4px 9px; border-radius:20px; cursor:pointer; }
 .opt-add-group-row{ display:flex; flex-wrap:wrap; gap:6px; padding:14px 2px 4px; align-items:center; border-top:1px dashed var(--line); margin-top:10px; }
 .opt-add-group-row input{ flex:1; min-width:160px; }
 .opt-add-group-row button{ flex:none; }
-.opt-item{ display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid var(--line); padding:15px 2px; cursor:pointer; transition:opacity .15s ease; }
+.opt-item{ display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-bottom:8px; box-shadow:var(--shadow); cursor:pointer; transition:background .15s ease, border-color .15s ease, opacity .15s ease; }
 .opt-item:active{ opacity:.6; }
 .opt-radio{ width:16px; height:16px; border-radius:50%; border:1.4px solid #C7C4B4; flex:none; position:relative; order:2; }
 .opt-item.sel .opt-radio{ border-color:var(--sage); }
 .opt-item.sel .opt-radio::after{ content:''; position:absolute; inset:3.5px; border-radius:50%; background:var(--sage); }
 .opt-text{ font-size:14.5px; font-weight:500; color:var(--ink); }
+.opt-item.sel{ border-color:var(--sage); background:var(--sage-wash); }
 .opt-item.sel .opt-text{ font-weight:700; }
 .btn-next{ display:block; width:100%; padding:16px; text-align:center; background:var(--sage); color:#fff; border:none; border-radius:14px; font-size:15px; font-weight:700; letter-spacing:.01em; cursor:pointer; }
 .btn-next:disabled{ background:#D8D6C8; color:#fff; }
@@ -148,6 +149,10 @@ body.admin-on .adm-toolbar{ display:flex; }
 .re-input{ width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid var(--line); border-radius:6px; font-family:inherit; font-size:13px; }
 .adm-program{ font-size:12px; display:inline-flex; align-items:center; gap:5px; }
 .adm-program select{ font-size:12px; padding:3px 6px; border-radius:6px; border:1px solid var(--line); font-family:inherit; }
+/* 화면에서 바로 고치기 — 고칠 수 있는 글자는 점선으로 표시 */
+body.admin-on .plain [contenteditable]{ outline:1px dashed var(--sage-soft); outline-offset:3px; border-radius:3px; min-width:24px; display:inline-block; }
+body.admin-on .prep-group-label[contenteditable]{ outline:1px dashed var(--sage-soft); outline-offset:3px; border-radius:3px; }
+.inline-del{ margin-left:8px; border:1px solid var(--line); background:var(--paper-2); color:var(--ink-soft); font-size:10.5px; padding:2px 8px; border-radius:20px; cursor:pointer; font-family:inherit; }
 .meal-pick{ display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
 .meal-pick-item{ display:flex; align-items:center; gap:5px; border:1px solid var(--line); border-radius:20px; padding:5px 11px; font-size:12.5px; cursor:pointer; background:#fff; }
 .meal-pick-item input{ margin:0; }
@@ -582,6 +587,8 @@ let OPTIONS = OPTIONS_BY['happy'];
 
 // 실제 달력 날짜와 요일. 매달 여기만 바꾸면 전체 화면(1일차→날짜)에 자동 반영됩니다.
 const CALENDAR_DAYS = ["15일(수) - 1일차", "16일(목) - 2일차", "17일(금) - 3일차"];
+// 행사를 바꿀 때 날짜 라벨을 되돌리기 위한 기본값 (고쳐둔 값이 없으면 이걸로 돌아간다)
+const DEFAULT_CALENDAR_DAYS = CALENDAR_DAYS.slice();
 
 // 이제 각 코스(stay-1516/1617/1517)는 TIMETABLES에 자기 날짜만 따로 저장되어 있으므로,
 // 예전처럼 2박3일 원본에서 몇 시부터 잘라 보여줄지 계산할 필요가 없습니다.
@@ -597,6 +604,10 @@ const STAY_RANGES = {
 let PROGRAM_ID = "happy"; // 기본값 (서버에 저장된 값이 있으면 그걸로 바뀜)
 // 공지사항·다음일정은 행사(서울여행/행복학교)마다 따로 보관한다.
 // { seohaeng:[...], happy:[...] } 형태로 저장되므로 서로 섞이지 않는다.
+// 안내서 문구도 행사(서울여행/행복학교)마다 따로 보관한다.
+// subappTextOverrides는 '지금 행사의 서랍'을 가리키는 참조다.
+let TEXT_BY = { seohaeng:{}, happy:{} };
+let subappTextOverrides = {};
 let NOTICES_BY = { seohaeng:[], happy:[] };
 let NEXT_BY    = { seohaeng:[], happy:[] };
 function curNotices(){ if(!NOTICES_BY[PROGRAM_ID]) NOTICES_BY[PROGRAM_ID]=[]; return NOTICES_BY[PROGRAM_ID]; }
@@ -1067,7 +1078,7 @@ let isAdmin = false;
 /* =========================================================
    3. 로컬 저장 / 시트 동기화
    ========================================================= */
-const BUILD_TAG = '2026-08-06-s'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
+const BUILD_TAG = '2026-08-07-e'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
 const DATA_VERSION = 3; // 기본 데이터를 크게 바꿀 때마다 올려주세요. 오래된 기기 캐시를 자동으로 무시하게 됩니다.
 function loadLocalShared(){
   try{
@@ -1174,15 +1185,19 @@ async function applyLatestData(d){
     if(timetables_ && Object.keys(timetables_).length) Object.assign(TIMETABLES, timetables_);
     if(prep_ && prep_.length) PREPGROUPS = prep_;
     if(acts_ && acts_.length) ACTIVITIES = acts_;
-    if(d.subapp_text_overrides && Object.keys(d.subapp_text_overrides).length){
-      subappTextOverrides = d.subapp_text_overrides;
-      localStorage.setItem('subappTextOverrides', JSON.stringify(subappTextOverrides));
-      CALENDAR_DAYS.forEach((_,i)=>{ if(subappTextOverrides['calDay'+i] !== undefined) CALENDAR_DAYS[i] = subappTextOverrides['calDay'+i]; });
-    }
-    // 옵션은 프로그램(서울여행/행복학교)마다 서랍이 따로 있으므로,
-    // 먼저 프로그램 종류를 확정한 뒤 그 서랍을 골라야 한다.
+    // 문구·옵션은 프로그램(서울여행/행복학교)마다 서랍이 따로 있으므로,
+    // 반드시 프로그램 종류를 먼저 확정한 뒤에 그 서랍을 골라야 한다.
     if(d.subapp_program === 'seohaeng' || d.subapp_program === 'happy'){
       PROGRAM_ID = d.subapp_program; // 관리자가 고른 이번 달 행사 종류
+    }
+    if(d.subapp_text_overrides && Object.keys(d.subapp_text_overrides).length){
+      const got = d.subapp_text_overrides;
+      // 새 형식은 {seohaeng:{...}, happy:{...}}, 옛 형식은 문구가 바로 들어있는 평평한 객체다
+      TEXT_BY = (got.seohaeng || got.happy)
+        ? got
+        : { seohaeng: Object.assign({}, got), happy: Object.assign({}, got) };
+      switchTextOverrides();
+      saveTextOverrides();
     }
     if(d.subapp_options_by && typeof d.subapp_options_by === 'object'){
       OPTIONS_BY = d.subapp_options_by;
@@ -1317,7 +1332,7 @@ async function flushSubappSync(){
   setSaveStatus('저장 중…', 'saving');
   OPTIONS_BY[PROGRAM_ID] = OPTIONS; // 저장 직전, 현재 보고 있는 옵션을 서랍에 반영
   const targets = {
-    text:     ['subapp_text_overrides', subappTextOverrides],
+    text:     ['subapp_text_overrides', TEXT_BY],
     options:  ['subapp_options_by',     OPTIONS_BY],
     timetable:['subapp_timetables',     TIMETABLES],
     meals:    ['subapp_meals',          MEALS],
@@ -1347,7 +1362,7 @@ window.addEventListener('beforeunload', function(e){
   const pw = sessionStorage.getItem('barajiadminpw');
   if(pw && navigator.sendBeacon){
     // 페이지가 닫히는 중에도 확실히 전송되는 방식
-    navigator.sendBeacon(APPSSCRIPTURL, new Blob([JSON.stringify({ password:pw, key:'subapp_text_overrides', value:subappTextOverrides })], {type:'text/plain;charset=utf-8'}));
+    navigator.sendBeacon(APPSSCRIPTURL, new Blob([JSON.stringify({ password:pw, key:'subapp_text_overrides', value:TEXT_BY })], {type:'text/plain;charset=utf-8'}));
     OPTIONS_BY[PROGRAM_ID] = OPTIONS;
     navigator.sendBeacon(APPSSCRIPTURL, new Blob([JSON.stringify({ password:pw, key:'subapp_options_by', value:OPTIONS_BY })], {type:'text/plain;charset=utf-8'}));
   }
@@ -1492,7 +1507,8 @@ function renderStepUI(pageId){
 // 신청한 일정 종류(점심·저녁·1박2일·2박3일)마다 따로 저장되므로, 각각 다른 안내를 적을 수 있습니다.
 // 저장 키에 행사 종류(서울여행/행복학교)와 일정 종류(점심/저녁/1박2일/2박3일)를 모두 넣는다.
 // 그래야 두 행사의 집합 시간·장소가 서로 섞이지 않는다.
-function homeKey(name){ return 'home_' + (PROGRAM_ID||'') + '_' + (quickFromPage||'') + '_' + name; }
+// 문구 서랍 자체가 이미 행사별로 나뉘어 있으므로, 키에는 일정 종류만 넣으면 된다
+function homeKey(name){ return 'home_' + (quickFromPage||'') + '_' + name; }
 function homeVal(name, fallback){
   const v = subappTextOverrides[homeKey(name)];
   return (v !== undefined && v !== '') ? v : (fallback || '');
@@ -1550,7 +1566,7 @@ function quickHomeHTML(){
       <div class="admin-add-btn" onclick="openNextEventsEditor()">다음 일정 수정하기</div>
       <div class="admin-add-btn" onclick="openTabNamesEditor()">아래 단추 이름 수정하기</div>
     ` : ''}
-    <a class="footer-link" onclick="showPage('${quickFromPage}')">안내서 처음부터 다시 보기<span class="icon">›</span></a>
+    <a class="footer-link" onclick="showPage('page-select')">다시 일정 선택하기<span class="icon">›</span></a>
   `;
 }
 // '내 봉사' 화면 수정창 — 제목들과 모이는 시간·장소
@@ -1584,7 +1600,7 @@ function saveHomeEditor(){
     if(v) subappTextOverrides[key] = v;
     else delete subappTextOverrides[key];
   });
-  localStorage.setItem('subappTextOverrides', JSON.stringify(subappTextOverrides));
+  saveTextOverrides();
   queueSubappSync('text');
 }
 // 공지사항 수정창
@@ -1695,9 +1711,14 @@ function selectQuickTab(i){
   document.getElementById('quickBody').scrollTop = 0;
 }
 // 탭 이름 — 관리자가 바꾼 이름이 있으면 그것을 쓴다
+// 탭 이름 저장 키. 카테고리(점심·저녁·1박2일·2박3일)마다 따로 저장되도록
+// 어느 화면의 탭인지를 키에 함께 넣는다. (번호만 쓰면 서로 덮어쓴다)
+function tabNameKey(s){
+  const which = s.home ? 'home' : s.all ? 'all' : s.index;
+  return 'tabName_' + (quickFromPage||'') + '_' + which;
+}
 function quickTabLabel(s){
-  const key = 'tabName_' + (s.home ? 'home' : s.all ? 'all' : s.index);
-  return subappTextOverrides[key] || s.name;
+  return subappTextOverrides[tabNameKey(s)] || s.name;
 }
 // 탭 이름 수정창
 function openTabNamesEditor(){
@@ -1708,7 +1729,7 @@ function openTabNamesEditor(){
   document.getElementById('contentEditorTitle').textContent = '탭 이름 수정';
   document.getElementById('contentEditorHint').textContent = '아래 단추에 표시될 이름입니다. 짧을수록 보기 좋습니다.';
   document.getElementById('contentEditorBody').innerHTML = steps.map(s=>{
-    const key = 'tabName_' + (s.home ? 'home' : s.all ? 'all' : s.index);
+    const key = tabNameKey(s);
     return `<div class="admin-editgroup">
       <label class="re-label">${s.title}</label>
       <input class="tn-input re-input" data-key="${key}" value="${escAttr(quickTabLabel(s))}" placeholder="${escAttr(s.name)}">
@@ -1722,7 +1743,7 @@ function saveTabNamesEditor(){
     if(v) subappTextOverrides[inp.dataset.key] = v;
     else delete subappTextOverrides[inp.dataset.key]; // 비우면 기본 이름으로 되돌아감
   });
-  localStorage.setItem('subappTextOverrides', JSON.stringify(subappTextOverrides));
+  saveTextOverrides();
   queueSubappSync('text');
 }
 function renderQuickView(){
@@ -1745,12 +1766,16 @@ function renderQuickView(){
 }
 // 전체 활동 탭 — 2박3일 참가자가 전체 흐름을 볼 때
 function quickAllHTML(){
-  const dur = (PROGRAM_ID === 'seohaeng') ? '1박 2일' : '2박 3일';
+  const isSeo = (PROGRAM_ID === 'seohaeng');
+  const dur = isSeo ? '1박 2일' : '2박 3일';
   return `
     <h1 class="title" style="margin-bottom:4px">바라지 전체 활동</h1>
     <p class="lead" style="margin-bottom:20px">${dur} 전체 일정과 활동입니다.</p>
     <h2 class="subtitle" style="margin-top:0">이 봉사에서 우리가 하는 일</h2>
     <div class="card">${activityListHTML()}</div>
+    <h2 class="subtitle">공양 메뉴</h2>
+    <div class="card"><p><b>${MEALS.dinner1 ? (MEALS.dinner1.label||'첫날 저녁') : '첫날 저녁'}</b></p>${menuListHTML('dinner1')}</div>
+    ${!isSeo ? `<div class="card"><p><b>${MEALS.dinner2 ? (MEALS.dinner2.label||'둘째 날 저녁') : '둘째 날 저녁'}</b></p>${menuListHTML('dinner2')}</div>` : ''}
     <h2 class="subtitle">전체 일정표</h2>
     <div id="quickAllSchedule"></div>
   `;
@@ -2009,10 +2034,15 @@ function prepListHTML(filterFn, excludeStayOnly){
   const blocks = groups.map(g=>{
     const items = excludeStayOnly ? g.items.filter(it=>!it.stayOnly && !looksStayOnly(it.t) && !looksStayOnly(it.s)) : g.items;
     if(!items.length) return '';
-    return `<div class="prep-group"><p class="prep-group-label">${g.group}</p><ul class="plain">${items.map(it=>`<li><b>${it.t}</b>${it.s?(' — '+it.s):''}</li>`).join('')}</ul></div>`;
+    const gi = PREPGROUPS.indexOf(g);
+    return `<div class="prep-group">
+      <p class="prep-group-label"${isAdmin?` contenteditable="true" onfocus="isEditingNow=true" onblur="editPrepGroup(${gi},this)"`:''}>${g.group}</p>
+      <ul class="plain">${items.map(it=>prepItemHTML(gi, g.items.indexOf(it), it)).join('')}</ul>
+      ${isAdmin?`<div class="admin-add-btn" onclick="addPrepItem(${gi})">+ 항목 추가</div>`:''}
+    </div>`;
   }).filter(Boolean);
-  if(!blocks.length) return '<p class="empty-note">준비물 정보가 아직 등록되지 않았습니다.</p>';
-  return blocks.join('') + ceBtn('prep','준비물 수정하기');
+  if(!blocks.length && !isAdmin) return '<p class="empty-note">준비물 정보가 아직 등록되지 않았습니다.</p>';
+  return blocks.join('') + (isAdmin?`<div class="admin-add-btn" onclick="addPrepGroup()">+ 준비물 묶음 추가</div>`:'');
 }
 function kitchenGuideHTML(){
   return `<a class="kitchen-link" href="${KITCHEN_GUIDE.videoUrl}" target="_blank" rel="noopener">
@@ -2028,13 +2058,88 @@ function rulesListHTML(){
   if(!dataLoaded) return LOADING;
   const ruleGroup = PREPGROUPS.find(g=>g.rules);
   if(!ruleGroup) return '<p class="empty-note">안내가 아직 등록되지 않았습니다.</p>';
-  return `<ul class="plain">${ruleGroup.items.map(it=>`<li><b>${it.t}</b>${it.s?(' — '+it.s):''}</li>`).join('')}</ul>` + ceBtn('prep','약속 수정하기');
+  const gi = PREPGROUPS.indexOf(ruleGroup);
+  return `<ul class="plain">${ruleGroup.items.map((it,ii)=>prepItemHTML(gi, ii, it)).join('')}</ul>` +
+    (isAdmin?`<div class="admin-add-btn" onclick="addPrepItem(${gi})">+ 항목 추가</div>`:'');
 }
 function activityListHTML(limit){
   if(!dataLoaded) return LOADING;
-  if(!ACTIVITIES.length) return '<p class="empty-note">활동 정보가 아직 등록되지 않았습니다.</p>';
+  if(!ACTIVITIES.length && !isAdmin) return '<p class="empty-note">활동 정보가 아직 등록되지 않았습니다.</p>';
   const arr = limit ? ACTIVITIES.slice(0,limit) : ACTIVITIES;
-  return `<ul class="plain">${arr.map(a=>`<li><b>${a.title}</b>${a.desc?(' — '+a.desc):''}</li>`).join('')}</ul>` + ceBtn('activity','활동 소개 수정하기');
+  // 관리자는 팝업 없이 글자를 바로 눌러서 고칠 수 있게 한다
+  const ed = isAdmin
+    ? (i, field, val) => ` contenteditable="true" onfocus="isEditingNow=true" onblur="editActivity(${i},'${field}',this)"`
+    : () => '';
+  const rows = arr.map((a,i)=>`<li>
+      <b${ed(i,'title')}>${a.title||''}</b>${(a.desc||isAdmin)?' — ':''}<span${ed(i,'desc')}>${a.desc||''}</span>
+      ${isAdmin?`<button class="inline-del" onclick="deleteActivity(${i})">삭제</button>`:''}
+    </li>`).join('');
+  return `<ul class="plain">${rows}</ul>` +
+    (isAdmin ? `<div class="admin-add-btn" onclick="addActivityInline()">+ 활동 추가</div>` : '');
+}
+// 활동 소개 — 글자를 고치면 바로 반영
+function editActivity(i, field, el){
+  if(!ACTIVITIES[i]) return;
+  ACTIVITIES[i][field] = el.textContent.trim();
+  queueSubappSync('activity');
+  isEditingNow = false;
+}
+function deleteActivity(i){
+  if(!confirm('이 활동을 삭제할까요?')) return;
+  ACTIVITIES.splice(i,1);
+  queueSubappSync('activity');
+  renderAllContent(); refreshQuickIfOpen();
+}
+function addActivityInline(){
+  ACTIVITIES.push({ title:'새 활동', desc:'' });
+  queueSubappSync('activity');
+  renderAllContent(); refreshQuickIfOpen();
+}
+// 준비물·약속 항목 하나를 그린다 (관리자는 글자를 바로 눌러 고칠 수 있다)
+function prepItemHTML(gi, ii, it){
+  const ed = isAdmin
+    ? (field) => ` contenteditable="true" onfocus="isEditingNow=true" onblur="editPrepItem(${gi},${ii},'${field}',this)"`
+    : () => '';
+  return `<li>
+    <b${ed('t')}>${it.t||''}</b>${(it.s||isAdmin)?' — ':''}<span${ed('s')}>${it.s||''}</span>
+    ${isAdmin?`<button class="inline-del" onclick="deletePrepItem(${gi},${ii})">삭제</button>`:''}
+  </li>`;
+}
+function editPrepItem(gi, ii, field, el){
+  if(!PREPGROUPS[gi] || !PREPGROUPS[gi].items[ii]) return;
+  PREPGROUPS[gi].items[ii][field] = el.textContent.trim();
+  queueSubappSync('prep');
+  isEditingNow = false;
+}
+function editPrepGroup(gi, el){
+  if(!PREPGROUPS[gi]) return;
+  PREPGROUPS[gi].group = el.textContent.trim();
+  queueSubappSync('prep');
+  isEditingNow = false;
+}
+function deletePrepItem(gi, ii){
+  if(!confirm('이 항목을 삭제할까요?')) return;
+  PREPGROUPS[gi].items.splice(ii,1);
+  queueSubappSync('prep');
+  renderAllContent(); refreshQuickIfOpen();
+}
+function addPrepItem(gi){
+  if(!PREPGROUPS[gi]) return;
+  PREPGROUPS[gi].items.push({ t:'새 항목', s:'' });
+  queueSubappSync('prep');
+  renderAllContent(); refreshQuickIfOpen();
+}
+function addPrepGroup(){
+  const name = prompt('새 묶음 이름을 적어주세요 (예: 숙박자 준비물)');
+  if(!name || !name.trim()) return;
+  PREPGROUPS.push({ group:name.trim(), items:[] });
+  queueSubappSync('prep');
+  renderAllContent(); refreshQuickIfOpen();
+}
+// 빠른 찾아보기 화면을 보고 있다면 거기도 다시 그린다
+function refreshQuickIfOpen(){
+  const q = document.getElementById('page-quick');
+  if(q && q.classList.contains('active')) renderQuickView();
 }
 function menuMiniHTML(name){
   const m = findMenu(name);
@@ -2443,12 +2548,15 @@ async function checkAdminFromURL(){
 // 이번 달 행사 종류를 바꾼다. 저장하면 링크를 가진 모든 분이 그 행사 내용을 보게 된다.
 function changeProgram(id){
   if(id !== 'seohaeng' && id !== 'happy') return;
+  // 지금까지 고친 문구를 현재 행사 서랍에 확실히 넣어둔 뒤에 바꾼다
+  saveTextOverrides();
   PROGRAM_ID = id;
   // 옵션 목록(신청 화면 선택지)도 프로그램에 맞는 서랍으로 완전히 교체한다.
-  // (레시피/준비물/활동처럼 공유하는 데이터는 그대로 두고, 옵션·일정표만 통째로 바뀐다)
   if(!OPTIONS_BY[id]) OPTIONS_BY[id] = [];
   OPTIONS = OPTIONS_BY[id];
   localStorage.setItem('subappOptionsBy', JSON.stringify(OPTIONS_BY));
+  // 안내서 문구·날짜 라벨도 그 행사 것으로 바꾼다 (이게 없으면 화면이 안 바뀐다)
+  switchTextOverrides();
   // 이전 프로그램에서 고르고 있던 선택지는 지금 프로그램에 없을 수 있으니 초기화한다.
   selectedOptionId = null;
   selectedRoute = null;
@@ -2579,14 +2687,31 @@ async function checkSaveability(){
     markCannotSave('서버에 연결하지 못했습니다');
   }
 }
-let subappTextOverrides = {};
 function loadTextOverrides(){
-  try{ subappTextOverrides = JSON.parse(localStorage.getItem('subappTextOverrides')||'{}'); }
-  catch(e){ subappTextOverrides = {}; }
-  // 저장된 날짜 라벨(15일(수) 등)이 있으면 CALENDAR_DAYS에도 미리 반영해둡니다
+  try{
+    const raw = localStorage.getItem('subappTextBy');
+    if(raw){
+      TEXT_BY = JSON.parse(raw);
+    }else{
+      // 예전엔 행사 구분 없이 하나로 저장했으므로, 그런 값이 있으면 양쪽에 복사해 이어받는다
+      const legacy = JSON.parse(localStorage.getItem('subappTextOverrides')||'{}');
+      TEXT_BY = { seohaeng: Object.assign({}, legacy), happy: Object.assign({}, legacy) };
+    }
+  }catch(e){ TEXT_BY = { seohaeng:{}, happy:{} }; }
+  switchTextOverrides();
+}
+// 지금 행사의 문구 서랍을 바라보게 하고, 날짜 라벨도 그에 맞춰 다시 읽는다
+function switchTextOverrides(){
+  if(!TEXT_BY[PROGRAM_ID]) TEXT_BY[PROGRAM_ID] = {};
+  subappTextOverrides = TEXT_BY[PROGRAM_ID];
   CALENDAR_DAYS.forEach((_,i)=>{
-    if(subappTextOverrides['calDay'+i] !== undefined) CALENDAR_DAYS[i] = subappTextOverrides['calDay'+i];
+    CALENDAR_DAYS[i] = (subappTextOverrides['calDay'+i] !== undefined)
+      ? subappTextOverrides['calDay'+i] : DEFAULT_CALENDAR_DAYS[i];
   });
+}
+function saveTextOverrides(){
+  TEXT_BY[PROGRAM_ID] = subappTextOverrides;
+  localStorage.setItem('subappTextBy', JSON.stringify(TEXT_BY));
 }
 function applyTextOverrides(){
   document.querySelectorAll('[data-editable-key]').forEach(el=>{
@@ -2630,7 +2755,7 @@ function saveEditableField(el, alsoRefreshCalendar){
   const key = el.dataset.editableKey;
   const val = el.innerHTML;
   linkedKeysFor(key).forEach(k=>{ subappTextOverrides[k] = val; });
-  localStorage.setItem('subappTextOverrides', JSON.stringify(subappTextOverrides));
+  saveTextOverrides();
   queueSubappSync('text'); // 시트에는 [저장]을 누를 때 한 번만 기록됩니다
   const m = key.match(/^calDay(\d+)$/);
   if(m){
@@ -2729,7 +2854,7 @@ async function saveScheduleEditor(){
     if(t.days[idx]) t.days[idx].day = v;
     subappTextOverrides[`calDay_${editorStayKey}_${idx}`] = v;
   });
-  localStorage.setItem('subappTextOverrides', JSON.stringify(subappTextOverrides));
+  saveTextOverrides();
   queueSubappSync('text');      // 날짜 라벨
   queueSubappSync('timetable'); // 시트에는 [저장]을 누를 때 한 번만 기록됩니다
   closeScheduleEditor();
@@ -2900,29 +3025,8 @@ function closeContentEditor(){
 async function saveContentEditor(){
   const body = document.getElementById('contentEditorBody');
 
-  if(contentEditorKind === 'prep'){
-    const groups = [...body.querySelectorAll('.admin-editgroup')].map((gEl,gi)=>{
-      const name = gEl.querySelector('.ce-group').value.trim();
-      const items = [...gEl.querySelectorAll('.admin-editrow')].map(r=>({
-        t: r.querySelector('.ce-t').value.trim(),
-        s: r.querySelector('.ce-s').value.trim()
-      })).filter(it=>it.t); // 제목이 빈 항목은 삭제된 것으로 본다
-      const old = PREPGROUPS[gi] || {};
-      return name ? { group:name, rules: old.rules, items } : null;
-    }).filter(Boolean);
-    PREPGROUPS = groups;
-    queueSubappSync('prep');
-
-  }else if(contentEditorKind === 'activity'){
-    ACTIVITIES = [...body.querySelectorAll('.admin-editrow')].map((r,ai)=>{
-      const old = ACTIVITIES[ai] || {};
-      return { emoji: old.emoji, photo: old.photo,
-               title: r.querySelector('.ce-t').value.trim(),
-               desc:  r.querySelector('.ce-s').value.trim() };
-    }).filter(a=>a.title);
-    queueSubappSync('activity');
-
-  }else if(contentEditorKind === 'home'){
+  // 준비물·활동은 이제 화면에서 바로 고치므로 여기서 처리하지 않는다
+  if(contentEditorKind === 'home'){
     saveHomeEditor();
 
   }else if(contentEditorKind === 'tabnames'){
