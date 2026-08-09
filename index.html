@@ -149,6 +149,25 @@ body.admin-on .adm-toolbar{ display:flex; }
 .re-input{ width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid var(--line); border-radius:6px; font-family:inherit; font-size:13px; }
 .adm-program{ font-size:12px; display:inline-flex; align-items:center; gap:5px; }
 .adm-program select{ font-size:12px; padding:3px 6px; border-radius:6px; border:1px solid var(--line); font-family:inherit; }
+/* '내 봉사' 화면 — 이번 봉사를 위에 모으고, 참고 정보는 아래로 */
+.home-now{ background:var(--paper-2); border:2px solid var(--sage); border-radius:var(--r);
+  padding:18px; margin-bottom:10px; box-shadow:var(--shadow); }
+.home-badge{ display:inline-block; background:var(--sage); color:#fff; font-size:10.5px;
+  font-weight:700; padding:3px 10px; border-radius:20px; margin-bottom:10px; }
+.home-when{ font-family:"Gowun Batang",serif; font-size:19px; font-weight:700; line-height:1.4; }
+.home-cat{ font-size:12px; color:var(--ink-soft); margin-top:2px; }
+.home-lines{ margin-top:12px; padding-top:10px; border-top:1px solid var(--line); }
+.home-line{ display:flex; gap:8px; font-size:13.5px; padding:4px 0; }
+.home-line b{ color:var(--sage); flex:none; min-width:34px; }
+.home-cap{ font-size:11.5px !important; color:var(--sage); font-weight:700; margin-bottom:6px !important; }
+.soft-body{ color:var(--ink-soft); font-size:13px; margin-top:4px !important; white-space:pre-wrap; }
+.home-divider{ display:flex; align-items:center; gap:10px; margin:22px 0 12px;
+  color:var(--ink-soft); font-size:11.5px; }
+.home-divider::before,.home-divider::after{ content:''; flex:1; height:1px; background:var(--line); }
+.home-mini{ background:var(--paper-2); border:1px solid var(--line); border-radius:12px;
+  padding:13px 16px; margin-bottom:8px; }
+.home-mini .t{ font-size:13.5px; font-weight:600; margin-bottom:2px; }
+.home-mini .d{ font-size:12.5px; color:var(--ink-soft); }
 /* 화면에서 바로 고치기 — 고칠 수 있는 글자는 점선으로 표시 */
 body.admin-on .plain [contenteditable]{ outline:1px dashed var(--sage-soft); outline-offset:3px; border-radius:3px; min-width:24px; display:inline-block; }
 body.admin-on .prep-group-label[contenteditable]{ outline:1px dashed var(--sage-soft); outline-offset:3px; border-radius:3px; }
@@ -185,6 +204,81 @@ body.admin-on .opt-text[contenteditable]:focus{ outline:2px solid var(--ink); ba
 .opt-add-row input[type="text"]{ flex:1 1 160px; min-width:120px; padding:9px 10px; border:1px solid var(--line); border-radius:3px; font-family:'Pretendard'; font-size:13px; background:#fff; }
 .opt-add-row select{ padding:9px 6px; border:1px solid var(--line); border-radius:3px; font-family:'Pretendard'; font-size:12.5px; background:#fff; }
 .opt-add-row button{ flex:none; padding:9px 14px; border:none; border-radius:3px; background:var(--ink); color:#fff; font-family:'Pretendard'; font-size:13px; cursor:pointer; }
+
+/* ============================================================
+   UI/UX 패쉱 v1 — 관리자 입닥 편의성 / 반응형 미세조정 / 지밀리홤 톤앀매니
+   ============================================================ */
+
+/* ---------- 1. 관리자 편집 화맩 — 입닥 편의성 ---------- */
+.re-input, .re-textarea, .admin-editrow input, .opt-add-row input[type="text"] {
+  min-height: 40px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.re-input:focus, .re-textarea:focus,
+.admin-editrow input:focus, .opt-add-row input:focus {
+  outline: none;
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px var(--sage-wash);
+}
+.re-label .req-mark { color:#B5543E; font-size:11px; margin-left:4px; }
+.status-chip { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700;
+  padding:4px 10px; border-radius:20px; flex:none; }
+.status-chip.ok { background:#E4EFE0; color:#3C6B33; }
+.status-chip.pending { background:#FFF3D6; color:#8A6A1D; }
+.status-chip.fail { background:#FBE3DE; color:#B5543E; }
+.admin-add-btn, .m-actions button { min-height: 46px; }
+body.admin-on [contenteditable]:focus,
+body.admin-on .opt-text[contenteditable]:focus,
+body.text-edit-on [data-editable-key]:focus {
+  background: #FBFBF3;
+  outline: 2px solid var(--sage);
+}
+
+/* ---------- 2. 반응형 미세조정 ---------- */
+.quick-tab svg {
+  width: clamp(20px, 6vw, 26px);
+  height: clamp(20px, 6vw, 26px);
+}
+.quick-tab { min-height: 48px; }
+.tt-time {
+  flex: 0 1 auto !important;
+  min-width: 48px;
+  max-width: 82px;
+  width: auto !important;
+}
+.opt-add-row button, .opt-add-group-row button,
+.admin-editrow button, .quick-tab, .step-prev-btn, .btn-next {
+  min-height: 44px;
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .quick-tabbar { background: rgba(250,249,245,.98); }
+}
+@media (max-width: 360px) {
+  .page-scroll, .step-slide { padding-left: 18px; padding-right: 18px; }
+  h1.title { font-size: 20px; }
+}
+
+/* ---------- 3. 지밀리홤 톤앀매니 강화 ---------- */
+.card, .tt-card, .home-now, .home-mini, .recipe-block {
+  position: relative;
+  background: linear-gradient(165deg, #FBFBF7 0%, #F3F1E6 100%);
+  box-shadow: 0 2px 5px rgba(120,100,50,.08), 0 12px 26px -16px rgba(90,80,40,.24);
+  overflow: hidden;
+}
+.card::after, .tt-card::after, .home-now::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(150,130,80,.045) 0, transparent 35%),
+    radial-gradient(circle at 85% 85%, rgba(150,130,80,.035) 0, transparent 40%);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px) scale(.995); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+h2.subtitle .icon { color: var(--sage); opacity: .85; }
 </style>
 </head>
 <body>
@@ -1078,7 +1172,7 @@ let isAdmin = false;
 /* =========================================================
    3. 로컬 저장 / 시트 동기화
    ========================================================= */
-const BUILD_TAG = '2026-08-07-e'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
+const BUILD_TAG = '2026-08-07-g'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
 const DATA_VERSION = 3; // 기본 데이터를 크게 바꿀 때마다 올려주세요. 오래된 기기 캐시를 자동으로 무시하게 됩니다.
 function loadLocalShared(){
   try{
@@ -1439,7 +1533,12 @@ function applyNavState(state){
   state = state || {page:'page-select', step:0, cameFromRoute:null, hidden:[], modal:null};
   cameFromRoute = state.cameFromRoute || null;
   moreInfoHiddenSteps = state.hidden || [];
-  renderPageAndStep(state.page, state.step);
+  // 같은 화면에서 모달만 닫는 경우라면 화면을 다시 그리지 않는다.
+  // (다시 그리면 스크롤이 맨 위로 올라가서, 보던 자리를 잃어버린다)
+  const curPage = document.querySelector('.page.active');
+  const samePlace = curPage && curPage.id === state.page
+                    && (!STEP_PAGES[state.page] || stepIndex[state.page] === state.step);
+  if(!samePlace) renderPageAndStep(state.page, state.step);
   document.getElementById('recipeModal').classList.toggle('show', state.modal==='recipe');
   const schedModal = document.getElementById('scheduleEditorModal');
   schedModal.classList.toggle('show', state.modal==='schedule');
@@ -1520,44 +1619,46 @@ function quickHomeHTML(){
   const timeTxt  = homeVal('time');
   const placeTxt = homeVal('place');
 
+  // 공지사항 — 이번 봉사에 필요한 안내이므로 위쪽에 둔다
   const noticeList = curNotices();
   const noticeHTML = noticeList.length
-    ? noticeList.map(n=>`<div class="card"><p><b>${n.title||''}</b></p>${n.body?`<p style="color:var(--ink-soft);font-size:13px;margin-top:4px;white-space:pre-wrap">${n.body}</p>`:''}</div>`).join('')
-    : '<div class="step-placeholder">아직 공지사항이 없습니다.</div>';
+    ? noticeList.map(n=>`<div class="card">
+        <p class="home-cap">${homeVal('hdgNotice','꼭지 공지사항')}</p>
+        <p><b>${n.title||''}</b></p>
+        ${n.body?`<p class="soft-body">${n.body}</p>`:''}
+      </div>`).join('')
+    : (isAdmin ? '<div class="step-placeholder">아직 공지사항이 없습니다.</div>' : '');
 
+  // 다음 봉사 일정 — 지금 당장 필요한 게 아니므로 구분선 아래 참고 정보로 둔다
   const nextList = curNextEvents();
   const nextHTML = nextList.length
-    ? nextList.map(s=>`<div class="card">
-        <p><b>${s.title||''}</b>${s.dur?` · ${s.dur}`:''}</p>
-        ${s.date?`<p style="color:var(--ink-soft);font-size:13px;margin-top:2px">${s.date}</p>`:''}
-        ${s.place?`<p style="color:var(--ink-soft);font-size:13px">${s.place}</p>`:''}
+    ? nextList.map(s=>`<div class="home-mini">
+        <div class="t">${s.title||''}${s.dur?` · ${s.dur}`:''}</div>
+        ${s.date?`<div class="d">${s.date}</div>`:''}
+        ${s.place?`<div class="d">${s.place}</div>`:''}
       </div>`).join('')
-    : '<div class="step-placeholder">다음 일정은 아직 확정 전입니다.</div>';
+    : (isAdmin ? '<div class="step-placeholder">다음 일정은 아직 확정 전입니다.</div>' : '');
 
   return `
     <h1 class="title" style="margin-bottom:4px">${homeVal('pageTitle','내 봉사')}</h1>
-    <p class="lead" style="margin-bottom:20px">${homeVal('pageLead','신청하신 일정과 꼭 확인하실 안내입니다.')}</p>
+    <p class="lead" style="margin-bottom:18px">${homeVal('pageLead','신청하신 일정과 꼭 확인하실 안내입니다.')}</p>
 
-    <h2 class="subtitle" style="margin-top:0">${homeVal('hdgApplied','신청하신 일정')}</h2>
-    <div class="card">
+    <div class="home-now">
+      <span class="home-badge">${homeVal('hdgApplied','이번 봉사')}</span>
       ${opt ? `
-        <p><b>${group ? group.group : ''}</b></p>
-        <p style="font-size:15px;margin-top:6px">${opt.label}</p>
-      ` : '<p style="color:var(--ink-soft)">신청하신 일정을 먼저 선택해주세요.</p>'}
-    </div>
-
-    <h2 class="subtitle">${homeVal('hdgWhere','모이는 시간과 장소')}</h2>
-    <div class="card">
+        <div class="home-when">${opt.label}</div>
+        ${group ? `<div class="home-cat">${group.group}</div>` : ''}
+      ` : '<div class="home-when" style="font-size:15px;color:var(--ink-soft)">신청하신 일정을 먼저 선택해주세요.</div>'}
       ${(timeTxt||placeTxt) ? `
-        ${timeTxt?`<p><b>시간</b> · ${timeTxt}</p>`:''}
-        ${placeTxt?`<p style="margin-top:4px"><b>장소</b> · ${placeTxt}</p>`:''}
-      ` : '<p style="color:var(--ink-soft)">아직 안내되지 않았습니다.</p>'}
+        <div class="home-lines">
+          ${timeTxt?`<div class="home-line"><b>시간</b><span>${timeTxt}</span></div>`:''}
+          ${placeTxt?`<div class="home-line"><b>장소</b><span>${placeTxt}</span></div>`:''}
+        </div>` : (isAdmin ? '<div class="home-lines"><div class="home-line" style="color:var(--ink-soft)">모이는 시간·장소가 아직 입력되지 않았습니다</div></div>' : '')}
     </div>
 
-    <h2 class="subtitle">${homeVal('hdgNotice','꼭지 공지사항')}</h2>
     ${noticeHTML}
 
-    <h2 class="subtitle">${homeVal('hdgNext','다음 봉사 일정')}</h2>
+    ${(nextList.length || isAdmin) ? `<div class="home-divider">${homeVal('hdgNext','다음에 참여하실 수 있는 봉사')}</div>` : ''}
     ${nextHTML}
 
     ${isAdmin ? `
@@ -1579,12 +1680,11 @@ function openHomeEditor(){
   const fields = [
     ['pageTitle','화면 제목','내 봉사'],
     ['pageLead','안내 문구','신청하신 일정과 꼭 확인하실 안내입니다.'],
-    ['hdgApplied','제목 · 신청하신 일정','신청하신 일정'],
-    ['hdgWhere','제목 · 모이는 시간과 장소','모이는 시간과 장소'],
     ['time','모이는 시간','예: 13:30까지'],
     ['place','모이는 장소','예: 정토사회문화회관 4층 라훌라방'],
-    ['hdgNotice','제목 · 공지사항','꼭지 공지사항'],
-    ['hdgNext','제목 · 다음 봉사 일정','다음 봉사 일정'],
+    ['hdgApplied','초록 카드 위 작은 표시','이번 봉사'],
+    ['hdgNotice','공지 카드 위 작은 제목','꼭지 공지사항'],
+    ['hdgNext','아래 구분선 문구','다음에 참여하실 수 있는 봉사'],
   ];
   document.getElementById('contentEditorBody').innerHTML = fields.map(([k,label,ph])=>`
     <div class="admin-editgroup">
@@ -1707,6 +1807,9 @@ function selectQuickTab(i){
     sch.innerHTML = (t && t.days)
       ? t.days.map((day,di)=>`<div class="tt-card"><div class="day-label">${dayLabel(stayKey, di)}</div>${day.rows.map(formatRow).join('')}</div>`).join('')
       : '<p class="empty-note">일정 정보가 아직 등록되지 않았습니다.</p>';
+    // 상세일정표와 똑같이 장소를 다음 줄로 내려준다 (안 하면 내용과 장소가 붙어 보인다)
+    adjustPlaceWrap(sch);
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>adjustPlaceWrap(sch));
   }
   document.getElementById('quickBody').scrollTop = 0;
 }
