@@ -120,6 +120,14 @@ ul.plain li::before{ content:''; position:absolute; left:0; top:9px; width:4px; 
 .tt-place-f{ font-size:12.5px; font-weight:400; color:var(--ink-soft); }
 .tt-content.tt-newline .tt-extra{ display:block; margin-top:3px; }
 .tt-content.tt-newline .tt-extra > .tt-place-f-divider:first-child{ display:none; }
+.tt-row-edit{ position:relative; cursor:default; background:transparent; }
+.tt-row-edit.tt-dragging{ opacity:.4; }
+.tt-drag-handle{ flex:none; cursor:grab; color:var(--ink-soft); font-size:15px; padding:2px 4px 0 0; user-select:none; touch-action:none; }
+.tt-row-edit [contenteditable]{ outline:1px dashed var(--sage-soft); outline-offset:2px; border-radius:3px; cursor:text; min-width:20px; }
+.tt-row-edit [contenteditable]:focus{ outline:2px solid var(--sage); background:#fff; }
+.tt-del-btn{ flex:none; align-self:flex-start; border:1px solid var(--line); background:var(--paper-2); color:var(--ink-soft); font-size:10.5px; padding:3px 9px; border-radius:20px; cursor:pointer; font-family:inherit; margin-left:6px; }
+.tt-add-btn{ margin-top:6px; }
+
 .footer-link{ display:flex; align-items:center; justify-content:space-between; padding:17px 2px; margin-top:24px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); color:var(--ink); font-size:13.5px; font-weight:600; cursor:pointer; }
 .footer-link .icon{ font-size:12px; color:var(--ink-soft); }
 .foot-note{ text-align:center; font-size:11px; color:var(--ink-soft); margin-top:28px; opacity:.7; padding-bottom:6px; }
@@ -403,7 +411,6 @@ h2.subtitle .icon { color: var(--sage); opacity: .85; }
       </div>
       <div class="step-slide" data-step="1">
         <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icCalStay1"></span><span data-editable-key="hdgCalStay1">상세 일정표</span></h2>
-        <div class="admin-add-btn" onclick="openScheduleEditor('stay-1516')" style="display:none;" id="adEditStay1">일정 수정하기</div>
         <div id="stay1ScheduleBox"></div>
       </div>
       <div class="step-slide" data-step="2">
@@ -439,7 +446,6 @@ h2.subtitle .icon { color: var(--sage); opacity: .85; }
       </div>
       <div class="step-slide" data-step="1">
         <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icCalStay2"></span><span data-editable-key="hdgCalStay2">상세 일정표</span></h2>
-        <div class="admin-add-btn" onclick="openScheduleEditor('stay-1617')" style="display:none;" id="adEditStay2">일정 수정하기</div>
         <div id="stay2ScheduleBox"></div>
       </div>
       <div class="step-slide" data-step="2">
@@ -475,7 +481,6 @@ h2.subtitle .icon { color: var(--sage); opacity: .85; }
       </div>
       <div class="step-slide" data-step="1">
         <h2 class="subtitle" style="margin-top:0;"><span class="icon" id="icCalStay3"></span><span data-editable-key="hdgCalStay3">상세 일정표</span></h2>
-        <div class="admin-add-btn" onclick="openScheduleEditor('stay-1517')" style="display:none;" id="adEditStay3">일정 수정하기</div>
         <div id="stay3ScheduleBox"></div>
       </div>
       <div class="step-slide" data-step="2">
@@ -548,19 +553,6 @@ h2.subtitle .icon { color: var(--sage); opacity: .85; }
   <div class="modal-box" id="recipeModalBox">
     <div id="recipeModalBody"></div>
     <div class="m-actions"><button class="btn-cancel" onclick="closeRecipeModal()" style="flex:1;">닫기</button></div>
-  </div>
-</div>
-
-<!-- 일정 수정 모달 (관리자) -->
-<div class="modal" id="scheduleEditorModal">
-  <div class="modal-box">
-    <h3>상세 일정 수정</h3>
-    <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 14px;">여기서 수정하면 이 2박3일 바라지 원본 일정표가 바뀌고, 모든 참가자(1박·2박)의 일정에 즉시 반영됩니다.</p>
-    <div id="scheduleEditorBody"></div>
-    <div class="m-actions">
-      <button class="btn-cancel" onclick="closeScheduleEditor()">닫기</button>
-      <button class="btn-ok" onclick="saveScheduleEditor()">저장</button>
-    </div>
   </div>
 </div>
 
@@ -1540,9 +1532,6 @@ function applyNavState(state){
                     && (!STEP_PAGES[state.page] || stepIndex[state.page] === state.step);
   if(!samePlace) renderPageAndStep(state.page, state.step);
   document.getElementById('recipeModal').classList.toggle('show', state.modal==='recipe');
-  const schedModal = document.getElementById('scheduleEditorModal');
-  schedModal.classList.toggle('show', state.modal==='schedule');
-  if(state.modal!=='schedule'){ editorStayKey = null; isEditingNow = false; }
 }
 window.addEventListener('popstate', function(e){
   applyNavState(e.state);
@@ -1805,7 +1794,7 @@ function selectQuickTab(i){
     const stayKey = PAGE_TO_STAYKEY[quickFromPage] || defaultStayKeyForProgram(PROGRAM_ID);
     const t = TIMETABLES[stayKey];
     sch.innerHTML = (t && t.days)
-      ? t.days.map((day,di)=>`<div class="tt-card"><div class="day-label">${dayLabel(stayKey, di)}</div>${day.rows.map(formatRow).join('')}</div>`).join('')
+      ? t.days.map((day,di)=>`<div class="tt-card"><div class="day-label">${dayLabel(stayKey, di)}</div>${day.rows.map((r,ri)=>formatRow(r, {stayKey, dayIdx:di, rowIdx:ri})).join('')}${isAdmin?`<div class="admin-add-btn tt-add-btn" onclick="addScheduleRow('${stayKey}', ${di})">+ 일정 추가</div>`:''}</div>`).join('')
       : '<p class="empty-note">일정 정보가 아직 등록되지 않았습니다.</p>';
     // 상세일정표와 똑같이 장소를 다음 줄로 내려준다 (안 하면 내용과 장소가 붙어 보인다)
     adjustPlaceWrap(sch);
@@ -2296,25 +2285,47 @@ function closeRecipeModal(){
 }
 
 
-function formatRow(r){
-  const activityHTML = `${r.prog?'<b class="prog">':''}${r.content}${r.prog?'</b>':''}`;
-  // 장소/비고는 항상 다음 줄에 구분선(|) 없이 통일해서 보여줍니다.
+function formatRow(r, ctx){
+  ctx = ctx || {};
+  const editable = !!(isAdmin && ctx.stayKey && ctx.dayIdx != null && ctx.rowIdx != null);
+  // 장소/비고는 구분선 없이 항상 다음 줄에 통일해서 보여줍니다.
   const placeHTML = r.place ? `<span class="tt-place-f">${r.place}</span>` : '';
   const noteHTML = r.note ? `<span class="tt-place-f">${r.note}</span>` : '';
   const extra = [placeHTML, noteHTML].filter(Boolean).join('<span class="tt-place-f-divider">|</span>');
-  return `<div class="tt-row">
-    <div class="tt-time">${r.time.replace(/~/g,"~<wbr>")}</div>
-    <div class="tt-content tt-newline"><span class="tt-activity">${activityHTML}</span>${extra?`<span class="tt-extra">${extra}</span>`:''}</div>
+  if(!editable){
+    const activityHTML = `${r.prog?'<b class="prog">':''}${r.content}${r.prog?'</b>':''}`;
+    return `<div class="tt-row">
+      <div class="tt-time">${r.time.replace(/~/g,"~<wbr>")}</div>
+      <div class="tt-content tt-newline"><span class="tt-activity">${activityHTML}</span>${extra?`<span class="tt-extra">${extra}</span>`:''}</div>
+    </div>`;
+  }
+  // 관리자 모드: 팝업 없이 화면에서 바로 클릭해 고치고, 손잡이(⠿)를 끌어 순서를 바꿀 수 있습니다.
+  return `<div class="tt-row tt-row-edit" draggable="true"
+      data-stay="${ctx.stayKey}" data-day="${ctx.dayIdx}" data-row="${ctx.rowIdx}"
+      ondragstart="ttDragStart(event)" ondragover="ttDragOver(event)" ondrop="ttDrop(event)" ondragend="ttDragEnd(event)">
+    <span class="tt-drag-handle" title="끌어서 순서 바꾸기">⠿</span>
+    <div class="tt-time" contenteditable="true" data-field="time" onfocus="isEditingNow=true" onblur="saveScheduleField(this)">${r.time||''}</div>
+    <div class="tt-content tt-newline">
+      <span class="tt-activity" contenteditable="true" data-field="content" onfocus="isEditingNow=true" onblur="saveScheduleField(this)">${r.content||''}</span>
+      <span class="tt-extra"><span class="tt-place-f" contenteditable="true" data-field="place" onfocus="isEditingNow=true" onblur="saveScheduleField(this)">${r.place||''}</span></span>
+    </div>
+    <button class="tt-del-btn" onclick="deleteScheduleRow(this)" title="이 일정 삭제">삭제</button>
   </div>`;
 }
 // 활동명이 혼자서도 1줄을 넘기면(이미 줄바꿈 되면) 장소·비고를 그 줄 끝에 자연스럽게 붙이고,
 // 활동명이 원래 1줄로 끝나는 경우에는 장소·비고를 다음 줄로 내려서 항상 안정적으로 보이게 합니다.
 function adjustPlaceWrap(container){
-  // 장소/비고 표시 방식을 항상 "구분선 없이 다음 줄"로 통일하기로 했으므로,
-  // 더 이상 줄 수를 측정해서 tt-newline을 토글하지 않습니다. (formatRow에서 항상 tt-newline을 붙입니다)
   if(!container) return;
   container.querySelectorAll('.tt-content').forEach(el=>{
-    el.classList.add('tt-newline');
+    const activityEl = el.querySelector('.tt-activity');
+    const extraEl = el.querySelector('.tt-extra');
+    if(!activityEl || !extraEl) return;
+    const prevDisplay = extraEl.style.display;
+    extraEl.style.display = 'none';
+    const lineHeight = parseFloat(getComputedStyle(activityEl).lineHeight) || 20;
+    const isMultiline = activityEl.getBoundingClientRect().height > lineHeight * 1.4;
+    extraEl.style.display = prevDisplay;
+    el.classList.toggle('tt-newline', !isMultiline);
   });
 }
 // stayKey(코스)의 dayIdx번째 날 일정 행을 그대로 반환합니다.
@@ -2342,7 +2353,10 @@ function ttRowsHTMLByStayKey(stayKey){
   t.days.forEach((day, dayIdx)=>{
     const rows = ttRowsForDay(stayKey, dayIdx);
     if(!rows) return;
-    html += `<div class="tt-card"><div class="day-label" data-editable-key="calDay_${stayKey}_${dayIdx}">${dayLabel(stayKey, dayIdx)}</div>` + rows.map(formatRow).join('') + `</div>`;
+    html += `<div class="tt-card"><div class="day-label" data-editable-key="calDay_${stayKey}_${dayIdx}">${dayLabel(stayKey, dayIdx)}</div>`
+      + rows.map((r,ri)=>formatRow(r, {stayKey, dayIdx, rowIdx:ri})).join('')
+      + (isAdmin ? `<div class="admin-add-btn tt-add-btn" onclick="addScheduleRow('${stayKey}', ${dayIdx})">+ 일정 추가</div>` : '')
+      + `</div>`;
   });
   return html || '<p class="empty-note">일정 정보가 아직 등록되지 않았습니다.</p>';
 }
@@ -2446,7 +2460,8 @@ function renderMoreSchedule(){
   box.innerHTML = t.days.map((day,dayIdx)=>`
     <div class="tt-card">
       <div class="day-label" data-editable-key="calDay_${stayKey}_${dayIdx}">${dayLabel(stayKey, dayIdx)}</div>
-      ${day.rows.map(r=>formatRow(r)).join('')}
+      ${day.rows.map((r,ri)=>formatRow(r, {stayKey, dayIdx, rowIdx:ri})).join('')}
+      ${isAdmin ? `<div class="admin-add-btn tt-add-btn" onclick="addScheduleRow('${stayKey}', ${dayIdx})">+ 일정 추가</div>` : ''}
     </div>
   `).join('');
   adjustPlaceWrap(box);
@@ -2695,10 +2710,6 @@ function applyAdminUI(){
   document.getElementById('adminBadge').style.display = isAdmin ? 'block' : 'none';
   const ps = document.getElementById('programSelect');
   if(ps) ps.value = PROGRAM_ID; // 지금 고른 행사 종류가 선택 상자에 보이도록
-  ['adEditStay1','adEditStay2','adEditStay3'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.style.display = isAdmin ? 'block' : 'none';
-  });
 }
 
 /* =========================================================
@@ -2880,84 +2891,116 @@ document.addEventListener('blur', function(e){
 }, true);
 loadTextOverrides();
 
-let editorStayKey = null;
-function openScheduleEditor(stayKey){
-  if(!isAdmin) return;
-  isEditingNow = true;
-  editorStayKey = stayKey;
-  // 코스별로 완전히 독립된 TIMETABLES[stayKey]를 그대로 편집합니다.
-  if(!TIMETABLES[stayKey]) TIMETABLES[stayKey] = { label: stayKey, days: [] };
+// 일정표를 화면에서 바로 클릭해서 고칩니다(팝업 없음). 날짜 라벨은 day-label을 그대로 두 번 눌러 고칩니다.
+function findScheduleRow(stayKey, dayIdx, rowIdx){
   const t = TIMETABLES[stayKey];
-  const ranges = STAY_RANGES[stayKey] || t.days.map((_,i)=>({dayIndex:i}));
-  const body = document.getElementById('scheduleEditorBody');
-  let html = '';
-  ranges.forEach(seg=>{
-    if(!t.days[seg.dayIndex]) t.days[seg.dayIndex] = { day:`${seg.dayIndex+1}일차`, rows:[] };
-    const day = t.days[seg.dayIndex];
-    // 날짜도 여기서 바로 고칠 수 있게 입력칸으로 (예: "15일(수) - 1일차")
-    html += `<label class="re-label">날짜</label>
-      <input class="re-input editor-daylabel" data-dayidx="${seg.dayIndex}" value="${escAttr(dayLabel(stayKey, seg.dayIndex))}" placeholder="예: 13일(목) - 1일차">`;
-    day.rows.forEach((r, ri)=>{
-      html += `<div class="admin-editrow" data-day="${seg.dayIndex}" data-row="${ri}">
-        <input class="time" value="${r.time}">
-        <input class="content" value="${r.content||''}">
-        <input class="place" value="${r.place||''}">
-        <button class="del" onclick="this.parentElement.remove()">삭제</button>
-      </div>`;
-    });
-    html += `<button class="admin-add-btn" onclick="addEditorRow(${seg.dayIndex})">+ 일정 추가</button>`;
-  });
-  body.innerHTML = html;
-  document.getElementById('scheduleEditorModal').classList.add('show');
-  pushNav({modal:'schedule'});
+  if(!t || !t.days || !t.days[dayIdx] || !t.days[dayIdx].rows) return null;
+  return t.days[dayIdx].rows[rowIdx] || null;
 }
-function addEditorRow(dayIndex){
-  const body = document.getElementById('scheduleEditorBody');
-  const rows = body.querySelectorAll(`.admin-editrow[data-day="${dayIndex}"]`);
-  const newRi = rows.length;
-  const div = document.createElement('div');
-  div.className = 'admin-editrow';
-  div.dataset.day = dayIndex; div.dataset.row = newRi;
-  div.innerHTML = `<input class="time" value="00:00"><input class="content" value=""><input class="place" value=""><button class="del" onclick="this.parentElement.remove()">삭제</button>`;
-  const addBtn = [...body.children].find(el=>el.tagName==='BUTTON' && el.getAttribute('onclick')===`addEditorRow(${dayIndex})`);
-  if(addBtn) body.insertBefore(div, addBtn); else body.appendChild(div);
+function saveScheduleField(el){
+  const rowEl = el.closest('.tt-row-edit');
+  if(!rowEl) return;
+  const stayKey = rowEl.dataset.stay;
+  const dayIdx = parseInt(rowEl.dataset.day, 10);
+  const rowIdx = parseInt(rowEl.dataset.row, 10);
+  const field = el.dataset.field;
+  const row = findScheduleRow(stayKey, dayIdx, rowIdx);
+  if(!row) return;
+  row[field] = el.textContent.trim();
+  saveLocalShared();
+  queueSubappSync('timetable');
+  isEditingNow = false;
 }
-function closeScheduleEditor(){
-  history.back();
+function deleteScheduleRow(btn){
+  const rowEl = btn.closest('.tt-row-edit');
+  if(!rowEl) return;
+  const stayKey = rowEl.dataset.stay;
+  const dayIdx = parseInt(rowEl.dataset.day, 10);
+  const rowIdx = parseInt(rowEl.dataset.row, 10);
+  const t = TIMETABLES[stayKey];
+  if(!t || !t.days[dayIdx]) return;
+  if(!confirm('이 일정을 삭제할까요?')) return;
+  t.days[dayIdx].rows.splice(rowIdx, 1);
+  queueSubappSync('timetable');
+  renderAllContent(); refreshQuickIfOpen();
 }
-async function saveScheduleEditor(){
-  if(!editorStayKey) return;
-  const ranges = STAY_RANGES[editorStayKey] || [];
-  // 이 코스(editorStayKey) 전용 데이터에만 저장합니다. 다른 코스나 다른 프로그램의
-  // 일정에는 절대 영향을 주지 않습니다 — 이게 이번 개선의 핵심입니다.
-  if(!TIMETABLES[editorStayKey]) TIMETABLES[editorStayKey] = { label: editorStayKey, days: [] };
-  const t = TIMETABLES[editorStayKey];
-  const byDay = {};
-  ranges.forEach(seg=>{ byDay[seg.dayIndex] = []; });
-  document.querySelectorAll('#scheduleEditorBody .admin-editrow').forEach(row=>{
-    const d = parseInt(row.dataset.day,10);
-    const inputs = row.querySelectorAll('input');
-    byDay[d].push({ time:inputs[0].value.trim(), content:inputs[1].value.trim(), place:inputs[2].value.trim() });
-  });
-  Object.keys(byDay).forEach(d=>{
-    const di = parseInt(d,10);
-    if(!t.days[di]) t.days[di] = { day:`${di+1}일차`, rows:[] };
-    t.days[di].rows = byDay[d];
-  });
-  // 날짜 라벨도 이 코스에만 귀속되도록 저장한다 (calDay_코스_일차 키)
-  document.querySelectorAll('#scheduleEditorBody .editor-daylabel').forEach(inp=>{
-    const idx = parseInt(inp.dataset.dayidx, 10);
-    const v = inp.value.trim();
-    if(!v) return;
-    if(t.days[idx]) t.days[idx].day = v;
-    subappTextOverrides[`calDay_${editorStayKey}_${idx}`] = v;
-  });
-  saveTextOverrides();
-  queueSubappSync('text');      // 날짜 라벨
-  queueSubappSync('timetable'); // 시트에는 [저장]을 누를 때 한 번만 기록됩니다
-  closeScheduleEditor();
-  renderAllContent();
+function addScheduleRow(stayKey, dayIdx){
+  if(!TIMETABLES[stayKey]) TIMETABLES[stayKey] = { label: stayKey, days: [] };
+  if(!TIMETABLES[stayKey].days[dayIdx]) TIMETABLES[stayKey].days[dayIdx] = { day:`${dayIdx+1}일차`, rows:[] };
+  TIMETABLES[stayKey].days[dayIdx].rows.push({ time:'00:00', content:'새 일정', place:'' });
+  queueSubappSync('timetable');
+  renderAllContent(); refreshQuickIfOpen();
 }
+// 일정 줄을 끌어서(드래그) 순서를 바꿉니다 — PC 마우스와 모바일 터치 모두 지원합니다.
+let _ttDragEl = null;
+function ttDragStart(e){
+  _ttDragEl = e.currentTarget;
+  e.currentTarget.classList.add('tt-dragging');
+  if(e.dataTransfer){ e.dataTransfer.effectAllowed = 'move'; try{ e.dataTransfer.setData('text/plain',''); }catch(err){} }
+}
+function ttDragOver(e){
+  e.preventDefault();
+  const target = e.currentTarget;
+  if(!_ttDragEl || target === _ttDragEl) return;
+  if(target.dataset.stay !== _ttDragEl.dataset.stay || target.dataset.day !== _ttDragEl.dataset.day) return;
+  const rect = target.getBoundingClientRect();
+  const before = (e.clientY - rect.top) < rect.height/2;
+  target.parentNode.insertBefore(_ttDragEl, before ? target : target.nextSibling);
+}
+function ttDrop(e){ e.preventDefault(); }
+function ttDragEnd(e){
+  const rowEl = e.currentTarget;
+  rowEl.classList.remove('tt-dragging');
+  const stayKey = rowEl.dataset.stay;
+  const dayIdx = parseInt(rowEl.dataset.day, 10);
+  const t = TIMETABLES[stayKey];
+  if(!t || !t.days[dayIdx]) return;
+  const container = rowEl.parentNode;
+  const newOrder = [...container.querySelectorAll(`.tt-row-edit[data-day="${dayIdx}"]`)]
+    .map(el => parseInt(el.dataset.row, 10))
+    .map(oldRi => t.days[dayIdx].rows[oldRi]);
+  t.days[dayIdx].rows = newOrder;
+  _ttDragEl = null;
+  queueSubappSync('timetable');
+  renderAllContent(); refreshQuickIfOpen();
+}
+// 모바일 터치 환경에서도 손잡이를 눌러 끌 수 있도록 보조합니다 (draggable 속성은 터치에서 기본 동작하지 않는 브라우저가 있음)
+let _ttTouchEl = null, _ttTouchStartY = 0;
+document.addEventListener('touchstart', function(e){
+  const handle = e.target.closest && e.target.closest('.tt-drag-handle');
+  if(!handle) return;
+  _ttTouchEl = handle.closest('.tt-row-edit');
+  if(_ttTouchEl){ _ttTouchEl.classList.add('tt-dragging'); _ttTouchStartY = e.touches[0].clientY; }
+}, {passive:true});
+document.addEventListener('touchmove', function(e){
+  if(!_ttTouchEl) return;
+  const touch = e.touches[0];
+  const els = document.elementsFromPoint(touch.clientX, touch.clientY);
+  const overRow = els.find(el => el.classList && el.classList.contains('tt-row-edit') && el !== _ttTouchEl);
+  if(overRow && overRow.dataset.stay === _ttTouchEl.dataset.stay && overRow.dataset.day === _ttTouchEl.dataset.day){
+    const rect = overRow.getBoundingClientRect();
+    const before = (touch.clientY - rect.top) < rect.height/2;
+    overRow.parentNode.insertBefore(_ttTouchEl, before ? overRow : overRow.nextSibling);
+  }
+}, {passive:true});
+document.addEventListener('touchend', function(e){
+  if(!_ttTouchEl) return;
+  const rowEl = _ttTouchEl;
+  rowEl.classList.remove('tt-dragging');
+  const stayKey = rowEl.dataset.stay;
+  const dayIdx = parseInt(rowEl.dataset.day, 10);
+  const t = TIMETABLES[stayKey];
+  _ttTouchEl = null;
+  if(!t || !t.days[dayIdx]) return;
+  const container = rowEl.parentNode;
+  const newOrder = [...container.querySelectorAll(`.tt-row-edit[data-day="${dayIdx}"]`)]
+    .map(el => parseInt(el.dataset.row, 10))
+    .map(oldRi => t.days[dayIdx].rows[oldRi]);
+  t.days[dayIdx].rows = newOrder;
+  queueSubappSync('timetable');
+  renderAllContent(); refreshQuickIfOpen();
+});
+
 
 /* =========================================================
    내용 수정 (관리자) — 준비물 · 활동 · 공양메뉴
