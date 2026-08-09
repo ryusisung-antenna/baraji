@@ -2298,28 +2298,23 @@ function closeRecipeModal(){
 
 function formatRow(r){
   const activityHTML = `${r.prog?'<b class="prog">':''}${r.content}${r.prog?'</b>':''}`;
-  const placeHTML = r.place ? `<span class="tt-place-f-divider">|</span><span class="tt-place-f">${r.place}</span>` : '';
-  const noteHTML = r.note ? `<span class="tt-place-f-divider">|</span><span class="tt-place-f">${r.note}</span>` : '';
-  const extra = placeHTML + noteHTML;
+  // 장소/비고는 항상 다음 줄에 구분선(|) 없이 통일해서 보여줍니다.
+  const placeHTML = r.place ? `<span class="tt-place-f">${r.place}</span>` : '';
+  const noteHTML = r.note ? `<span class="tt-place-f">${r.note}</span>` : '';
+  const extra = [placeHTML, noteHTML].filter(Boolean).join('<span class="tt-place-f-divider">|</span>');
   return `<div class="tt-row">
     <div class="tt-time">${r.time.replace(/~/g,"~<wbr>")}</div>
-    <div class="tt-content"><span class="tt-activity">${activityHTML}</span>${extra?`<span class="tt-extra">${extra}</span>`:''}</div>
+    <div class="tt-content tt-newline"><span class="tt-activity">${activityHTML}</span>${extra?`<span class="tt-extra">${extra}</span>`:''}</div>
   </div>`;
 }
 // 활동명이 혼자서도 1줄을 넘기면(이미 줄바꿈 되면) 장소·비고를 그 줄 끝에 자연스럽게 붙이고,
 // 활동명이 원래 1줄로 끝나는 경우에는 장소·비고를 다음 줄로 내려서 항상 안정적으로 보이게 합니다.
 function adjustPlaceWrap(container){
+  // 장소/비고 표시 방식을 항상 "구분선 없이 다음 줄"로 통일하기로 했으므로,
+  // 더 이상 줄 수를 측정해서 tt-newline을 토글하지 않습니다. (formatRow에서 항상 tt-newline을 붙입니다)
   if(!container) return;
   container.querySelectorAll('.tt-content').forEach(el=>{
-    const activityEl = el.querySelector('.tt-activity');
-    const extraEl = el.querySelector('.tt-extra');
-    if(!activityEl || !extraEl) return;
-    const prevDisplay = extraEl.style.display;
-    extraEl.style.display = 'none';
-    const lineHeight = parseFloat(getComputedStyle(activityEl).lineHeight) || 20;
-    const isMultiline = activityEl.getBoundingClientRect().height > lineHeight * 1.4;
-    extraEl.style.display = prevDisplay;
-    el.classList.toggle('tt-newline', !isMultiline);
+    el.classList.add('tt-newline');
   });
 }
 // stayKey(코스)의 dayIdx번째 날 일정 행을 그대로 반환합니다.
