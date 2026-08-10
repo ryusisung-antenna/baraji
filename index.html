@@ -10,7 +10,7 @@
 <title>군청년 바라지 안내서</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Gowun+Batang:wght@400;700&family=Pretendard&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Pretendard&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
 :root{
@@ -120,13 +120,18 @@ ul.plain li::before{ content:''; position:absolute; left:0; top:9px; width:4px; 
 .tt-place-f{ font-size:12.5px; font-weight:400; color:var(--ink-soft); }
 .tt-content.tt-newline .tt-extra{ display:block; margin-top:3px; }
 .tt-content.tt-newline .tt-extra > .tt-place-f-divider:first-child{ display:none; }
-.tt-row-edit{ position:relative; cursor:default; background:transparent; }
+.tt-row-edit{ position:relative; cursor:default; background:transparent; flex-wrap:wrap; }
 .tt-row-edit.tt-dragging{ opacity:.4; }
 .tt-drag-handle{ flex:none; cursor:grab; color:var(--ink-soft); font-size:15px; padding:2px 4px 0 0; user-select:none; touch-action:none; }
-.tt-row-edit [contenteditable]{ outline:1px dashed var(--sage-soft); outline-offset:2px; border-radius:3px; cursor:text; min-width:20px; }
+.tt-row-edit [contenteditable]{ outline:1px dashed var(--sage-soft); outline-offset:2px; border-radius:3px; cursor:text; min-width:20px; display:inline-block; word-break:break-word; overflow-wrap:anywhere; }
 .tt-row-edit [contenteditable]:focus{ outline:2px solid var(--sage); background:#fff; }
-.tt-del-btn{ flex:none; align-self:flex-start; border:1px solid var(--line); background:var(--paper-2); color:var(--ink-soft); font-size:10.5px; padding:3px 9px; border-radius:20px; cursor:pointer; font-family:inherit; margin-left:6px; }
+.tt-row-edit .tt-content{ min-width:120px; } /* 좁은 화면에서 다른 요소들에 눌려 세로로 찌그러지지 않도록 최소폭 확보 */
+.tt-del-btn{ flex:none; align-self:flex-start; border:1px solid var(--line); background:var(--paper-2); color:var(--ink-soft); font-size:10.5px; padding:3px 9px; border-radius:20px; cursor:pointer; font-family:inherit; margin-left:6px; white-space:nowrap; }
 .tt-add-btn{ margin-top:6px; }
+.tt-note-row{ display:flex; align-items:baseline; gap:6px; margin-top:5px; flex-wrap:wrap; }
+.tt-note-label{ flex:none; font-size:11px; color:var(--sage); font-weight:700; }
+.tt-note-row .tt-place-f{ min-width:60px; }
+.tt-row-edit [contenteditable]:empty::before{ content:attr(data-ph); color:var(--ink-soft); opacity:.55; }
 
 .footer-link{ display:flex; align-items:center; justify-content:space-between; padding:17px 2px; margin-top:24px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); color:var(--ink); font-size:13.5px; font-weight:600; cursor:pointer; }
 .footer-link .icon{ font-size:12px; color:var(--ink-soft); }
@@ -147,7 +152,12 @@ ul.plain li::before{ content:''; position:absolute; left:0; top:9px; width:4px; 
 .step-placeholder{ background:var(--paper-2); border-radius:3px; padding:16px; font-size:13px; color:var(--ink-soft); line-height:1.7; }
 /* admin */
 body.admin-on .adm-toolbar{ display:flex; }
-.adm-toolbar{ display:none; gap:8px; padding:10px 26px; background:#FFF6D8; border-bottom:1px solid #E9DDA8; font-size:12px; align-items:center; }
+.adm-toolbar{ display:none; flex-wrap:wrap; row-gap:8px; column-gap:10px; padding:10px 16px; background:#FFF6D8; border-bottom:1px solid #E9DDA8; font-size:12px; align-items:center; }
+.adm-toolbar > *{ flex:none; min-width:0; }
+.adm-toolbar > span:first-child{ font-weight:700; width:100%; margin-bottom:2px; }
+.adm-toolbar button{ white-space:nowrap; padding:7px 12px; border:1px solid #C9B96A; background:#fff; border-radius:20px; font-family:inherit; font-size:11.5px; cursor:pointer; }
+.adm-program{ white-space:nowrap; }
+.adm-program select{ max-width:150px; }
 .adm-toolbar button{ font-size:11.5px; padding:5px 10px; border-radius:14px; border:1px solid var(--ink); background:#fff; cursor:pointer; }
 .admin-editrow{ display:flex; gap:6px; align-items:center; padding:8px 0; border-bottom:1px dashed var(--line); }
 .admin-editrow input{ flex:1; min-width:0; }
@@ -176,10 +186,45 @@ body.admin-on .adm-toolbar{ display:flex; }
   padding:13px 16px; margin-bottom:8px; }
 .home-mini .t{ font-size:13.5px; font-weight:600; margin-bottom:2px; }
 .home-mini .d{ font-size:12.5px; color:var(--ink-soft); }
+/* 활동·준비물 아이콘(메인앱과 같은 원형 아이콘) */
+.act-num-circle{ flex:none; width:34px; height:34px; border-radius:50%; background:none; border:1px solid var(--line); color:var(--ink); display:flex; align-items:center; justify-content:center; margin-top:2px; }
+.act-num-circle svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.act-row{ display:flex; gap:12px; align-items:flex-start; padding:13px 0; border-bottom:1px solid var(--line); }
+.act-row:last-child{ border-bottom:none; }
+.act-row .act-ct{ flex:1; min-width:0; }
+.act-row .act-ct b{ display:block; font-size:14.5px; font-weight:600; }
+.act-row .act-ct .desc{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
+.prep-ic-circle{ flex:none; width:30px; height:30px; border-radius:50%; background:none; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; color:var(--ink-soft); }
+.prep-ic-circle svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.prep-row-ic{ display:flex; align-items:flex-start; gap:12px; padding:13px 0; border-bottom:1px solid var(--line); }
+.prep-row-ic:last-child{ border-bottom:none; }
+.prep-row-ic .prep-ct{ flex:1; min-width:0; }
+.icon-pick{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.icon-pick button{ width:32px; height:32px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--ink-soft); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+.icon-pick button svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.6; }
+.icon-pick button.on{ border-color:var(--sage); background:var(--sage-wash); color:var(--sage); }
 /* 화면에서 바로 고치기 — 고칠 수 있는 글자는 점선으로 표시 */
 body.admin-on .plain [contenteditable]{ outline:1px dashed var(--sage-soft); outline-offset:3px; border-radius:3px; min-width:24px; display:inline-block; }
 body.admin-on .prep-group-label[contenteditable]{ outline:1px dashed var(--sage-soft); outline-offset:3px; border-radius:3px; }
-.inline-del{ margin-left:8px; border:1px solid var(--line); background:var(--paper-2); color:var(--ink-soft); font-size:10.5px; padding:2px 8px; border-radius:20px; cursor:pointer; font-family:inherit; }
+.inline-del{
+  margin-top:8px; width:32px; height:32px; border-radius:50%;
+  border:1px solid var(--line); background:var(--paper-2); color:var(--ink-soft);
+  display:flex; align-items:center; justify-content:center; font-size:13px;
+  cursor:pointer; font-family:inherit; transition:.15s ease;
+}
+.inline-del:hover, .inline-del:active{ border-color:#c0876a; color:#c0876a; background:#fff; }
+.recipe-item-edit{ display:flex; align-items:center; gap:8px; padding-left:0 !important; }
+.recipe-item-edit::before{ display:none; }
+.recipe-item-edit > span[contenteditable]{ flex:1; min-width:0; }
+.recipe-item-edit .inline-del{ width:26px; height:26px; font-size:11px; margin-top:0; flex:none; }
+.admin-add-btn{
+  margin-top:10px; width:100%; padding:11px 14px; border:1px solid var(--sage-soft);
+  border-radius:24px; background:var(--paper-2); font-size:12.5px; font-weight:600;
+  letter-spacing:.02em; cursor:pointer; color:var(--sage);
+  text-align:center; box-shadow:0 1px 2px rgba(43,46,40,.05);
+  transition:.15s ease;
+}
+.admin-add-btn:hover, .admin-add-btn:active{ background:var(--sage-wash); border-color:var(--sage); box-shadow:0 2px 6px rgba(91,115,85,.14); }
 .meal-pick{ display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
 .meal-pick-item{ display:flex; align-items:center; gap:5px; border:1px solid var(--line); border-radius:20px; padding:5px 11px; font-size:12.5px; cursor:pointer; background:#fff; }
 .meal-pick-item input{ margin:0; }
@@ -189,7 +234,6 @@ body.admin-on .prep-group-label[contenteditable]{ outline:1px dashed var(--sage-
 .admin-editrow input.content{ flex:1; min-width:60px; }
 .admin-editrow input.place{ width:70px; }
 .admin-editrow button.del{ border:1px solid #c0392b; color:#c0392b; background:#fff; border-radius:6px; padding:4px 7px; font-size:11px; cursor:pointer; }
-.admin-add-btn{ margin-top:8px; width:100%; padding:9px; border:1px dashed var(--ink); border-radius:6px; background:#fff; font-size:12.5px; cursor:pointer; color:var(--ink); }
 #adminBadge{ position:fixed; top:8px; right:8px; font-size:10px; background:#0002; color:#fff; padding:4px 8px; border-radius:10px; z-index:50; opacity:.4; }
 .modal{ position:fixed; inset:0; background:rgba(20,20,18,.55); z-index:100; display:none; align-items:flex-end; justify-content:center; }
 .modal.show{ display:flex; }
@@ -288,6 +332,7 @@ body.text-edit-on [data-editable-key]:focus {
 }
 h2.subtitle .icon { color: var(--sage); opacity: .85; }
 </style>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
 <div id="adminBadge" style="display:none;">ADMIN</div>
@@ -813,25 +858,55 @@ function defaultStayKeyForProgram(programId){
   return programId === 'happy' ? 'stay-1517' : 'stay-1516';
 }
 
+// 활동·준비물 아이콘 — 메인앱과 같은 세트입니다
+const ACTIVITY_ICONS = {
+  bowl:    `<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0016 0z"/><path d="M4 12h16M9 12V8M15 12V8"/></svg>`,
+  broom:   `<svg viewBox="0 0 24 24"><path d="M14 3l6 6-8 8-6-2z"/><path d="M9 15l-5 5M6 21l-2-2"/></svg>`,
+  lotus:   `<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6"/></svg>`,
+  sunrise: `<svg viewBox="0 0 24 24"><circle cx="12" cy="14" r="4"/><path d="M4 18h16M12 4v3M5.6 8.6l1.8 1.8M18.4 8.6l-1.8 1.8"/></svg>`,
+  trail:   `<svg viewBox="0 0 24 24"><path d="M12 3C7 3 4 7 4 12c0 5 3 9 8 9M12 3c5 0 8 4 8 9c0 5-3 9-8 9M4 12h16"/></svg>`,
+  chat:    `<svg viewBox="0 0 24 24"><path d="M5 5h14v10H9l-4 4z"/></svg>`,
+  qa:      `<svg viewBox="0 0 24 24"><path d="M9 9a3 3 0 116 0c0 2-3 2.5-3 5"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>`,
+  note:    `<svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>`,
+  home:    `<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg>`,
+  camera:  `<svg viewBox="0 0 24 24"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg>`,
+};
+const PREP_ICONS = {
+  ban:      '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M6 6l12 12"/></svg>',
+  focus:    '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/></svg>',
+  bowl:     '<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0016 0z"/><path d="M4 12h16M9 12V8M15 12V8"/></svg>',
+  quiet:    '<svg viewBox="0 0 24 24"><path d="M5 9v6h4l5 4V5L9 9H5z"/><path d="M17 15l4-6M21 15l-4-6"/></svg>',
+  shirt:    '<svg viewBox="0 0 24 24"><path d="M8 4l4 2 4-2 4 4-3 3v9H7v-9L4 8z"/></svg>',
+  apron:    '<svg viewBox="0 0 24 24"><path d="M7 4h10v6a5 5 0 01-10 0z"/><path d="M9 10v10h6V10"/></svg>',
+  cup:      '<svg viewBox="0 0 24 24"><path d="M6 3h10l-1 13a4 4 0 01-4 4H11a4 4 0 01-4-4z"/><path d="M6 8h10"/></svg>',
+  towel:    '<svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>',
+  mask:     '<svg viewBox="0 0 24 24"><path d="M4 10c2-2 4-3 8-3s6 1 8 3c0 5-3 9-8 9s-8-4-8-9z"/><path d="M8 12h.01M16 12h.01"/></svg>',
+  bottle:   '<svg viewBox="0 0 24 24"><path d="M10 2h4v3l2 2v13a2 2 0 01-2 2h-4a2 2 0 01-2-2V7l2-2z"/><path d="M9 12h6"/></svg>',
+  beads:    '<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="18" cy="9" r="2"/><circle cx="18" cy="16" r="2"/><circle cx="12" cy="20" r="2"/><circle cx="6" cy="16" r="2"/><circle cx="6" cy="9" r="2"/></svg>',
+  bed:      '<svg viewBox="0 0 24 24"><path d="M3 18v-7a2 2 0 012-2h14a2 2 0 012 2v7"/><path d="M3 14h18M7 9V6M17 6v3"/></svg>',
+};
+const ACTIVITY_ICON_KEYS = Object.keys(ACTIVITY_ICONS);
+const PREP_ICON_KEYS = Object.keys(PREP_ICONS);
+
 let PREPGROUPS = [
   { group:"공통 준비물", items:[
-      {t:"편안한 복장", s:"활동하기 편한 옷차림", ic:""},
-      {t:"실내화 또는 슬리퍼", s:"", ic:""},
-      {t:"세면도구 · 수건", s:"1박 이상 신청자만", ic:"", stayOnly:true},
-      {t:"개인 컵", s:"", ic:""}
+      {t:"편안한 복장", s:"활동하기 편한 옷차림", ic:"shirt"},
+      {t:"실내화 또는 슬리퍼", s:"", ic:"focus"},
+      {t:"세면도구 · 수건", s:"1박 이상 신청자만", ic:"bottle", stayOnly:true},
+      {t:"개인 컵", s:"", ic:"cup"}
   ]},
   { group:"봉사하면서 지켜주세요", rules:true, items:[
-      {t:"휴대폰은 진동으로 전환해 주세요", s:""},
-      {t:"공양간 내에서는 위생모를 착용해 주세요", s:""},
-      {t:"군장병들과의 대화는 밝고 편안하게 나눠주세요", s:""},
-      {t:"사진 촬영 시 군장병 얼굴이 나오지 않도록 주의해 주세요", s:""}
+      {t:"휴대폰은 진동으로 전환해 주세요", s:"", ic:"quiet"},
+      {t:"공양간 내에서는 위생모를 착용해 주세요", s:"", ic:"apron"},
+      {t:"군장병들과의 대화는 밝고 편안하게 나눠주세요", s:"", ic:"bowl"},
+      {t:"사진 촬영 시 군장병 얼굴이 나오지 않도록 주의해 주세요", s:"", ic:"ban"}
   ]}
 ];
 
 let ACTIVITIES = [
-  { title:"공양 준비 및 배식", desc:"대중공양팀과 함께 식사를 준비하고 배식합니다." },
-  { title:"행복학교 진행 보조", desc:"강의실 세팅과 자료 배부를 돕습니다." },
-  { title:"숙소 환경 정돈", desc:"군장병들이 편안히 쉴 수 있도록 숙소를 정돈합니다." },
+  { title:"공양 준비 및 배식", desc:"대중공양팀과 함께 식사를 준비하고 배식합니다.", emoji:"bowl" },
+  { title:"행복학교 진행 보조", desc:"강의실 세팅과 자료 배부를 돕습니다.", emoji:"note" },
+  { title:"숙소 환경 정돈", desc:"군장병들이 편안히 쉴 수 있도록 숙소를 정돈합니다.", emoji:"home" },
   { title:"조별 나누기 진행", desc:"저녁 나누기 시간에 조원들과 이야기를 나눕니다." }
 ];
 
@@ -1164,7 +1239,7 @@ let isAdmin = false;
 /* =========================================================
    3. 로컬 저장 / 시트 동기화
    ========================================================= */
-const BUILD_TAG = '2026-08-07-g'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
+const BUILD_TAG = '2026-08-08-h'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
 const DATA_VERSION = 3; // 기본 데이터를 크게 바꿀 때마다 올려주세요. 오래된 기기 캐시를 자동으로 무시하게 됩니다.
 function loadLocalShared(){
   try{
@@ -2129,7 +2204,7 @@ function prepListHTML(filterFn, excludeStayOnly){
     const gi = PREPGROUPS.indexOf(g);
     return `<div class="prep-group">
       <p class="prep-group-label"${isAdmin?` contenteditable="true" onfocus="isEditingNow=true" onblur="editPrepGroup(${gi},this)"`:''}>${g.group}</p>
-      <ul class="plain">${items.map(it=>prepItemHTML(gi, g.items.indexOf(it), it)).join('')}</ul>
+      <div class="prep-items">${items.map(it=>prepItemHTML(gi, g.items.indexOf(it), it)).join('')}</div>
       ${isAdmin?`<div class="admin-add-btn" onclick="addPrepItem(${gi})">+ 항목 추가</div>`:''}
     </div>`;
   }).filter(Boolean);
@@ -2151,7 +2226,7 @@ function rulesListHTML(){
   const ruleGroup = PREPGROUPS.find(g=>g.rules);
   if(!ruleGroup) return '<p class="empty-note">안내가 아직 등록되지 않았습니다.</p>';
   const gi = PREPGROUPS.indexOf(ruleGroup);
-  return `<ul class="plain">${ruleGroup.items.map((it,ii)=>prepItemHTML(gi, ii, it)).join('')}</ul>` +
+  return `<div class="prep-items">${ruleGroup.items.map((it,ii)=>prepItemHTML(gi, ii, it)).join('')}</div>` +
     (isAdmin?`<div class="admin-add-btn" onclick="addPrepItem(${gi})">+ 항목 추가</div>`:'');
 }
 function activityListHTML(limit){
@@ -2160,14 +2235,30 @@ function activityListHTML(limit){
   const arr = limit ? ACTIVITIES.slice(0,limit) : ACTIVITIES;
   // 관리자는 팝업 없이 글자를 바로 눌러서 고칠 수 있게 한다
   const ed = isAdmin
-    ? (i, field, val) => ` contenteditable="true" onfocus="isEditingNow=true" onblur="editActivity(${i},'${field}',this)"`
+    ? (i, field) => ` contenteditable="true" onfocus="isEditingNow=true" onblur="editActivity(${i},'${field}',this)"`
     : () => '';
-  const rows = arr.map((a,i)=>`<li>
-      <b${ed(i,'title')}>${a.title||''}</b>${(a.desc||isAdmin)?' — ':''}<span${ed(i,'desc')}>${a.desc||''}</span>
-      ${isAdmin?`<button class="inline-del" onclick="deleteActivity(${i})">삭제</button>`:''}
-    </li>`).join('');
-  return `<ul class="plain">${rows}</ul>` +
+  const rows = arr.map((a,i)=>{
+    const icon = ACTIVITY_ICONS[a.emoji] || ACTIVITY_ICONS.bowl;
+    const iconPick = isAdmin ? `<div class="icon-pick">${ACTIVITY_ICON_KEYS.map(k=>
+      `<button class="${k===a.emoji?'on':''}" onclick="setActivityIcon(${i},'${k}')" title="${k}">${ACTIVITY_ICONS[k]}</button>`).join('')}</div>` : '';
+    return `<div class="act-row">
+      <div class="act-num-circle">${icon}</div>
+      <div class="act-ct">
+        <b${ed(i,'title')}>${a.title||''}</b>
+        <div class="desc"${ed(i,'desc')}>${a.desc||''}</div>
+        ${iconPick}
+        ${isAdmin?`<button class="inline-del" onclick="deleteActivity(${i})" title="이 활동 삭제">🗑</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  return rows +
     (isAdmin ? `<div class="admin-add-btn" onclick="addActivityInline()">+ 활동 추가</div>` : '');
+}
+function setActivityIcon(i, key){
+  if(!ACTIVITIES[i]) return;
+  ACTIVITIES[i].emoji = key;
+  queueSubappSync('activity');
+  renderAllContent(); refreshQuickIfOpen();
 }
 // 활동 소개 — 글자를 고치면 바로 반영
 function editActivity(i, field, el){
@@ -2183,7 +2274,7 @@ function deleteActivity(i){
   renderAllContent(); refreshQuickIfOpen();
 }
 function addActivityInline(){
-  ACTIVITIES.push({ title:'새 활동', desc:'' });
+  ACTIVITIES.push({ title:'새 활동', desc:'', emoji:'bowl' });
   queueSubappSync('activity');
   renderAllContent(); refreshQuickIfOpen();
 }
@@ -2192,10 +2283,23 @@ function prepItemHTML(gi, ii, it){
   const ed = isAdmin
     ? (field) => ` contenteditable="true" onfocus="isEditingNow=true" onblur="editPrepItem(${gi},${ii},'${field}',this)"`
     : () => '';
-  return `<li>
-    <b${ed('t')}>${it.t||''}</b>${(it.s||isAdmin)?' — ':''}<span${ed('s')}>${it.s||''}</span>
-    ${isAdmin?`<button class="inline-del" onclick="deletePrepItem(${gi},${ii})">삭제</button>`:''}
-  </li>`;
+  const icon = PREP_ICONS[it.ic] || PREP_ICONS.focus;
+  const iconPick = isAdmin ? `<div class="icon-pick">${PREP_ICON_KEYS.map(k=>
+    `<button class="${k===it.ic?'on':''}" onclick="setPrepIcon(${gi},${ii},'${k}')" title="${k}">${PREP_ICONS[k]}</button>`).join('')}</div>` : '';
+  return `<div class="prep-row-ic">
+    <div class="prep-ic-circle">${icon}</div>
+    <div class="prep-ct">
+      <b${ed('t')}>${it.t||''}</b>${(it.s||isAdmin)?' — ':''}<span${ed('s')}>${it.s||''}</span>
+      ${iconPick}
+      ${isAdmin?`<button class="inline-del" onclick="deletePrepItem(${gi},${ii})" title="이 항목 삭제">🗑</button>`:''}
+    </div>
+  </div>`;
+}
+function setPrepIcon(gi, ii, key){
+  if(!PREPGROUPS[gi] || !PREPGROUPS[gi].items[ii]) return;
+  PREPGROUPS[gi].items[ii].ic = key;
+  queueSubappSync('prep');
+  renderAllContent(); refreshQuickIfOpen();
 }
 function editPrepItem(gi, ii, field, el){
   if(!PREPGROUPS[gi] || !PREPGROUPS[gi].items[ii]) return;
@@ -2217,7 +2321,7 @@ function deletePrepItem(gi, ii){
 }
 function addPrepItem(gi){
   if(!PREPGROUPS[gi]) return;
-  PREPGROUPS[gi].items.push({ t:'새 항목', s:'' });
+  PREPGROUPS[gi].items.push({ t:'새 항목', s:'', ic:'focus' });
   queueSubappSync('prep');
   renderAllContent(); refreshQuickIfOpen();
 }
@@ -2243,9 +2347,10 @@ function menuMiniHTML(name){
 }
 function menuListHTML(mealKey){
   if(!dataLoaded) return LOADING;
+  const printBtn = isAdmin ? `<div class="admin-add-btn" onclick="printRecipes()">🖨️ 전체 레시피 인쇄용으로 저장 (냉장고 부착용)</div>` : '';
   const meal = MEALS[mealKey];
-  if(!meal || !meal.menus || !meal.menus.length) return '<p class="empty-note">메뉴 정보가 아직 등록되지 않았습니다.</p>' + ceBtn('meals','메뉴 수정하기');
-  return meal.menus.map(n=>menuMiniHTML(n)).join('') + ceBtn('meals','메뉴 수정하기');
+  if(!meal || !meal.menus || !meal.menus.length) return '<p class="empty-note">메뉴 정보가 아직 등록되지 않았습니다.</p>' + ceBtn('meals','메뉴 수정하기') + printBtn;
+  return meal.menus.map(n=>menuMiniHTML(n)).join('') + ceBtn('meals','메뉴 수정하기') + printBtn;
 }
 // '표고버섯 2kg 기준' 처럼 분량 숫자만 반복하는 문구는 위의 "50인분 기준" 안내와 중복이라 표시하지 않습니다.
 // (실제 시트에 옛날 데이터가 남아있어도, 화면에는 항상 걸러져서 나갑니다)
@@ -2254,31 +2359,161 @@ function isRedundantServingNote(s){
   const t = s.trim();
   return /^[가-힣a-zA-Z()·・\s]{0,10}\d+(\.\d+)?\s*(kg|g|킬로|리터|l|ml|개|장|봉지|병|통|컵|모|대|줌|알|큰술|작은술)\s*기준\.?$/i.test(t);
 }
+function recipeEsc(s){ return String(s==null?'':s).replace(/'/g,"\\'"); }
 function openRecipeModal(name){
   const m = findMenu(name);
-  if(!m || !m.recipe) return;
-  const r = m.recipe;
-  const showNote = r.serving && !isRedundantServingNote(r.serving);
-  document.getElementById('recipeModalBody').innerHTML = `
-    <h2 style="font-family:"Gowun Batang",serif; margin:0 0 4px; font-size:20px;">${m.name}</h2>
-    <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 ${showNote?4:16}px;">50인분 기준 · 인원수에 따라 가감해주세요</p>
-    ${showNote?`<p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 16px;">${r.serving}</p>`:''}
-    <div class="recipe-block">
-      <div class="sec-title" style="margin-top:0;"><span class="icon">${ICONS.bowl}</span>재료</div>
-      <ul class="plain">${(r.ingredients||[]).map(x=>`<li>${x}</li>`).join('')}</ul>
-    </div>
-    ${(r.steps||[]).map(s=>`
-      <div class="recipe-block">
-        <div class="sec-title" style="margin-top:0;">${s.title}</div>
-        <ul class="plain">${(s.items||[]).map(x=>`<li>${x}</li>`).join('')}</ul>
-      </div>
-    `).join('')}
-    ${isAdmin?`<div class="admin-add-btn" onclick="openRecipeEditor('${m.name.replace(/'/g,"\\'")}')">이 레시피 수정하기</div>`:''}
-  `;
+  if(!m) return;
+  if(isAdmin && !m.recipe) m.recipe = { serving:'', ingredients:[], steps:[] };
+  if(!m.recipe){
+    document.getElementById('recipeModalBody').innerHTML = `
+      <h2 style="font-family:'Gowun Batang',serif; margin:0 0 16px; font-size:20px;">${m.name}</h2>
+      <p class="empty-note">레시피가 아직 등록되지 않았습니다.</p>`;
+    document.getElementById('recipeModal').classList.add('show');
+    pushNav({modal:'recipe'});
+    return;
+  }
+  renderRecipeModalBody(name);
   document.getElementById('recipeModal').classList.add('show');
   const box = document.getElementById('recipeModalBox');
   if(box) box.scrollTop = 0;
   pushNav({modal:'recipe'});
+}
+// 레시피 화면을 다시 그린다. 관리자는 글자를 바로 눌러 고치고,
+// 재료·조리 항목은 손잡이(⠿)를 끌어 순서를 바꿀 수 있습니다. (메인앱과 같은 방식)
+function renderRecipeModalBody(name){
+  const m = findMenu(name);
+  if(!m || !m.recipe) return;
+  const r = m.recipe;
+  const showNote = r.serving && !isRedundantServingNote(r.serving);
+  const en = recipeEsc(name);
+  const nameField = isAdmin
+    ? `<span contenteditable="true" data-rfield="menuName" data-name="${en}" onfocus="isEditingNow=true" onblur="saveRecipeField(this)">${m.name}</span>`
+    : m.name;
+  const servingField = isAdmin
+    ? `<div style="margin:0 0 16px;">
+        <span class="tt-note-label" style="display:block;margin-bottom:2px;">분량 안내 (예: 유부 60장 기준)</span>
+        <span contenteditable="true" data-rfield="serving" data-name="${en}" onfocus="isEditingNow=true" onblur="saveRecipeField(this)"
+          style="font-size:12.5px;color:var(--ink-soft);" data-ph="분량을 적어주세요">${r.serving||''}</span>
+      </div>`
+    : (showNote ? `<p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 16px;">${r.serving}</p>` : '');
+
+  document.getElementById('recipeModalBody').innerHTML = `
+    <h2 style="font-family:'Gowun Batang',serif; margin:0 0 4px; font-size:20px;">${nameField}</h2>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 ${isAdmin?4:(showNote?4:16)}px;">50인분 기준 · 인원수에 따라 가감해주세요</p>
+    ${servingField}
+    <div class="recipe-block">
+      <div class="sec-title" style="margin-top:0;"><span class="icon">${ICONS.bowl}</span>재료</div>
+      <ul class="plain recipe-ing-list">
+        ${(r.ingredients||[]).map((x,ii)=>recipeIngHTML(en,ii,x)).join('')}
+      </ul>
+      ${isAdmin?`<div class="admin-add-btn" onclick="addIngredient('${en}')">+ 재료 추가</div>`:''}
+    </div>
+    ${(r.steps||[]).map((s,si)=>`
+      <div class="recipe-block">
+        <div class="sec-title" style="margin-top:0; display:flex; align-items:center; gap:8px;">
+          <span style="flex:1">${isAdmin
+            ? `<span contenteditable="true" data-rfield="stepTitle" data-name="${en}" data-si="${si}" onfocus="isEditingNow=true" onblur="saveRecipeField(this)">${s.title||''}</span>`
+            : (s.title||'')}</span>
+          ${isAdmin?`<button class="inline-del" onclick="removeStep('${en}',${si})" title="이 단계 삭제">🗑</button>`:''}
+        </div>
+        <ul class="plain recipe-step-list">
+          ${(s.items||[]).map((x,ii)=>recipeStepItemHTML(en,si,ii,x)).join('')}
+        </ul>
+        ${isAdmin?`<div class="admin-add-btn" onclick="addStepItem('${en}',${si})">+ 항목 추가</div>`:''}
+      </div>
+    `).join('')}
+    ${isAdmin?`<div class="admin-add-btn" onclick="addStep('${en}')">+ 조리 단계 추가</div>`:''}
+  `;
+}
+function recipeIngHTML(en, ii, text){
+  if(!isAdmin) return `<li>${text}</li>`;
+  return `<li class="recipe-item-edit" draggable="true"
+      ondragstart="onIngDragStart(event,'${en}',${ii})" ondragover="onIngDragOver(event)" ondrop="onIngDrop(event,'${en}',${ii})">
+    <span class="tt-drag-handle" title="끌어서 순서 바꾸기">⠿</span>
+    <span contenteditable="true" data-rfield="ingredient" data-name="${en}" data-idx="${ii}" onfocus="isEditingNow=true" onblur="saveRecipeField(this)">${text||''}</span>
+    <button class="inline-del" onclick="removeIngredient('${en}',${ii})" title="이 재료 삭제">🗑</button>
+  </li>`;
+}
+function recipeStepItemHTML(en, si, ii, text){
+  if(!isAdmin) return `<li>${text}</li>`;
+  return `<li class="recipe-item-edit" draggable="true"
+      ondragstart="onStepItemDragStart(event,'${en}',${si},${ii})" ondragover="onIngDragOver(event)" ondrop="onStepItemDrop(event,'${en}',${si},${ii})">
+    <span class="tt-drag-handle" title="끌어서 순서 바꾸기">⠿</span>
+    <span contenteditable="true" data-rfield="stepItem" data-name="${en}" data-si="${si}" data-idx="${ii}" onfocus="isEditingNow=true" onblur="saveRecipeField(this)">${text||''}</span>
+    <button class="inline-del" onclick="removeStepItem('${en}',${si},${ii})" title="이 항목 삭제">🗑</button>
+  </li>`;
+}
+// 글자를 고치면 바로 저장한다 (메인앱과 같은 방식 — 팝업·별도 저장버튼 없음)
+function saveRecipeField(el){
+  const m = findMenu(el.dataset.name);
+  if(!m || !m.recipe) return;
+  const field = el.dataset.rfield;
+  const val = el.textContent.trim();
+  if(field === 'menuName'){ m.name = val; }
+  else if(field === 'serving'){ m.recipe.serving = val; }
+  else if(field === 'ingredient'){ m.recipe.ingredients[+el.dataset.idx] = val; }
+  else if(field === 'stepTitle'){ m.recipe.steps[+el.dataset.si].title = val; }
+  else if(field === 'stepItem'){ m.recipe.steps[+el.dataset.si].items[+el.dataset.idx] = val; }
+  queueSubappSync('menus');
+  isEditingNow = false;
+}
+function addIngredient(name){
+  const m = findMenu(name); if(!m) return;
+  m.recipe.ingredients.push('새 재료');
+  queueSubappSync('menus'); renderRecipeModalBody(name);
+}
+function removeIngredient(name, ii){
+  const m = findMenu(name); if(!m) return;
+  m.recipe.ingredients.splice(ii,1);
+  queueSubappSync('menus'); renderRecipeModalBody(name);
+}
+function addStep(name){
+  const m = findMenu(name); if(!m) return;
+  m.recipe.steps.push({ title:'새 단계', items:[] });
+  queueSubappSync('menus'); renderRecipeModalBody(name);
+}
+function removeStep(name, si){
+  if(!confirm('이 단계를 통째로 삭제할까요?')) return;
+  const m = findMenu(name); if(!m) return;
+  m.recipe.steps.splice(si,1);
+  queueSubappSync('menus'); renderRecipeModalBody(name);
+}
+function addStepItem(name, si){
+  const m = findMenu(name); if(!m) return;
+  m.recipe.steps[si].items.push('새 항목');
+  queueSubappSync('menus'); renderRecipeModalBody(name);
+}
+function removeStepItem(name, si, ii){
+  const m = findMenu(name); if(!m) return;
+  m.recipe.steps[si].items.splice(ii,1);
+  queueSubappSync('menus'); renderRecipeModalBody(name);
+}
+// 재료 끌어서 순서 바꾸기
+let _recipeDragIng = null;
+function onIngDragStart(e, name, ii){ _recipeDragIng = {name, ii}; e.dataTransfer.effectAllowed='move'; }
+function onIngDragOver(e){ e.preventDefault(); }
+function onIngDrop(e, name, targetIi){
+  e.preventDefault();
+  if(!_recipeDragIng || _recipeDragIng.name !== name) return;
+  const m = findMenu(name); if(!m) return;
+  const arr = m.recipe.ingredients;
+  const [moved] = arr.splice(_recipeDragIng.ii, 1);
+  arr.splice(targetIi, 0, moved);
+  _recipeDragIng = null;
+  queueSubappSync('menus'); renderRecipeModalBody(name);
+}
+// 조리 단계 안 항목 끌어서 순서 바꾸기
+let _recipeDragStepItem = null;
+function onStepItemDragStart(e, name, si, ii){ _recipeDragStepItem = {name, si, ii}; e.dataTransfer.effectAllowed='move'; }
+function onStepItemDrop(e, name, si, targetIi){
+  e.preventDefault();
+  if(!_recipeDragStepItem || _recipeDragStepItem.name !== name || _recipeDragStepItem.si !== si) return;
+  const m = findMenu(name); if(!m) return;
+  const arr = m.recipe.steps[si].items;
+  const [moved] = arr.splice(_recipeDragStepItem.ii, 1);
+  arr.splice(targetIi, 0, moved);
+  _recipeDragStepItem = null;
+  queueSubappSync('menus'); renderRecipeModalBody(name);
 }
 function closeRecipeModal(){
   history.back();
@@ -2307,7 +2542,13 @@ function formatRow(r, ctx){
     <div class="tt-time" contenteditable="true" data-field="time" onfocus="isEditingNow=true" onblur="saveScheduleField(this)">${r.time||''}</div>
     <div class="tt-content tt-newline">
       <span class="tt-activity" contenteditable="true" data-field="content" onfocus="isEditingNow=true" onblur="saveScheduleField(this)">${r.content||''}</span>
-      <span class="tt-extra"><span class="tt-place-f" contenteditable="true" data-field="place" onfocus="isEditingNow=true" onblur="saveScheduleField(this)">${r.place||''}</span></span>
+      <span class="tt-extra">
+        <span class="tt-place-f" contenteditable="true" data-field="place" onfocus="isEditingNow=true" onblur="saveScheduleField(this)" data-ph="장소">${r.place||''}</span>
+      </span>
+      <div class="tt-note-row">
+        <span class="tt-note-label">비고</span>
+        <span class="tt-place-f" contenteditable="true" data-field="note" onfocus="isEditingNow=true" onblur="saveScheduleField(this)" data-ph="예: 12층 샤워실 사용가능">${r.note||''}</span>
+      </div>
     </div>
     <button class="tt-del-btn" onclick="deleteScheduleRow(this)" title="이 일정 삭제">삭제</button>
   </div>`;
@@ -2330,6 +2571,142 @@ function adjustPlaceWrap(container){
 }
 // stayKey(코스)의 dayIdx번째 날 일정 행을 그대로 반환합니다.
 // 이제 각 코스가 자기 날짜만 따로 저장하고 있으므로 시간으로 잘라낼 필요가 없습니다.
+// 일정표를 이미지(PNG)로 저장 — 메인앱과 같은 방식입니다
+// 소요시간 표시 (예: "30" → "30분") — 메인앱과 같은 형식
+function formatDurationForImage(dur){
+  const m = parseInt(dur, 10);
+  if(!m || isNaN(m)) return '';
+  return m + '분';
+}
+function exportTTImage(stayKey){
+  if(typeof html2canvas === 'undefined'){
+    showToast('이미지 저장 기능을 불러오지 못했어요. 인터넷 연결을 확인해주세요.');
+    return;
+  }
+  const t = TIMETABLES[stayKey];
+  if(!t || !t.days){ showToast('저장할 일정표가 없습니다.'); return; }
+
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:700px;background:#ffffff;padding:28px;font-family:"Gowun Dodum","맑은 고딕",sans-serif;color:#222;';
+
+  // 제목의 "(15일–16일)" 같은 날짜 부분은 실제로 고친 날짜(dayLabel)를 기준으로 다시 만든다.
+  // t.label은 파일에 처음 만들 때 박힌 문구라, 날짜만 고쳐도 여기엔 반영되지 않기 때문이다.
+  const firstDay = dayLabel(stayKey, 0);
+  const lastDay = dayLabel(stayKey, t.days.length-1);
+  const courseName = (t.label||'상세 일정').replace(/\s*\([^)]*\)\s*$/,'').trim(); // 맨 끝 괄호(날짜)만 떼어낸다
+  const titleHTML = `<div style="text-align:center;font-family:'Gowun Batang';font-size:26px;font-weight:800;color:#222;margin-bottom:6px;">${courseName}</div>
+    <div style="text-align:center;font-size:14px;color:#666;margin-bottom:18px;">${firstDay}${t.days.length>1?' ~ '+lastDay:''}</div>`;
+
+  const bandColors = ['#cdc2e6', '#f2e8c8']; // 메인앱과 같은 보라·베이지 번갈아 색
+  const daysHTML = t.days.map((d, dayIdx)=>{
+    const band = bandColors[dayIdx % bandColors.length];
+    const rowsHTML = d.rows.map(r=>{
+      const isProg = !!r.prog;
+      const contentStyle = isProg ? 'color:#2745c9;font-weight:700;' : 'color:#222;';
+      const noteStyle = r.note ? 'color:#c0392b;font-weight:700;' : 'color:#222;';
+      return `<tr>
+        <td style="padding:10px 8px;border:1px solid #ddd;text-align:center;font-size:13.5px;white-space:nowrap;">${r.time||''}</td>
+        <td style="padding:10px 8px;border:1px solid #ddd;text-align:center;font-size:13.5px;">${formatDurationForImage(r.dur)}</td>
+        <td style="padding:10px 12px;border:1px solid #ddd;font-size:13.5px;${contentStyle}">${r.content||''}</td>
+        <td style="padding:10px 8px;border:1px solid #ddd;text-align:center;font-size:13.5px;">${r.place||''}</td>
+        <td style="padding:10px 8px;border:1px solid #ddd;text-align:center;font-size:12.5px;${noteStyle}">${r.note||''}</td>
+      </tr>`;
+    }).join('');
+    return `<div style="margin-bottom:22px;">
+      <div style="background:${band};text-align:center;font-family:'Gowun Batang';font-weight:800;font-size:16px;padding:10px 0;border:1px solid #ccc;border-bottom:none;">${dayLabel(stayKey, dayIdx)}</div>
+      <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
+        <thead>
+          <tr style="background:#faf6ec;">
+            <th style="padding:8px;border:1px solid #ddd;font-size:13px;width:15%;">시간</th>
+            <th style="padding:8px;border:1px solid #ddd;font-size:13px;width:12%;">소요시간</th>
+            <th style="padding:8px;border:1px solid #ddd;font-size:13px;width:38%;">내용</th>
+            <th style="padding:8px;border:1px solid #ddd;font-size:13px;width:17%;">장소</th>
+            <th style="padding:8px;border:1px solid #ddd;font-size:13px;width:18%;">비고</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHTML}</tbody>
+      </table>
+    </div>`;
+  }).join('');
+
+  wrap.innerHTML = titleHTML + daysHTML;
+  document.body.appendChild(wrap);
+
+  html2canvas(wrap, {backgroundColor:'#ffffff', scale:2}).then(canvas=>{
+    document.body.removeChild(wrap);
+    const link = document.createElement('a');
+    link.download = `${courseName.replace(/[^\w가-힣]/g,'')}_${firstDay.replace(/[^\w가-힣0-9]/g,'')}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('이미지가 저장되었어요.');
+  }).catch(()=>{
+    document.body.removeChild(wrap);
+    showToast('이미지 저장에 실패했어요.');
+  });
+}
+// 전체 레시피를 인쇄용(A4)으로 만들어 인쇄창을 띄운다 — 메뉴 1개당 A4 1장, 메인앱과 같은 방식
+function printRecipes(){
+  const order = ['dinner1','dinner2','morning'];
+  let html = '';
+  const seen = new Set(); // 같은 메뉴가 여러 끼니에 겹쳐 있어도 한 장만 나오게
+  order.forEach(key=>{
+    const meal = MEALS[key];
+    if(!meal) return;
+    meal.menus.forEach(name=>{
+      if(seen.has(name)) return;
+      const m = findMenu(name);
+      if(!m || !m.recipe) return;
+      seen.add(name);
+      const r = m.recipe;
+      html += `<div class="print-page"><div class="print-page-inner">
+        <div class="print-header">
+          <div class="print-name">${m.emoji||''} ${m.name}</div>
+        </div>
+        <div class="print-block">
+          <div class="print-sec-title">재료</div>
+          <div class="print-ing-grid">${(r.ingredients||[]).map(x=>`<div class="print-ing-item">${x}</div>`).join('')}</div>
+        </div>
+        ${(r.steps||[]).map(s=>`
+          <div class="print-block">
+            <div class="print-sec-title">${s.title}</div>
+            <ul class="print-steps">${(s.items||[]).map(x=>`<li>${x}</li>`).join('')}</ul>
+          </div>
+        `).join('')}
+      </div></div>`;
+    });
+  });
+
+  if(!html){ showToast('인쇄할 레시피가 없습니다. 먼저 레시피를 등록해주세요.'); return; }
+
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+    <title>바라지 공양 레시피</title>
+    <style>
+      @page { size: A4; margin: 10mm; }
+      * { box-sizing:border-box; }
+      html, body { margin:0; padding:0; }
+      body { font-family: 'Malgun Gothic','맑은 고딕',sans-serif; color:#1a1a1a; line-height:1.55; font-size:13pt; }
+      .print-page { page-break-after:always; display:flex; }
+      .print-page:last-child { page-break-after:auto; }
+      .print-page-inner { width:100%; height:277mm; overflow:hidden; display:flex; flex-direction:column; flex-shrink:0; transform-origin:top left; }
+      .print-header { display:flex; align-items:baseline; gap:4mm; margin-bottom:5mm; flex:none; flex-wrap:wrap; }
+      .print-name { font-size:21pt; font-weight:800; color:#3d4a2c; }
+      .print-block { border:0.4mm solid #d8ddc9; border-radius:2.5mm; padding:3.5mm 5mm; margin-bottom:4mm; flex:none; }
+      .print-sec-title { font-size:13pt; font-weight:800; color:#3d4a2c; padding-bottom:2mm; margin-bottom:2.5mm; border-bottom:0.5mm solid #7a8b5f; }
+      .print-ing-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:2mm 4mm; }
+      .print-ing-item { font-size:12pt; padding:1mm 2mm; background:#f6f7f1; border-radius:1.2mm; }
+      .print-steps { font-size:12.5pt; padding-left:5mm; margin:0; }
+      .print-steps li { margin-bottom:2mm; }
+      @media print { .noprint{display:none;} }
+    </style></head><body>
+    <div class="noprint" style="text-align:center;margin:14px 0;padding:14px;background:#f4efe6;">
+      <button onclick="window.print()" style="font-size:17px;padding:12px 28px;background:#5f6e49;color:#fff;border:none;border-radius:8px;cursor:pointer;">이 문서를 PDF로 저장 / 인쇄하기</button>
+      <p style="font-size:13px;color:#666;margin-top:8px;">버튼을 누른 뒤 '대상'에서 'PDF로 저장'을 고르세요. (메뉴 1개당 A4 1장)</p>
+    </div>
+    ${html}
+  </body></html>`);
+  w.document.close();
+}
 function ttRowsForDay(stayKey, dayIdx){
   const t = TIMETABLES[stayKey];
   if(!t || !t.days || !t.days[dayIdx]) return null;
@@ -2358,7 +2735,9 @@ function ttRowsHTMLByStayKey(stayKey){
       + (isAdmin ? `<div class="admin-add-btn tt-add-btn" onclick="addScheduleRow('${stayKey}', ${dayIdx})">+ 일정 추가</div>` : '')
       + `</div>`;
   });
-  return html || '<p class="empty-note">일정 정보가 아직 등록되지 않았습니다.</p>';
+  if(!html) return '<p class="empty-note">일정 정보가 아직 등록되지 않았습니다.</p>';
+  if(isAdmin) html += `<div class="admin-add-btn" onclick="exportTTImage('${stayKey}')">🖼️ 이 일정표 이미지로 저장</div>`;
+  return html;
 }
 function ttFullHTML(stayKey){
   if(!dataLoaded) return LOADING;
@@ -3006,67 +3385,7 @@ document.addEventListener('touchend', function(e){
    내용 수정 (관리자) — 준비물 · 활동 · 공양메뉴
    메인앱과 데이터를 나눠 쓰므로, 여기서 고친 것은 서브앱에만 반영됩니다.
    ========================================================= */
-// 레시피(재료·조리법) 수정 — 줄바꿈으로 구분해서 편하게 고칠 수 있게 합니다
-let recipeEditorName = null;
-function openRecipeEditor(name){
-  if(!isAdmin) return;
-  const m = findMenu(name);
-  if(!m) return;
-  if(!m.recipe) m.recipe = { serving:'', ingredients:[], steps:[] };
-  recipeEditorName = name;
-  isEditingNow = true;
-  const r = m.recipe;
-  document.getElementById('contentEditorTitle').textContent = m.name + ' 레시피 수정';
-  document.getElementById('contentEditorHint').textContent = '한 줄에 하나씩 적어주세요. 굵게 표시하려면 <b>글자</b> 처럼 감싸면 됩니다.';
-  document.getElementById('contentEditorBody').innerHTML = `
-    <div class="admin-editgroup">
-      <label class="re-label">메뉴 이름</label>
-      <input id="re_name" class="re-input" value="${escAttr(m.name)}">
-      <label class="re-label">분량 안내 (선택)</label>
-      <input id="re_serving" class="re-input" value="${escAttr(r.serving||'')}" placeholder="예: 유부 60장 기준">
-      <label class="re-label">재료 (한 줄에 하나씩)</label>
-      <textarea id="re_ing" class="re-textarea" rows="8">${escAttr((r.ingredients||[]).join('\n'))}</textarea>
-    </div>
-    <div id="re_steps">
-      ${(r.steps||[]).map((s,si)=>`
-        <div class="admin-editgroup re-step" data-si="${si}">
-          <label class="re-label">단계 ${si+1} 제목 (비우면 삭제됩니다)</label>
-          <input class="re-step-title re-input" value="${escAttr(s.title||'')}">
-          <label class="re-label">내용 (한 줄에 하나씩)</label>
-          <textarea class="re-step-items re-textarea" rows="6">${escAttr((s.items||[]).join('\n'))}</textarea>
-        </div>`).join('')}
-    </div>
-    <button class="admin-add-btn" onclick="reAddStep()">+ 조리 단계 추가</button>
-  `;
-  contentEditorKind = 'recipe';
-  document.getElementById('contentEditorModal').classList.add('show');
-}
-function reAddStep(){
-  const wrap = document.getElementById('re_steps');
-  const si = wrap.querySelectorAll('.re-step').length;
-  const div = document.createElement('div');
-  div.className = 'admin-editgroup re-step';
-  div.innerHTML = `
-    <label class="re-label">단계 ${si+1} 제목 (비우면 삭제됩니다)</label>
-    <input class="re-step-title re-input" placeholder="예: 재료 준비">
-    <label class="re-label">내용 (한 줄에 하나씩)</label>
-    <textarea class="re-step-items re-textarea" rows="6"></textarea>`;
-  wrap.appendChild(div);
-}
-function saveRecipeEditor(){
-  const m = findMenu(recipeEditorName);
-  if(!m) return;
-  const newName = document.getElementById('re_name').value.trim();
-  if(newName) m.name = newName;
-  m.recipe.serving = document.getElementById('re_serving').value.trim();
-  m.recipe.ingredients = document.getElementById('re_ing').value.split('\n').map(s=>s.trim()).filter(Boolean);
-  m.recipe.steps = [...document.querySelectorAll('#re_steps .re-step')].map(el=>({
-    title: el.querySelector('.re-step-title').value.trim(),
-    items: el.querySelector('.re-step-items').value.split('\n').map(s=>s.trim()).filter(Boolean)
-  })).filter(s=>s.title); // 제목이 빈 단계는 삭제된 것으로 본다
-  queueSubappSync('menus');
-}
-
+// 레시피는 이제 화면에서 바로 고치므로(openRecipeModal 참고) 별도 팝업 편집기는 없습니다.
 let contentEditorKind = null;
 function openContentEditor(kind){
   if(!isAdmin) return;
@@ -3178,9 +3497,6 @@ async function saveContentEditor(){
 
   }else if(contentEditorKind === 'nextevents'){
     saveNextEventsEditor();
-
-  }else if(contentEditorKind === 'recipe'){
-    saveRecipeEditor();
 
   }else if(contentEditorKind === 'meals'){
     [...body.querySelectorAll('.admin-editgroup[data-mealkey]')].forEach(g=>{
