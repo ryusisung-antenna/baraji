@@ -112,7 +112,10 @@ ul.plain li::before{ content:''; position:absolute; left:0; top:9px; width:4px; 
 .day-label{ display:block; font-family:"Gowun Batang",serif; font-size:13.5px; font-weight:700; margin:20px 0 10px; color:var(--sage); }
 .tt-row{ display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px; align-items:flex-start; }
 .tt-row:last-child{ border-bottom:none; }
-.tt-time{ flex:0 0 62px; width:62px; color:var(--sage); font-weight:700; font-size:11.5px; line-height:1.45; white-space:normal; overflow-wrap:anywhere; padding-top:2px; }
+.tt-time-wrap{ flex:0 0 62px; min-width:62px; max-width:62px; box-sizing:border-box; }
+.tt-time{ flex:0 0 62px; min-width:62px; max-width:62px; box-sizing:border-box; color:var(--sage); font-weight:700; font-size:11.5px; line-height:1.45; white-space:normal; overflow-wrap:anywhere; padding-top:2px; }
+.tt-time-wrap .tt-time{ flex:none; width:100%; max-width:none; min-width:0; } /* 감싸개 안에서는 감싸개 폭을 그대로 채움 */
+.tt-dur-f{ font-size:10px; color:var(--ink-soft); margin-top:2px; }
 .tt-content{ flex:1 1 0; line-height:1.5; min-width:0; overflow-wrap:break-word; word-break:break-word; padding-top:1px; }
 .tt-content .tt-activity{ display:inline-block; }
 .tt-content b.prog{ color:var(--ink); font-weight:700; }
@@ -199,10 +202,16 @@ body.admin-on .adm-toolbar{ display:flex; }
 .prep-row-ic{ display:flex; align-items:flex-start; gap:12px; padding:13px 0; border-bottom:1px solid var(--line); }
 .prep-row-ic:last-child{ border-bottom:none; }
 .prep-row-ic .prep-ct{ flex:1; min-width:0; }
+.prep-row-ic .prep-ct b{ display:block; font-size:14.5px; font-weight:600; }
+.prep-row-ic .prep-ct .desc{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
 .icon-pick{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
 .icon-pick button{ width:32px; height:32px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--ink-soft); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
 .icon-pick button svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.6; }
 .icon-pick button.on{ border-color:var(--sage); background:var(--sage-wash); color:var(--sage); }
+.preview-note{ display:flex; gap:10px; align-items:flex-start; background:#F3E4D8; border:1px solid #D9B79E; border-radius:12px; padding:13px 15px; margin-bottom:20px; }
+.preview-note .pn-ico{ flex:none; width:20px; height:20px; border-radius:50%; background:#C0876A; color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; margin-top:1px; }
+.preview-note .pn-txt{ font-size:12.5px; color:#6B3E24; line-height:1.6; }
+.preview-note .pn-txt b{ color:#4A2814; }
 /* 화면에서 바로 고치기 — 고칠 수 있는 글자는 점선으로 표시 */
 body.admin-on .plain [contenteditable]{ outline:1px dashed var(--sage-soft); outline-offset:3px; border-radius:3px; min-width:24px; display:inline-block; }
 body.admin-on .prep-group-label[contenteditable]{ outline:1px dashed var(--sage-soft); outline-offset:3px; border-radius:3px; }
@@ -292,12 +301,6 @@ body.text-edit-on [data-editable-key]:focus {
   height: clamp(20px, 6vw, 26px);
 }
 .quick-tab { min-height: 48px; }
-.tt-time {
-  flex: 0 1 auto !important;
-  min-width: 48px;
-  max-width: 82px;
-  width: auto !important;
-}
 .opt-add-row button, .opt-add-group-row button,
 .admin-editrow button, .quick-tab, .step-prev-btn, .btn-next {
   min-height: 44px;
@@ -424,7 +427,6 @@ h2.subtitle .icon { color: var(--sage); opacity: .85; }
         </div>
         <p class="lead" data-editable-key="dinnerLead">다른 공양바라지분들과 함께 장병들의 저녁공양을 준비하고 공양간을 정리하고 귀가하게 됩니다.</p>
         <h2 class="subtitle" style="margin-top:6px;"><span class="icon" id="icBowlDinner"></span><span data-editable-key="hdgBowlDinner">저녁공양 메뉴</span></h2>
-        <p class="empty-note" id="dinnerDayLabel" style="margin-bottom:8px;"></p>
         <div class="card" id="dinnerMenuBox"></div>
         <div id="dinnerKitchenBox"></div>
       </div>
@@ -1239,7 +1241,7 @@ let isAdmin = false;
 /* =========================================================
    3. 로컬 저장 / 시트 동기화
    ========================================================= */
-const BUILD_TAG = '2026-08-08-h'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
+const BUILD_TAG = '2026-08-08-n'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
 const DATA_VERSION = 3; // 기본 데이터를 크게 바꿀 때마다 올려주세요. 오래된 기기 캐시를 자동으로 무시하게 됩니다.
 function loadLocalShared(){
   try{
@@ -1849,7 +1851,10 @@ function quickStepsOf(pageId){
   const isFullStay = (quickFromPage === 'page-stay1' || quickFromPage === 'page-stay2' || quickFromPage === 'page-stay3');
   const tabs = [home, ...rest];
   if(!(PROGRAM_ID === 'seohaeng' && isFullStay)){
-    tabs.push({ index:-2, title:'바라지 전체 활동', name:'전체 활동', all:true,
+    // 파트봉사로 신청하신 분께는 "이게 내 일정"으로 오해하지 않도록 다른 이름을 씁니다.
+    // 전체(1박2일·2박3일) 참가자에게는 실제로 본인 일정이므로 그대로 "전체 활동"입니다.
+    const tabName = isFullStay ? '바라지 전체 활동' : '전체참여하면';
+    tabs.push({ index:-2, title:'바라지 전체 활동', name:tabName, all:true, isPreview:!isFullStay,
       icon:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>' });
   }
   return tabs;
@@ -1934,10 +1939,15 @@ function renderQuickView(){
 // 전체 활동 탭 — 2박3일 참가자가 전체 흐름을 볼 때
 function quickAllHTML(){
   const isSeo = (PROGRAM_ID === 'seohaeng');
+  const isFullStay = (quickFromPage === 'page-stay1' || quickFromPage === 'page-stay2' || quickFromPage === 'page-stay3');
   const dur = isSeo ? '1박 2일' : '2박 3일';
+  // 파트봉사자에게는 "이게 내 일정"으로 오해하지 않도록, 이건 미리보기라는 걸 먼저 밝힙니다.
+  const previewNote = isFullStay ? '' :
+    `<div class="preview-note"><div class="pn-ico">!</div><div class="pn-txt"><b>지금은 파트봉사</b>로 함께해주고 계세요. 아래는 ${dur}로 신청하시면 경험하시게 될 전체 일정과 활동이에요.</div></div>`;
   return `
     <h1 class="title" style="margin-bottom:4px">바라지 전체 활동</h1>
-    <p class="lead" style="margin-bottom:20px">${dur} 전체 일정과 활동입니다.</p>
+    ${isFullStay ? `<p class="lead" style="margin-bottom:20px">${dur} 전체 일정과 활동입니다.</p>` : ''}
+    ${previewNote}
     <h2 class="subtitle" style="margin-top:0">이 봉사에서 우리가 하는 일</h2>
     <div class="card">${activityListHTML()}</div>
     <h2 class="subtitle">공양 메뉴</h2>
@@ -2263,7 +2273,7 @@ function setActivityIcon(i, key){
 // 활동 소개 — 글자를 고치면 바로 반영
 function editActivity(i, field, el){
   if(!ACTIVITIES[i]) return;
-  ACTIVITIES[i][field] = el.textContent.trim();
+  ACTIVITIES[i][field] = el.innerHTML.trim(); // innerHTML로 저장해야 볼드·밑줄·색 서식이 유지됩니다
   queueSubappSync('activity');
   isEditingNow = false;
 }
@@ -2289,7 +2299,8 @@ function prepItemHTML(gi, ii, it){
   return `<div class="prep-row-ic">
     <div class="prep-ic-circle">${icon}</div>
     <div class="prep-ct">
-      <b${ed('t')}>${it.t||''}</b>${(it.s||isAdmin)?' — ':''}<span${ed('s')}>${it.s||''}</span>
+      <b${ed('t')}>${it.t||''}</b>
+      <div class="desc"${ed('s')}>${it.s||''}</div>
       ${iconPick}
       ${isAdmin?`<button class="inline-del" onclick="deletePrepItem(${gi},${ii})" title="이 항목 삭제">🗑</button>`:''}
     </div>
@@ -2303,13 +2314,13 @@ function setPrepIcon(gi, ii, key){
 }
 function editPrepItem(gi, ii, field, el){
   if(!PREPGROUPS[gi] || !PREPGROUPS[gi].items[ii]) return;
-  PREPGROUPS[gi].items[ii][field] = el.textContent.trim();
+  PREPGROUPS[gi].items[ii][field] = el.innerHTML.trim(); // innerHTML로 저장해야 볼드·밑줄·색 서식이 유지됩니다
   queueSubappSync('prep');
   isEditingNow = false;
 }
 function editPrepGroup(gi, el){
   if(!PREPGROUPS[gi]) return;
-  PREPGROUPS[gi].group = el.textContent.trim();
+  PREPGROUPS[gi].group = el.innerHTML.trim();
   queueSubappSync('prep');
   isEditingNow = false;
 }
@@ -2448,7 +2459,7 @@ function saveRecipeField(el){
   const m = findMenu(el.dataset.name);
   if(!m || !m.recipe) return;
   const field = el.dataset.rfield;
-  const val = el.textContent.trim();
+  const val = el.innerHTML.trim(); // innerHTML로 저장해야 볼드·밑줄·색 서식이 유지됩니다
   if(field === 'menuName'){ m.name = val; }
   else if(field === 'serving'){ m.recipe.serving = val; }
   else if(field === 'ingredient'){ m.recipe.ingredients[+el.dataset.idx] = val; }
@@ -2539,7 +2550,10 @@ function formatRow(r, ctx){
       data-stay="${ctx.stayKey}" data-day="${ctx.dayIdx}" data-row="${ctx.rowIdx}"
       ondragstart="ttDragStart(event)" ondragover="ttDragOver(event)" ondrop="ttDrop(event)" ondragend="ttDragEnd(event)">
     <span class="tt-drag-handle" title="끌어서 순서 바꾸기">⠿</span>
-    <div class="tt-time" contenteditable="true" data-field="time" onfocus="isEditingNow=true" onblur="saveScheduleField(this)">${r.time||''}</div>
+    <div class="tt-time-wrap">
+      <div class="tt-time" contenteditable="true" data-field="time" onfocus="isEditingNow=true" onblur="saveScheduleField(this)">${r.time||''}</div>
+      <div class="tt-dur-f">${(function(){const d=calcDurationFromTime(r.time);return d?d+'분':'';})()}</div>
+    </div>
     <div class="tt-content tt-newline">
       <span class="tt-activity" contenteditable="true" data-field="content" onfocus="isEditingNow=true" onblur="saveScheduleField(this)">${r.content||''}</span>
       <span class="tt-extra">
@@ -2606,7 +2620,7 @@ function exportTTImage(stayKey){
       const noteStyle = r.note ? 'color:#c0392b;font-weight:700;' : 'color:#222;';
       return `<tr>
         <td style="padding:10px 8px;border:1px solid #ddd;text-align:center;font-size:13.5px;white-space:nowrap;">${r.time||''}</td>
-        <td style="padding:10px 8px;border:1px solid #ddd;text-align:center;font-size:13.5px;">${formatDurationForImage(r.dur)}</td>
+        <td style="padding:10px 8px;border:1px solid #ddd;text-align:center;font-size:13.5px;">${formatDurationForImage(calcDurationFromTime(r.time))}</td>
         <td style="padding:10px 12px;border:1px solid #ddd;font-size:13.5px;${contentStyle}">${r.content||''}</td>
         <td style="padding:10px 8px;border:1px solid #ddd;text-align:center;font-size:13.5px;">${r.place||''}</td>
         <td style="padding:10px 8px;border:1px solid #ddd;text-align:center;font-size:12.5px;${noteStyle}">${r.note||''}</td>
@@ -2764,8 +2778,6 @@ function renderDinnerContent(){
   if(!box) return;
   const opt = findOptionById(selectedOptionId);
   const mealKey = (opt && opt.mealKey) || 'dinner1';
-  const labelEl = document.getElementById('dinnerDayLabel');
-  if(labelEl) labelEl.textContent = opt ? opt.label + ' 저녁공양' : '';
   box.innerHTML = menuListHTML(mealKey);
   document.getElementById('dinnerPrepBox').innerHTML = prepListHTML(g=>!g.rules, true);
   document.getElementById('dinnerRulesBox').innerHTML = rulesListHTML();
@@ -3285,10 +3297,29 @@ function saveScheduleField(el){
   const field = el.dataset.field;
   const row = findScheduleRow(stayKey, dayIdx, rowIdx);
   if(!row) return;
-  row[field] = el.textContent.trim();
+  // 시간은 소요시간을 계산해야 하므로 순수 글자로, 나머지(내용·장소·비고)는
+  // 볼드·밑줄·색 서식이 유지되도록 innerHTML로 저장합니다.
+  row[field] = (field === 'time') ? el.textContent.trim() : el.innerHTML.trim();
+  if(field === 'time'){
+    row.dur = calcDurationFromTime(row.time); // 시간을 고치면 소요시간을 자동으로 다시 계산
+    const durEl = rowEl.querySelector('.tt-dur-f');
+    if(durEl) durEl.textContent = row.dur ? row.dur+'분' : '';
+  }
   saveLocalShared();
   queueSubappSync('timetable');
   isEditingNow = false;
+}
+// "13:30~14:30", "13:30-14:30", "13:30 ~ 14:30" 등을 인식해 분 단위 소요시간을 계산합니다.
+// 끝나는 시간이 없으면(예: "14:30~") 계산하지 않고 빈 값을 돌려줍니다.
+function calcDurationFromTime(timeStr){
+  if(!timeStr) return '';
+  const nums = String(timeStr).match(/\d{1,2}:\d{2}/g);
+  if(!nums || nums.length < 2) return '';
+  const toMin = (t)=>{ const [h,m] = t.split(':').map(Number); return h*60+m; };
+  let start = toMin(nums[0]), end = toMin(nums[1]);
+  if(end < start) end += 24*60; // 자정을 넘기는 일정(예: 23:30~00:30) 대비
+  const diff = end - start;
+  return diff > 0 ? String(diff) : '';
 }
 function deleteScheduleRow(btn){
   const rowEl = btn.closest('.tt-row-edit');
