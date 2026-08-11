@@ -189,6 +189,20 @@ body.admin-on .adm-toolbar{ display:flex; }
   padding:13px 16px; margin-bottom:8px; }
 .home-mini .t{ font-size:13.5px; font-weight:600; margin-bottom:2px; }
 .home-mini .d{ font-size:12.5px; color:var(--ink-soft); }
+.home-mini-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.home-mini-txt{ flex:1; min-width:0; }
+.notify-btn{ flex:none; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; color:var(--sage); }
+.notify-ring{ width:34px; height:34px; border-radius:50%; border:1px solid var(--sage-soft); display:flex; align-items:center; justify-content:center; }
+.notify-ring svg{ width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.notify-lb{ font-size:9.5px; font-weight:600; }
+.notify-btn:hover .notify-ring, .notify-btn:active .notify-ring{ background:var(--sage-wash); }
+.ny-event-box{ background:var(--sage-wash); border:1px solid var(--sage-soft); border-radius:10px; padding:10px 13px; margin-bottom:14px; }
+.ny-event-label{ font-size:10.5px; color:var(--sage); font-weight:700; margin-bottom:3px; }
+.ny-event-title{ font-size:13.5px; font-weight:600; color:var(--ink); }
+.ny-check-row label{ display:flex; gap:9px; align-items:flex-start; font-size:12.5px; color:var(--ink); padding:9px 0; border-bottom:1px solid var(--line); line-height:1.5; cursor:pointer; }
+.ny-check-row label:last-child{ border-bottom:none; }
+.ny-check-row input[type=checkbox]{ margin-top:2px; flex:none; width:16px; height:16px; accent-color:var(--sage); }
+.notify-btn:hover, .notify-btn:active{ background:var(--sage-wash); }
 /* 활동·준비물 아이콘(메인앱과 같은 원형 아이콘) */
 .act-num-circle{ flex:none; width:34px; height:34px; border-radius:50%; background:none; border:1px solid var(--line); color:var(--ink); display:flex; align-items:center; justify-content:center; margin-top:2px; }
 .act-num-circle svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
@@ -600,6 +614,42 @@ h2.subtitle .icon { color: var(--sage); opacity: .85; }
   <div class="modal-box" id="recipeModalBox">
     <div id="recipeModalBody"></div>
     <div class="m-actions"><button class="btn-cancel" onclick="closeRecipeModal()" style="flex:1;">닫기</button></div>
+  </div>
+</div>
+
+<!-- 군청년 프로그램 알림 신청 모달 (일반 봉사자용) -->
+<div class="modal" id="notifyModal">
+  <div class="modal-box">
+    <h3>알림 신청</h3>
+    <div id="ny_eventBox" class="ny-event-box">
+      <div class="ny-event-label">알림 신청하실 일정</div>
+      <div class="ny-event-title" id="ny_eventTitle"></div>
+    </div>
+    <div class="ny-check-row">
+      <label>
+        <input type="checkbox" id="ny_wantEvent">
+        <span><b>이 일정</b>이 확정되면 알림 받기</span>
+      </label>
+      <label>
+        <input type="checkbox" id="ny_wantGeneral">
+        <span>이 일정 <b>이외에</b>도 군청년 프로그램 소식이 있을 때 알림 받기</span>
+      </label>
+    </div>
+    <div class="admin-editgroup" style="margin-top:14px;">
+      <label class="re-label">이름</label>
+      <input id="ny_name" class="re-input" placeholder="이름">
+      <label class="re-label">전화번호</label>
+      <input id="ny_phone" class="re-input" placeholder="010-0000-0000" inputmode="tel" oninput="autoFormatPhone(this)">
+      <label class="re-label">소속 지부</label>
+      <input id="ny_bu" class="re-input" placeholder="예: 서울">
+      <label class="re-label">소속 지회</label>
+      <input id="ny_ji" class="re-input" placeholder="예: 방배">
+    </div>
+    <p style="font-size:11.5px; color:var(--ink-soft); margin:10px 2px 0; line-height:1.55;">신청하신 연락처로 문자·전화 안내를 드릴 수 있어요.</p>
+    <div class="m-actions">
+      <button class="btn-cancel" onclick="closeNotifyModal()">닫기</button>
+      <button class="btn-ok" onclick="submitNotifySubscribe()">신청하기</button>
+    </div>
   </div>
 </div>
 
@@ -1241,7 +1291,7 @@ let isAdmin = false;
 /* =========================================================
    3. 로컬 저장 / 시트 동기화
    ========================================================= */
-const BUILD_TAG = '2026-08-08-n'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
+const BUILD_TAG = '2026-08-08-t'; // 이 파일의 버전 — 화면 맨 아래에서 확인할 수 있습니다
 const DATA_VERSION = 3; // 기본 데이터를 크게 바꿀 때마다 올려주세요. 오래된 기기 캐시를 자동으로 무시하게 됩니다.
 function loadLocalShared(){
   try{
@@ -1698,11 +1748,24 @@ function quickHomeHTML(){
   // 다음 봉사 일정 — 지금 당장 필요한 게 아니므로 구분선 아래 참고 정보로 둔다
   const nextList = curNextEvents();
   const nextHTML = nextList.length
-    ? nextList.map(s=>`<div class="home-mini">
-        <div class="t">${s.title||''}${s.dur?` · ${s.dur}`:''}</div>
-        ${s.date?`<div class="d">${s.date}</div>`:''}
-        ${s.place?`<div class="d">${s.place}</div>`:''}
-      </div>`).join('')
+    ? nextList.map(s=>{
+        // 화면에 보이는 것과 똑같이 "제목 · 기간 (날짜)"로 합쳐서 알림 신청에 넘긴다.
+        // 제목만 넘기면 어느 날짜 일정인지 꼭지앱에서 알 수 없기 때문입니다.
+        const fullLabel = [s.title||'', s.dur?`· ${s.dur}`:'', s.date?`(${s.date})`:''].filter(Boolean).join(' ');
+        return `<div class="home-mini">
+        <div class="home-mini-row">
+          <div class="home-mini-txt">
+            <div class="t">${s.title||''}${s.dur?` · ${s.dur}`:''}</div>
+            ${s.date?`<div class="d">${s.date}</div>`:''}
+            ${s.place?`<div class="d">${s.place}</div>`:''}
+          </div>
+          ${!isAdmin?`<div class="notify-btn" onclick="openNotifyModal('${fullLabel.replace(/'/g,"\\'")}')">
+            <div class="notify-ring"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M9.5 18a2.5 2.5 0 005 0"/></svg></div>
+            <div class="notify-lb">신청</div>
+          </div>`:''}
+        </div>
+      </div>`;
+      }).join('')
     : (isAdmin ? '<div class="step-placeholder">다음 일정은 아직 확정 전입니다.</div>' : '');
 
   return `
@@ -1893,6 +1956,66 @@ function quickTabLabel(s){
   return subappTextOverrides[tabNameKey(s)] || s.name;
 }
 // 탭 이름 수정창
+// 군청년 프로그램 알림 신청 — 일반 봉사자가 다음 일정 소식을 계속 받아보고 싶을 때 씁니다.
+let notifyFromEvent = '';
+// 전화번호를 입력하는 대로 000-0000-0000 형식으로 맞춰준다.
+function autoFormatPhone(el){
+  const digits = el.value.replace(/[^0-9]/g, '').slice(0, 11);
+  let out = digits;
+  if(digits.startsWith('02')){
+    // 서울 지역번호(02)는 자릿수가 다르므로 따로 처리
+    out = digits.length > 6 ? digits.slice(0,2)+'-'+digits.slice(2,6)+'-'+digits.slice(6,10)
+        : digits.length > 2 ? digits.slice(0,2)+'-'+digits.slice(2)
+        : digits;
+  }else if(digits.length > 7){
+    out = digits.slice(0,3)+'-'+digits.slice(3,7)+'-'+digits.slice(7);
+  }else if(digits.length > 3){
+    out = digits.slice(0,3)+'-'+digits.slice(3);
+  }
+  el.value = out;
+}
+function openNotifyModal(eventTitle){
+  notifyFromEvent = eventTitle || '';
+  isEditingNow = true;
+  document.getElementById('ny_eventTitle').textContent = notifyFromEvent;
+  ['ny_name','ny_phone','ny_bu','ny_ji'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  const ce = document.getElementById('ny_wantEvent'); if(ce) ce.checked = true; // 이 일정 알림은 기본 체크
+  const cg = document.getElementById('ny_wantGeneral'); if(cg) cg.checked = false;
+  document.getElementById('notifyModal').classList.add('show');
+}
+function closeNotifyModal(){
+  document.getElementById('notifyModal').classList.remove('show');
+  isEditingNow = false;
+}
+async function submitNotifySubscribe(){
+  const name = document.getElementById('ny_name').value.trim();
+  const phone = document.getElementById('ny_phone').value.trim();
+  const bu = document.getElementById('ny_bu').value.trim();
+  const ji = document.getElementById('ny_ji').value.trim();
+  const wantEvent = document.getElementById('ny_wantEvent').checked;
+  const wantGeneral = document.getElementById('ny_wantGeneral').checked;
+  if(!name || !phone){ alert('이름과 전화번호를 입력해주세요.'); return; }
+  if(!wantEvent && !wantGeneral){ alert('알림받고 싶으신 항목을 하나 이상 선택해주세요.'); return; }
+  try{
+    const res = await fetch(APPSSCRIPTURL, {
+      method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({ action:'subscribeNotify', value:{
+        name, phone, bu, ji,
+        fromEvent: wantEvent ? notifyFromEvent : '',
+        wantEvent, wantGeneral
+      } })
+    });
+    const json = await res.json();
+    if(json.ok){
+      closeNotifyModal();
+      showToast('신청되었습니다. 소식이 있을 때 연락드릴게요 🙏');
+    }else{
+      alert(json.error || '신청에 실패했습니다. 다시 시도해주세요.');
+    }
+  }catch(e){
+    alert('네트워크 오류로 신청하지 못했습니다. 다시 시도해주세요.');
+  }
+}
 function openTabNamesEditor(){
   if(!isAdmin) return;
   isEditingNow = true;
@@ -3094,7 +3217,8 @@ async function logoutAdmin(){
   if(yb) yb.style.display = 'none';
   setTextEditMode(false); // 관리자 모드를 나가면 문구 수정도 같이 꺼서 헷갈리지 않게
   applyAdminUI();
-  renderOptions();
+  renderAllContent(); // 관리자 전용 버튼들이 확실히 사라지도록 화면 전체를 다시 그린다
+  refreshQuickIfOpen(); // 빠른 찾아보기 화면에 있었다면 거기도 다시 그린다
 }
 function applyAdminUI(){
   document.body.classList.toggle('admin-on', isAdmin);
@@ -3141,6 +3265,7 @@ async function loginAdmin(){
       applyAdminUI();
       setTextEditMode(true, true); // 중복 확인 건너뛰기
       renderAllContent(); // 수정 버튼들이 나타나도록 화면 전체를 다시 그린다
+      refreshQuickIfOpen(); // 빠른 찾아보기 화면에 있었다면 거기도 다시 그린다
       showToast('관리자 모드로 들어왔습니다');
     }else{
       showToast('비밀번호가 맞지 않습니다', true);
@@ -3552,9 +3677,12 @@ async function saveContentEditor(){
 
   loadOptionsOverride();
   loadLocalShared();
-  renderAllContent();          // 화면이 비어 보이지 않게 우선 그려두고
+  // 예전엔 여기서 이 기기의 옛 값으로 먼저 화면을 그렸는데, 그러면 "다른 행사가 잠깐 보였다가
+  // 최근 저장한 걸로 바뀌는" 것처럼 보이는 문제가 있었습니다. 이제 서버 최신 값이 올 때까지
+  // 로딩 표시만 두고, 한 번에 정확한 내용으로 그립니다.
   const latest = await dataPromise;
-  await applyLatestData(latest);  // 서버 내용이 오는 즉시 덮어쓴다
+  await applyLatestData(latest);  // 서버 내용이 오면 그걸로 딱 한 번 그린다
+  if(!latest) renderAllContent(); // 서버 연결이 안 됐을 때만 이 기기의 옛 값으로라도 보여준다
   if(latest){
     _lastDataSignature = JSON.stringify([latest.subapp_text_overrides, latest.subapp_options,
       latest.subapp_timetables, latest.subapp_meals, latest.subapp_prep_groups, latest.subapp_activities, latest.subapp_program, latest.subapp_next_events, latest.subapp_notices]);
@@ -3564,6 +3692,7 @@ async function saveContentEditor(){
   if(isAdmin){
     setTextEditMode(true, canSaveToServer === true); // 이미 확인됐으면 중복 확인 건너뛰기
     renderAllContent(); // 관리자용 수정 버튼들이 나타나도록 화면을 다시 그린다
+    refreshQuickIfOpen(); // 빠른 찾아보기 화면에 있었다면 거기도 다시 그린다
   }
   history.replaceState(buildNavState(), '');
   setInterval(syncFromSheetShared, 60000);
