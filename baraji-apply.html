@@ -447,9 +447,17 @@ body.admin-on .adm-toolbar{display:flex}
 const APPSSCRIPTURL = "https://script.google.com/macros/s/AKfycbypbINZxPPOTBCSPZL39LOWgZnqcRaxo0akj9fDN4Rsv6kZ3-dkUfhJ0ctV9CBF87Rs/exec";
 const YTVIDEOID = "eQWuKJ79RMo";
 
+// 클릭했을 때 지연 없이 바로 재생되도록, 유튜브 iframe API를 페이지가 열리자마자 미리 불러둔다
+(function preloadYT(){
+  const tag = document.createElement("script");
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+})();
+
 let REMOTE_DATA = { meals:{}, menus:[], activities:[], schedules:[], siteconfig:{} };
 let isAdmin = false;
 let ADMIN_PW = "";
+let SCHEDULE_COUNTS = {}; // 정원이 걸린 일정별 "지금까지 신청한 인원수" — 서버(getScheduleCounts)에서 받아온다
 
 const FALLBACK_ACTIVITIES = [
   {icon:"🍚", title:"군장병들을 위한 공양을 만들어요", desc:"정성껏 준비한 음식이 장병들에겐 어머니의 따뜻한 한 끼가 됩니다."},
@@ -516,6 +524,17 @@ async function loadRemoteData(){
     REMOTE_DATA = JSON.parse(JSON.stringify(FALLBACK_DATA));
   }
   renderAll();
+  loadScheduleCounts(); // 정원 카운트는 별도 요청 — 실패해도 나머지 화면엔 영향 없게 분리
+}
+async function loadScheduleCounts(){
+  try{
+    const res = await fetch(APPSSCRIPTURL+"?action=getScheduleCounts&t="+Date.now(), {cache:"no-store"});
+    const json = await res.json();
+    if(json.ok) SCHEDULE_COUNTS = json.data || {};
+  }catch(e){
+    console.warn("정원 카운트 불러오기 실패", e);
+  }
+  renderApplySchedules();
 }
 function renderAll(){ applySiteTexts(); renderLanding(); renderActivities(); renderMeals(); renderApplySchedules(); }
 
@@ -587,8 +606,8 @@ async function persistSiteconfig(){
   try{
     const res = await fetch(APPSSCRIPTURL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({ password: ADMIN_PW, key:"siteconfig", value: REMOTE_DATA.siteconfig }) });
     const json = await res.json();
-    if(!json.ok){ showToast("저장 실패 — 비밀번호를 다시 확인해주세요"); logoutAdmin(); }
-  }catch(e){ showToast("저장 실패 — 네트워크 오류"); }
+    if(!json.ok){ showToast("⚠️ 저장 실패 — 다시 시도해주세요 (로그인은 유지됩니다)"); }
+  }catch(e){ showToast("저장 실패 — 네트워크 오류. 다시 시도해주세요 (로그인은 유지됩니다)"); }
 }
 /* ---------- 제목·문구 클릭 편집 (관리자) ---------- */
 const INLINE_TEXT_FIELDS = [
@@ -749,6 +768,9 @@ function mainInlineFormHtml(s, targetId, formType){
           </select>
         </div>
       </div>`:""}
+      ${!isLanding?`<div class="if-row">
+        <div class="if-field"><label>정원(선택)</label><input type="text" id="if_cap" value="${s.cap||""}" placeholder="비우면 무제한, 예) 10"></div>
+      </div>`:""}
       <div class="if-actions">
         <button class="if-cancel" onclick="hideInlineForm('${targetId}')">취소</button>
         <button class="if-save" onclick="saveMainInline('${s.id||""}','${targetId}','${formType}')">저장</button>
@@ -788,13 +810,15 @@ function saveMainInline(existingId, targetId, formType){
   const nights = document.getElementById("if_nights").value;
   const place = isLanding ? document.getElementById("if_place").value.trim() : "정토사회문화회관";
   const status = isLanding ? document.getElementById("if_status").value : "recruiting";
+  const capRaw = isLanding ? "" : document.getElementById("if_cap").value.trim();
+  const cap = capRaw ? parseInt(capRaw,10) : null; // 비우면 무제한(null)
   if((isLanding && !name) || !month || !startDay || !endDay){ showToast(isLanding?"프로그램명/월/시작일/종료일을 입력해주세요":"월/시작일/종료일을 입력해주세요"); return; }
   if(existingId){
     const s = REMOTE_DATA.schedules.find(x=>x.id===existingId);
     if(isLanding) Object.assign(s, {name, month, startDay, startTime, endDay, endTime, nights, place, status});
-    else Object.assign(s, {month, startDay, startTime, endDay, endTime, nights});
+    else Object.assign(s, {month, startDay, startTime, endDay, endTime, nights, cap});
   }else{
-    REMOTE_DATA.schedules.push({ id:"m-"+Date.now(), type:formType||"main", name, month, startDay, startTime, endDay, endTime, nights, place, status });
+    REMOTE_DATA.schedules.push({ id:"m-"+Date.now(), type:formType||"main", name, month, startDay, startTime, endDay, endTime, nights, place, status, cap });
   }
   hideInlineForm(targetId);
   renderAll();
@@ -833,6 +857,9 @@ function partInlineFormHtml(s, targetId){
         <div class="if-field"><label>시작시간</label><input type="text" id="pf_stime" value="${s.startTime||""}" placeholder="13:30"></div>
         <div class="if-field"><label>종료시간</label><input type="text" id="pf_etime" value="${s.endTime||""}" placeholder="19:30"></div>
       </div>
+      <div class="if-row">
+        <div class="if-field"><label>정원(선택)</label><input type="text" id="pf_cap" value="${s.cap||""}" placeholder="비우면 무제한, 예) 10"></div>
+      </div>
       <div class="if-actions">
         <button class="if-cancel" onclick="hideInlineForm('${targetId}')">취소</button>
         <button class="if-save" onclick="savePartInline('${s.id||""}','${targetId}')">저장</button>
@@ -853,12 +880,14 @@ function savePartInline(existingId, targetId){
   const activity = document.getElementById("pf_activity").value;
   const place = "정토사회문화회관";
   const status = "recruiting";
+  const capRaw = document.getElementById("pf_cap").value.trim();
+  const cap = capRaw ? parseInt(capRaw,10) : null; // 비우면 무제한(null)
   if(!month || !day || !activity){ showToast("월/일/활동명을 입력해주세요"); return; }
   if(existingId){
     const s = REMOTE_DATA.schedules.find(x=>x.id===existingId);
-    Object.assign(s, {month, day, startTime, endTime, activity, place, status});
+    Object.assign(s, {month, day, startTime, endTime, activity, place, status, cap});
   }else{
-    REMOTE_DATA.schedules.push({ id:"p-"+Date.now(), type:"part", month, day, startTime, endTime, activity, place, status });
+    REMOTE_DATA.schedules.push({ id:"p-"+Date.now(), type:"part", month, day, startTime, endTime, activity, place, status, cap });
   }
   hideInlineForm(targetId);
   renderAll();
@@ -891,18 +920,29 @@ function moveSchedule(id, dir){
 }
 async function persistData(){
   if(!ADMIN_PW){ showToast("관리자 인증이 필요합니다"); return; }
+  // 예전엔 일정 저장과 메뉴 저장을 동시에(병렬로) 보냈는데, 구글 앱스크립트가
+  // 같은 스크립트로 거의 동시에 들어온 요청을 처리하다가 가끔 하나를 실패시키는
+  // 경우가 있었습니다. 그리고 그 실패 하나 때문에 무조건 관리자를 강제
+  // 로그아웃시켜서, 방금 고친 내용이 실제로는 저장되지 않은 채로 화면에만
+  // 남아있다가 나중에 서버의 옛날 값으로 되돌아가 보이는 문제가 있었습니다.
+  // 이제는 순서대로 보내서 충돌 가능성을 줄이고, 실패해도 로그아웃시키지 않고
+  // 다시 시도할 수 있게 안내만 합니다.
   try{
-    const [r1, r2] = await Promise.all([
-      fetch(APPSSCRIPTURL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({ password: ADMIN_PW, key:"apply_schedules", value: REMOTE_DATA.schedules }) }),
-      fetch(APPSSCRIPTURL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({ password: ADMIN_PW, key:"meals", value: REMOTE_DATA.meals }) })
-    ]);
-    const [j1, j2] = await Promise.all([r1.json(), r2.json()]);
-    if(!j1.ok || !j2.ok){
-      showToast("저장 실패 — 비밀번호를 다시 확인해주세요");
-      logoutAdmin();
+    const r1 = await fetch(APPSSCRIPTURL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({ password: ADMIN_PW, key:"apply_schedules", value: REMOTE_DATA.schedules }) });
+    const j1 = await r1.json();
+    if(!j1.ok){
+      showToast("⚠️ 일정 저장 실패 — 다시 시도해주세요 (로그인은 유지됩니다)");
+      return;
     }
+    const r2 = await fetch(APPSSCRIPTURL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({ password: ADMIN_PW, key:"meals", value: REMOTE_DATA.meals }) });
+    const j2 = await r2.json();
+    if(!j2.ok){
+      showToast("⚠️ 메뉴 저장 실패 — 방금 고친 일정은 저장됐습니다. 메뉴만 다시 시도해주세요");
+      return;
+    }
+    showToast("저장되었습니다");
   }catch(e){
-    showToast("저장 실패 — 네트워크 오류");
+    showToast("저장 실패 — 네트워크 오류. 다시 시도해주세요 (로그인은 유지됩니다)");
   }
 }
 
@@ -1008,7 +1048,18 @@ function partApplyTitle(s){
   return `${s.month}/${s.day}(${wd(s.month,s.day)}) ${s.startTime} ~ ${s.endTime} : ${s.activity}`;
 }
 function isClosed(s){ return s && s.closed === true; }
-function closedBadge(s){ return isClosed(s) ? `<span class="cap-badge cap-full">마감</span>` : ""; }
+// ★ 정원(cap)이 걸린 일정: 지금까지 신청한 인원(SCHEDULE_COUNTS)이 정원 이상이면 자동으로 마감 취급
+function hasCap(s){ return !!(s && s.cap && Number(s.cap) > 0); }
+function capCount(s){ return (s && SCHEDULE_COUNTS[s.id]) || 0; }
+function isCapFull(s){ return hasCap(s) && capCount(s) >= Number(s.cap); }
+function isFull(s){ return isClosed(s) || isCapFull(s); } // 선택을 막아야 하는지 여부(수동 마감 + 정원 마감 모두 포함)
+function closedBadge(s){ return isFull(s) ? `<span class="cap-badge cap-full">마감</span>` : ""; }
+// 정원이 걸려있고 아직 마감 전이면 "잔여 n자리"를 보여준다
+function capRemainBadge(s){
+  if(!hasCap(s) || isFull(s)) return "";
+  const remain = Math.max(0, Number(s.cap) - capCount(s));
+  return `<span class="cap-badge">잔여 ${remain}자리</span>`;
+}
 function toggleClosed(id){
   const s = REMOTE_DATA.schedules.find(x=>x.id===id);
   if(!s) return;
@@ -1084,23 +1135,23 @@ function renderApplySchedules(){
   const parts = REMOTE_DATA.schedules.filter(s => s.type === "part" && s.status !== "cancelled" && !isPastPart(s));
 
   document.getElementById("scheduleMain").innerHTML = mains.map(s => {
-    const blocked = isClosed(s) && !selectedMains.includes(s.id);
+    const blocked = isFull(s) && !selectedMains.includes(s.id);
     const closed = isClosed(s);
     return `
     <div class="opt-item ${selectedMains.includes(s.id)?'sel':''} ${blocked?'is-full':''}" data-id="${s.id}" data-status="${s.status||'recruiting'}">
       ${isAdmin?`<div class="drag-handle">⠿</div>`:`<div class="opt-radio" ${blocked?'':`onclick="toggleMain('${s.id}')"`}></div>`}
-      <div class="opt-text" ${blocked?'':`onclick="toggleMain('${s.id}')"`}>${mainApplyTitle(s)}${s.status==='planned'?' <span class="opt-tag">(일정 미확정)</span>':''}${closedBadge(s)}</div>
+      <div class="opt-text" ${blocked?'':`onclick="toggleMain('${s.id}')"`}>${mainApplyTitle(s)}${s.status==='planned'?' <span class="opt-tag">(일정 미확정)</span>':''}${closedBadge(s)}${capRemainBadge(s)}</div>
       ${isAdmin?`<div class="opt-admin-btns"><button class="b-icon ${closed?'is-closed':''}" onclick="toggleClosed('${s.id}')">${closed?"마감":"모집"}</button><button class="b-icon" onclick="showMainInlineForm('${s.id}')">✎</button><button class="b-icon del" onclick="deleteSchedule('${s.id}')">✕</button></div>`:""}
     </div>
     <div id="mainInlineForm-${s.id}"></div>`;
   }).join("");
   document.getElementById("schedulePart").innerHTML = parts.map(s => {
-    const blocked = isClosed(s) && !selectedParts.includes(s.id);
+    const blocked = isFull(s) && !selectedParts.includes(s.id);
     const closed = isClosed(s);
     return `
     <div class="opt-item ${selectedParts.includes(s.id)?'sel':''} ${blocked?'is-full':''}" data-id="${s.id}">
       ${isAdmin?`<div class="drag-handle">⠿</div>`:`<div class="opt-radio" ${blocked?'':`onclick="togglePart('${s.id}')"`}></div>`}
-      <div class="opt-text" ${blocked?'':`onclick="togglePart('${s.id}')"`}>${partApplyTitle(s)}${closedBadge(s)}</div>
+      <div class="opt-text" ${blocked?'':`onclick="togglePart('${s.id}')"`}>${partApplyTitle(s)}${closedBadge(s)}${capRemainBadge(s)}</div>
       ${isAdmin?`<div class="opt-admin-btns"><button class="b-icon ${closed?'is-closed':''}" onclick="toggleClosed('${s.id}')">${closed?"마감":"모집"}</button><button class="b-icon" onclick="showPartInlineForm('${s.id}')">✎</button><button class="b-icon del" onclick="deleteSchedule('${s.id}')">✕</button></div>`:""}
     </div>
     <div id="partInlineForm-${s.id}"></div>`;
@@ -1257,6 +1308,9 @@ function chooseApply(){
 function chooseVideo(){
   document.getElementById("choiceStage").classList.add("hide");
   document.getElementById("videoStage").classList.remove("hide");
+  // "홍보영상 보기"를 누른 이 클릭 자체가 사용자 제스처이므로, 한 번 더 탭하게 하지 않고
+  // 바로 영상을 시작한다. tap-to-start 화면은 자동재생이 막혔을 때만 대비용으로 남겨둔다.
+  startVideo();
 }
 function startVideo(){
   document.getElementById("tapToStart").classList.add("hide");
