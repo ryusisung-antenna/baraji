@@ -10,11 +10,11 @@
 <title>군청년 바라지 - 밥은 먹었니?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&family=Gowun+Batang:wght@400;700&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#F1F2EC;--paper:#F1F2EC;--paper-2:#FBFBF7;--ink:#2B2E28;--ink-soft:#5A5F54;--line:#DBDBCF;--accent:#5B7355;--warm:#5B7355;--sage:#5B7355;--sage-soft:#8A9B82;--sage-wash:#E6EAE0;--shadow:0 1px 0 rgba(43,46,40,.04), 0 10px 30px -18px rgba(43,46,40,.28);--r:18px;--maxw:560px}
+:root{--bg:#FFF8EB;--paper:#FFF8EB;--paper-2:#FFFDF8;--ink:#25342B;--ink-soft:#5D695D;--line:#EADBC8;--accent:#B15A38;--warm:#B15A38;--sage:#B15A38;--sage-soft:#D49B7C;--sage-wash:#FBE9D9;--shadow:0 1px 0 rgba(83,52,34,.04), 0 10px 30px -18px rgba(83,52,34,.18);--r:18px;--maxw:560px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:#111}
+html,body{margin:0;background:var(--paper)}
 body{font-family:"Pretendard",sans-serif;color:var(--ink);line-height:1.65}
 .wrap{max-width:var(--maxw);margin:0 auto;min-height:100vh;background:var(--paper);position:relative;overflow:hidden;display:flex;flex-direction:column}
 
@@ -22,7 +22,7 @@ body{font-family:"Pretendard",sans-serif;color:var(--ink);line-height:1.65}
 .choice-stage.hide{display:none}
 .choice-inner{max-width:var(--maxw);margin:0 auto;padding:36px 26px;width:100%;box-sizing:border-box}
 .s-card{border:1px solid var(--line);border-radius:var(--r);padding:20px;cursor:pointer;margin-bottom:12px;background:var(--paper-2);box-shadow:var(--shadow);display:flex;gap:14px;align-items:center;transition:.15s}
-.s-card.primary{border-color:var(--sage-soft);background:linear-gradient(135deg,var(--sage-wash),var(--paper-2) 65%)}
+.s-card.primary{border-color:#E4C7B3;background:#FFF2E4;box-shadow:0 2px 10px rgba(83,52,34,.06)}
 .s-ic{flex:none;width:44px;height:44px;border-radius:50%;background:var(--paper);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
 .s-card.primary .s-ic{background:var(--sage);border-color:var(--sage);color:#fff}
 .s-ic svg{width:20px;height:20px}
@@ -49,7 +49,7 @@ body{font-family:"Pretendard",sans-serif;color:var(--ink);line-height:1.65}
 .page.active{display:flex;animation:fadeIn .35s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .page-scroll{flex:1;overflow-y:auto;padding:30px 26px 18px;-webkit-overflow-scrolling:touch}
-.page-footer{flex:none;padding:16px 26px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(250,249,245,0),var(--paper) 40%);display:flex;flex-direction:column;gap:10px}
+.page-footer{flex:none;padding:16px 26px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(255,248,235,0),var(--paper) 40%);display:flex;flex-direction:column;gap:10px}
 .kicker{font-size:11px;font-weight:600;letter-spacing:.24em;color:var(--ink-soft);margin-bottom:18px;text-transform:uppercase;text-align:center}
 h1.title{font-family:"Gowun Batang",serif;font-size:24px;font-weight:600;margin:0 0 12px;color:var(--ink);line-height:1.5;text-align:center;letter-spacing:-.01em}
 h1.title .warm{color:var(--warm)}
@@ -184,13 +184,13 @@ p.lead{font-size:13.5px;color:var(--ink-soft);text-align:center;margin:0 0 26px;
 /* 모집현황 (관리자 전용) */
 /* 모집현황 — 꼭지앱(공양꼭지)과 완전히 동일한 색·서체·간격을 쓴다 */
 #page-recruit{
-  --k-green:#8FB04E; --k-green-deep:#6E8C3A; --k-clay:#C77E4E;
-  --k-ink:#3A352E; --k-ink-soft:#7A7263; --k-ink-faint:#A99F8C;
-  --k-line:#E6DECF; --k-card:#FFFFFF;
+  --k-green:#B15A38; --k-green-deep:#9B482D; --k-clay:#B15A38;
+  --k-ink:#25342B; --k-ink-soft:#5D695D; --k-ink-faint:#8A8B7B;
+  --k-line:#EADBC8; --k-card:#FFFDF8;
   --k-shadow:0 1px 2px rgba(58,53,46,.04),0 10px 30px rgba(58,53,46,.06);
   --k-serif:'Gowun Batang',serif;
   --k-sans:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Pretendard','Noto Sans KR',sans-serif;
-  background:#FBF8F1;color:var(--k-ink)
+  background:var(--paper);color:var(--k-ink)
 }
 #page-recruit .page-scroll{padding-left:16px;padding-right:16px}
 #page-recruit .title,#page-recruit .lead,#page-recruit .kicker{color:var(--k-ink)}
@@ -251,6 +251,263 @@ body.admin-on #adminBadge{display:block}
 .adm-toolbar{display:none;gap:8px;padding:9px 22px;background:#FFF6D8;border-bottom:1px solid #E9DDA8;font-size:11.5px;align-items:center;position:relative;z-index:60}
 body.admin-on .adm-toolbar{display:flex}
 .adm-toolbar button{font-size:11px;padding:5px 10px;border-radius:14px;border:1px solid var(--ink);background:#fff;cursor:pointer}
+
+/* 바라지 활동 이미지와 신청 화면 */
+.activity-art-card{
+  background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px;
+}
+.activity-art-card img{
+  width:100%;display:block;aspect-ratio:1.138/1;object-fit:cover;background:#fff;
+  border-bottom:1px solid var(--line);
+}
+.activity-art-copy{display:grid;grid-template-columns:38px 1fr;gap:13px;padding:16px 16px 17px}
+.activity-art-copy .num{
+  width:34px;height:34px;border-radius:50%;border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  font-family:"Gowun Batang",serif;font-size:12px;font-weight:700;color:var(--ink)
+}
+.activity-art-copy h3{
+  font-family:"Gowun Batang",serif;font-size:16px;font-weight:700;
+  margin:1px 0 6px;line-height:1.5
+}
+.activity-art-copy p{font-size:13px;color:var(--ink-soft);line-height:1.7;margin:0}
+
+.meal-art{
+  width:100%;display:block;border-radius:14px;border:1px solid var(--line);
+  margin:0 0 14px;background:#fff
+}
+.meal-slot.has-art{padding:14px}
+.meal-slot.has-art .meal-slot-label{margin-bottom:12px}
+.meal-slot.has-art .recipe-mini{padding-left:2px;padding-right:2px}
+
+.apply-choice-note{
+  font-size:12.5px;color:var(--ink-soft);line-height:1.7;margin:4px 0 16px
+}
+.apply-program-group{margin:18px 0 24px}
+.apply-program-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 1px 10px
+}
+.apply-program-head h4{
+  font-family:"Gowun Batang",serif;font-size:17px;margin:0;color:var(--ink)
+}
+.apply-duration{
+  font-size:11px;font-weight:800;color:var(--sage);background:var(--sage-wash);
+  border-radius:99px;padding:4px 9px;white-space:nowrap
+}
+.apply-schedule-card{
+  border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px 13px;
+  margin-bottom:9px;display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start;
+  cursor:pointer
+}
+.apply-schedule-card.sel{border-color:var(--sage);background:var(--sage-wash)}
+.apply-schedule-card.blocked{opacity:.48;cursor:not-allowed}
+.schedule-check{
+  width:20px;height:20px;border:1.5px solid var(--line);border-radius:6px;margin-top:2px;
+  display:grid;place-items:center;font-size:11px;background:#fff
+}
+.apply-schedule-card.sel .schedule-check,.part-date-row.sel .schedule-check{
+  background:var(--sage);border-color:var(--sage);color:#fff
+}
+.schedule-inline-wrap{min-width:0}
+.schedule-inline{
+  display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;line-height:1.45
+}
+.schedule-inline .date{font-weight:800;font-size:14.5px;color:var(--ink)}
+.schedule-inline .time{font-size:12px;color:var(--ink-soft);font-weight:600}
+.schedule-inline .range{font-size:12px;color:var(--sage);font-weight:800}
+.schedule-inline-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.status-mini,.cap-badge{
+  display:inline-flex;align-items:center;font-size:9.5px;border:1px solid var(--line);
+  color:var(--ink-soft);border-radius:99px;padding:2px 6px;background:#fff
+}
+.cap-badge.cap-full{color:#9C5146;border-color:#CFA59F;background:#FFF8F7}
+.conflict-note{display:block;color:#9C5146;font-size:10.5px;margin-top:6px}
+
+.part-category{margin:20px 0 10px;border-top:1px solid var(--line);padding-top:17px}
+.part-cat-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-bottom:10px}
+.part-cat-head h4{font-family:"Gowun Batang",serif;font-size:17px;margin:0}
+.part-cat-head span{font-size:11.5px;color:var(--ink-soft);font-weight:700}
+.part-date-row{
+  border:1px solid var(--line);background:#fff;border-radius:13px;padding:12px 13px;margin:7px 0;
+  display:flex;align-items:center;gap:10px;cursor:pointer
+}
+.part-date-row.sel{border-color:var(--sage);background:var(--sage-wash)}
+.part-date-row.blocked{opacity:.48;cursor:not-allowed}
+.part-date-main{flex:1;min-width:0}
+.part-date-main b{font-size:14px}
+.part-date-badge{
+  font-size:9.5px;border-radius:99px;padding:2px 6px;border:1px solid var(--line);
+  color:var(--ink-soft);white-space:nowrap
+}
+.part-date-badge.full{color:#9C5146;border-color:#CFA59F}
+
+.apply-admin-row{display:flex;gap:5px;justify-content:flex-end;margin-top:9px;grid-column:1/-1}
+.apply-admin-row .b-icon{width:auto;padding:0 9px;border-radius:99px;font-size:10px}
+
+.submit-progress{
+  display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:12px;
+  background:var(--paper-2);padding:12px 13px;margin:12px 0;font-size:12px;color:var(--ink-soft)
+}
+.submit-progress.hidden{display:none}
+.submit-progress b{display:block;color:var(--ink);font-size:12.5px}
+.submit-progress small{display:block;margin-top:2px;font-size:10.5px}
+.submit-spinner{
+  width:20px;height:20px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--sage);
+  animation:spin .8s linear infinite;flex:none
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.done-screen.show{display:block}
+.done-screen .emoji{font-size:38px}
+.guide-card{
+  margin:22px 0 18px;border:1px solid var(--line);border-radius:20px;
+  background:var(--paper-2);padding:22px 17px;text-align:left;box-shadow:var(--shadow)
+}
+.guide-header-card{margin-bottom:12px}
+.guide-card .gc-k{
+  font-size:10.5px;font-weight:800;letter-spacing:.18em;color:var(--sage)
+}
+.guide-card h3{
+  font-family:"Gowun Batang",serif;font-size:24px;line-height:1.35;margin:8px 0 5px;color:var(--ink)
+}
+.gc-name{font-size:14px;color:var(--ink-soft);margin-bottom:18px}
+.complete-subcard{
+  border:1px solid var(--line);background:var(--paper-2);border-radius:20px;
+  padding:18px 16px;text-align:left;box-shadow:var(--shadow);margin:0 0 12px
+}
+.complete-subcard .gc-k{
+  font-size:9.5px;font-weight:800;letter-spacing:.17em;color:var(--sage);margin-bottom:5px
+}
+.gc-section-title{
+  font-family:"Gowun Batang",serif;font-size:16px;font-weight:700;margin:0 0 10px;color:var(--ink)
+}
+.gc-schedules{display:grid;gap:9px}
+.guide-sched-card{
+  border:1px solid var(--line);background:#fff;border-radius:13px;padding:13px
+}
+.guide-sched-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:7px}
+.guide-sched-top b{font-family:"Gowun Batang",serif;font-size:14px}
+.guide-sched-badge{
+  font-size:9.5px;font-weight:800;color:var(--sage);background:var(--sage-wash);
+  border-radius:99px;padding:3px 7px;white-space:nowrap
+}
+.guide-inline-date{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.guide-inline-date .g-date{font-size:14px;font-weight:800}
+.guide-inline-date .g-time{font-size:11.5px;color:var(--ink-soft)}
+.guide-inline-date .g-range{font-size:11px;color:var(--sage);font-weight:800}
+.gc-flow{display:grid;gap:0}
+.flow-step{
+  display:grid;grid-template-columns:36px 1fr;gap:11px;position:relative;padding:0 0 18px
+}
+.flow-step:not(:last-child)::before{
+  content:"";position:absolute;left:17px;top:33px;bottom:0;width:1px;background:var(--line)
+}
+.flow-no{
+  width:35px;height:35px;border-radius:50%;background:#fff;border:1px solid var(--line);
+  display:grid;place-items:center;color:var(--sage);font-size:10px;font-weight:800;z-index:1
+}
+.flow-step b{
+  display:block;font-family:"Gowun Batang",serif;font-size:14.5px;margin:2px 0 3px
+}
+.flow-step small{display:block;font-size:11.5px;color:var(--ink-soft);line-height:1.65}
+.save-guide-btn{
+  width:100%;border:1px solid var(--sage);background:var(--sage);color:#fff;border-radius:12px;
+  padding:13px 15px;font-family:"Pretendard",sans-serif;font-size:13px;font-weight:700;cursor:pointer
+}
+@media(max-width:380px){
+  .activity-art-copy{padding:14px 14px 15px}
+  .activity-art-copy h3{font-size:15px}
+  .schedule-inline .date{font-size:13.5px}
+  .part-cat-head{align-items:flex-start;flex-direction:column;gap:2px}
+}
+
+
+/* ===== 2026-09-23 UX refinement ===== */
+.schedule-skeleton-list{display:grid;gap:9px;margin:12px 0 18px}
+.schedule-skeleton-card{
+  min-height:84px;border:1px solid var(--line);border-radius:14px;background:#fff;
+  padding:13px;display:grid;grid-template-columns:22px 1fr;gap:11px;align-items:center;overflow:hidden;position:relative
+}
+.schedule-skeleton-card.compact{min-height:68px}
+.schedule-skeleton-card::after{
+  content:"";position:absolute;inset:0;transform:translateX(-110%);
+  background:linear-gradient(90deg,transparent,rgba(251,233,217,.8),transparent);
+  animation:skeletonShimmer 1.15s ease-in-out infinite
+}
+.schedule-skeleton-card>span{width:20px;height:20px;border:1px solid var(--line);border-radius:6px;background:#FFF1E1}
+.schedule-skeleton-card>div{display:grid;gap:9px}
+.schedule-skeleton-card i{display:block;height:12px;border-radius:8px;background:#F5E6D6;width:78%}
+.schedule-skeleton-card i:last-child{width:54%;height:10px}
+@keyframes skeletonShimmer{100%{transform:translateX(110%)}}
+
+.apply-program-head{align-items:center;margin:0 2px 9px}
+.apply-program-head h4,.part-cat-head h4{
+  font-family:"Gowun Batang",serif;font-size:16.5px;line-height:1.42;font-weight:700;color:var(--ink)
+}
+.apply-duration{font-size:10.5px;line-height:1.2;padding:5px 9px}
+.part-cat-head{align-items:center;margin-bottom:8px}
+.part-cat-head span{font-size:11.5px;line-height:1.35}
+.apply-schedule-card{
+  padding:11px 12px;min-height:76px;align-items:center;gap:10px;margin-bottom:8px
+}
+.apply-schedule-card .schedule-check{align-self:center;margin-top:0}
+.schedule-inline{line-height:1.35;row-gap:3px}
+.schedule-inline-meta{margin-top:5px}
+.part-date-row{padding:10px 12px;min-height:58px;align-items:center;margin:6px 0}
+.part-date-row .schedule-check{align-self:center;margin-top:0}
+.part-category{margin:18px 0 8px;padding-top:15px}
+
+.activity-art-card{
+  position:relative;background:transparent;border:0;box-shadow:none;overflow:hidden;margin-bottom:18px
+}
+.activity-art-card img{
+  width:100%;height:auto;aspect-ratio:auto;object-fit:contain;display:block;background:transparent;border:0
+}
+.activity-art-copy{
+  position:absolute;left:18px;right:18px;top:17px;z-index:2;pointer-events:none;
+  display:block;padding:0
+}
+.activity-art-copy .num{
+  width:31px;height:31px;background:rgba(255,253,248,.9);border-color:rgba(177,90,56,.28);
+  color:var(--sage);font-size:11px;backdrop-filter:blur(2px)
+}
+.activity-art-copy h3{
+  font-size:16px;line-height:1.42;margin:0 0 4px;font-weight:700;color:var(--ink);
+  text-shadow:0 1px 0 rgba(255,255,255,.95)
+}
+.activity-art-copy p{
+  font-size:12.5px;line-height:1.58;margin:0;color:var(--ink-soft);max-width:92%;
+  text-shadow:0 1px 0 rgba(255,255,255,.95)
+}
+
+@media(max-width:600px){
+  .done-screen{padding:38px 0 26px}
+  .guide-card{margin-left:0;margin-right:0;padding:22px 16px}
+  .complete-subcard{margin-left:0;margin-right:0;padding:17px 15px}
+  .save-guide-btn{margin-left:0;margin-right:0}
+}
+@media(max-width:380px){
+  .activity-art-copy{left:14px;right:14px;top:14px}
+  .activity-art-copy h3{font-size:15px}
+  .activity-art-copy p{font-size:11.8px;line-height:1.52;max-width:96%}
+}
+@media(min-width:601px){
+  .activity-art-copy{left:26px;right:26px;top:25px}
+  .activity-art-copy h3{font-size:21px;line-height:1.45;margin-bottom:7px}
+  .activity-art-copy p{font-size:15px;line-height:1.65;max-width:90%}
+}
+.apply-program-head h4,.part-cat-head h4{
+  font-size:14px;line-height:1.45;font-weight:700;margin:0
+}
+.apply-duration{font-size:10px}
+.apply-section-split{margin-top:16px}
+.apply-section-split .section-title{margin-bottom:10px}
+.section-title .num{width:29px;height:24px;border-radius:13px;font-size:10px}
+.load-retry{display:block;margin:12px auto 0;padding:9px 16px;border:1px solid var(--sage);border-radius:9px;background:#fff;color:var(--sage);font:600 12px "Pretendard",sans-serif;cursor:pointer}
+.submit-progress.is-slow{border-color:var(--sage-soft)}
+.submit-progress.is-uncertain{border-color:#CFA59F;background:#FFF8F7}
+
 </style>
 </head>
 <body>
@@ -296,7 +553,7 @@ body.admin-on .adm-toolbar{display:flex}
       <h1 class="title" id="secretTitle" onclick="handleSecretTap()">밥은 <span class="warm">먹었니?</span></h1>
       <p class="lead" id="landingSub">군청년 바라지를 모집합니다.<br>지금 신청받고 있는 일정을 확인해보세요.</p>
       <div class="landing-cal-head"><span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/></svg></span><span id="landingMonthLabel">8월에 예정된 바라지 봉사일정</span></div>
-      <div id="landingSchedList"><div class="loading-note">일정 불러오는 중...</div></div>
+      <div id="landingSchedList"><div class="schedule-skeleton-list" aria-hidden="true"><div class="schedule-skeleton-card"><span></span><div><i></i><i></i></div></div><div class="schedule-skeleton-card"><span></span><div><i></i><i></i></div></div></div></div>
       <div id="landingIntro"></div>
       <div id="landingInlineForm"></div>
       <button class="admin-add-btn hidden" id="addLandingBtn" onclick="showLandingInlineForm()">+ 새 일정 추가</button>
@@ -361,7 +618,7 @@ body.admin-on .adm-toolbar{display:flex}
       <button class="btn-back" onclick="goPage('landing')">← 이전</button>
       <div class="kicker">APPLY</div>
       <h1 class="title" id="applyTitle">군청년 바라지 <span class="warm">전국모집</span></h1>
-      <p class="lead" id="applyLead" style="margin-bottom:22px">아들같고 동생같은 군용사들이 마음을 편안히 쉬고 더 행복한 군생활을 해나갈 수 있는 의미있는 시간에 함께 해 주세요.</p>
+      <p class="lead" id="applyLead" style="margin-bottom:14px">아들같고 동생같은 군용사들이 마음을 편안히 쉬고 더 행복한 군생활을 해나갈 수 있는 의미있는 시간에 함께 해 주세요.</p>
 
       <div id="formArea">
         <div class="section">
@@ -400,39 +657,66 @@ body.admin-on .adm-toolbar{display:flex}
           </div>
         </div>
 
-        <div class="section" id="confirmedSection">
-          <div class="section-title"><span class="num">3</span>참가 일정 / 신청동기 / 신청경로</div>
-          <div class="group-label strong">8-1. 바라지 일정 선택<br><span style="font-weight:700">*바라지 프로그램으로 운영되는 일정임*</span></div>
-          <div class="section-desc" id="mainDesc" style="margin:2px 0 10px">바라지 프로그램은 공양봉사뿐 아니라 법사님 간담회, 산책, 회관 둘러보기, 군청년 프로그램 참관 등의 일정으로 함께 진행됩니다.</div>
-          <div id="scheduleMain"></div>
+        <div class="section">
+          <div class="section-title"><span class="num">3-1</span>바라지 프로그램으로 참여</div>
+          <div class="apply-choice-note" id="mainDesc">1박 2일 서울여행 또는 2박 3일 행복학교 전체 바라지 일정에 참여하는 방식입니다. 행복학교 바라지는 1박 2일 부분 참여 일정이 열릴 수도 있습니다. 지금 가능한 날짜와 시간을 보고 선택해주세요. 복수 선택도 가능합니다.</div>
+          <div id="scheduleMain"><div class="schedule-skeleton-list" aria-hidden="true"><div class="schedule-skeleton-card"><span></span><div><i></i><i></i></div></div><div class="schedule-skeleton-card"><span></span><div><i></i><i></i></div></div></div></div>
           <div id="mainInlineForm"></div>
           <button class="admin-add-btn hidden" id="addMainBtn" onclick="showMainInlineForm()">+ 바라지 일정 추가</button>
-          <div class="group-label strong" style="margin-top:22px">8-2. 파트 일일봉사 일정 선택<span style="font-weight:800">(중복선택 가능)</span></div>
-          <div class="section-desc" id="partDesc" style="margin:2px 0 10px">파트 일일봉사는 공양봉사에만 참여하는 봉사입니다.</div>
-          <div id="schedulePart"></div>
+        </div>
+        <div class="section apply-section-split">
+          <div class="section-title"><span class="num">3-2</span>하루만 공양봉사로 참여</div>
+          <div class="apply-choice-note" id="partDesc">공양간 봉사만 함께하는 파트봉사입니다. 점심공양 지원과 저녁공양 봉사를 날짜별로 선택할 수 있고, 복수 선택도 가능합니다.</div>
+          <div id="schedulePart"><div class="schedule-skeleton-list" aria-hidden="true"><div class="schedule-skeleton-card compact"><span></span><div><i></i><i></i></div></div><div class="schedule-skeleton-card compact"><span></span><div><i></i><i></i></div></div></div></div>
           <div id="partInlineForm"></div>
           <button class="admin-add-btn hidden" id="addPartBtn" onclick="showPartInlineForm()">+ 파트봉사 일정 추가</button>
-          <div class="field" style="margin-top:20px"><label>바라지 신청 동기<span class="req">*</span></label><textarea id="motive" placeholder="신청 동기를 자유롭게 적어주세요"></textarea></div>
+        </div>
+
+        <div class="section" id="confirmedFields">
+          <div class="section-title"><span class="num">4</span>바라지 신청</div>
+          <div class="field"><label>바라지 신청 동기<span class="req">*</span></label><textarea id="motive" placeholder="신청 동기를 자유롭게 적어주세요"></textarea></div>
           <div class="field"><label>바라지 신청 경로<span class="req">*</span></label><input type="text" id="route" placeholder="예) 정토회 홈페이지, 텔레그램 소식채널, 모임, 소개 등"></div>
         </div>
 
-        <div class="section hidden" id="pendingSection">
-          <div class="section-title"><span class="num">3</span>참가 일정</div>
+        <div class="section hidden" id="pendingNotice">
+          <div class="section-title"><span class="num">4</span>일정 확정 전 예약</div>
           <div class="pending-notice">
             <div class="pe">🗓️</div>
-            <h4 id="pendingMonthLabel">해당 월은 아직 일정이 완전히 확정되지 않은 상태입니다</h4>
-            <p>일정이 확정되면 남겨주신 연락처로 신청페이지를 보내드리겠습니다.<br>기본정보만 남겨주시면 확정 즉시 안내드릴게요.</p>
+            <h4 id="pendingMonthLabel">선택한 일정은 아직 완전히 확정되지 않았습니다</h4>
+            <p>기본정보만 남겨주시면 일정이 확정된 뒤 신청페이지를 안내드리겠습니다.</p>
           </div>
         </div>
 
         <div class="error-msg" id="errorMsg">필수 항목을 모두 입력해주세요.</div>
+        <div id="submitProgress" class="submit-progress hidden"><span class="submit-spinner"></span><div><b>신청을 접수하고 있습니다</b><small>안전하게 저장되는 동안 몇 초 정도 걸릴 수 있어요.</small></div></div>
         <button class="btn-submit" id="submitBtn" onclick="submitApply()">신청 제출하기</button>
       </div>
 
       <div class="done-screen" id="doneScreen">
         <div class="emoji">🙏</div>
         <h2 id="doneTitle">신청이 완료되었습니다</h2>
-        <p id="doneDesc">신청해주셔서 감사합니다.<br>신청하신 분은 텔레그램 소통방으로 안내드립니다.</p>
+        <p id="doneDesc">신청해주셔서 감사합니다.</p>
+        <div id="guideCard" class="guide-card guide-header-card">
+          <div class="gc-k">MY BARAJI</div>
+          <h3>나의 바라지 안내</h3>
+          <div id="guideName" class="gc-name"></div>
+        </div>
+        <div class="complete-subcard complete-schedule-block">
+          <div class="gc-k">MY SERVICE</div>
+          <div class="gc-section-title">내 봉사</div>
+          <div id="guideSchedules" class="gc-schedules"></div>
+        </div>
+        <div class="complete-subcard complete-flow-block">
+          <div class="gc-k">NEXT STEP</div>
+          <div class="gc-section-title">향후 진행</div>
+          <div class="gc-flow">
+            <div class="flow-step"><div class="flow-no">01</div><div><b>신청 완료</b><small>신청하신 내용이 접수되었습니다.</small></div></div>
+            <div class="flow-step"><div class="flow-no">02</div><div><b>신청 일정 확인 연락</b><small>신청하신 일정이 맞는지, 변동사항은 없는지 메시지로 확인드려요.</small></div></div>
+            <div class="flow-step"><div class="flow-no">03</div><div><b>텔레그램 소통방 초대</b><small>준비물과 세부일정, 변동사항을 소통방에서 함께 나눕니다.</small></div></div>
+            <div class="flow-step"><div class="flow-no">04</div><div><b>바라지에서 만나요</b><small>건강히 잘 지내다가 약속한 날 만나요.</small></div></div>
+          </div>
+        </div>
+        <button class="save-guide-btn" onclick="saveGuideImage()">나의 참가 안내 이미지로 저장</button>
       </div>
     </div>
   </div>
@@ -458,6 +742,51 @@ let REMOTE_DATA = { meals:{}, menus:[], activities:[], schedules:[], siteconfig:
 let isAdmin = false;
 let ADMIN_PW = "";
 let SCHEDULE_COUNTS = {}; // 정원이 걸린 일정별 "지금까지 신청한 인원수" — 서버(getScheduleCounts)에서 받아온다
+const SESSION_DATA_CACHE_KEY = "baraji_apply_oct_data_v2";
+const SESSION_DATA_CACHE_TTL = 4 * 60 * 1000;
+let DATA_LOAD_STATE = "loading";
+let DATA_LOAD_PROMISE = null;
+
+function readSessionDataCache_(){
+  try{
+    const raw=sessionStorage.getItem(SESSION_DATA_CACHE_KEY);
+    if(!raw)return null;
+    const parsed=JSON.parse(raw);
+    if(!parsed||!parsed.ts||!parsed.data)return null;
+    if(Date.now()-parsed.ts>SESSION_DATA_CACHE_TTL){
+      sessionStorage.removeItem(SESSION_DATA_CACHE_KEY);
+      return null;
+    }
+    return parsed;
+  }catch(e){return null;}
+}
+function writeSessionDataCache_(){
+  try{
+    sessionStorage.setItem(SESSION_DATA_CACHE_KEY,JSON.stringify({
+      ts:Date.now(),data:REMOTE_DATA,counts:SCHEDULE_COUNTS
+    }));
+  }catch(e){}
+}
+function scheduleSkeletonHtml_(count=2,compact=false){
+  return '<div class="schedule-skeleton-list" aria-hidden="true">'+
+    Array.from({length:count},()=>'<div class="schedule-skeleton-card'+(compact?' compact':'')+'"><span></span><div><i></i><i></i></div></div>').join('')+
+    '</div>';
+}
+async function fetchJsonWithTimeout_(url,options={},timeoutMs=18000){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),timeoutMs);
+  try{
+    const response=await fetch(url,{...options,signal:controller.signal});
+    if(!response.ok)throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  }finally{clearTimeout(timer);}
+}
+function scheduleLoadMessage_(state){
+  const note=state==="slow"
+    ? "원데이터 응답이 늦어지고 있습니다. 연결을 계속 확인하고 있습니다."
+    : "일정을 불러오지 못했습니다. 네트워크를 확인하고 다시 시도해주세요.";
+  return `<div class="empty-note">${note}${state==="slow"?"":'<button type="button" class="load-retry" onclick="loadRemoteData(true)">일정 다시 불러오기</button>'}</div>`;
+}
 
 const FALLBACK_ACTIVITIES = [
   {icon:"🍚", title:"군장병들을 위한 공양을 만들어요", desc:"정성껏 준비한 음식이 장병들에겐 어머니의 따뜻한 한 끼가 됩니다."},
@@ -498,39 +827,78 @@ const FALLBACK_DATA = {
   meals: FALLBACK_MEALS
 };
 
-async function loadRemoteData(){
-  try{
-    const res = await fetch(APPSSCRIPTURL+"?t="+Date.now(), {cache:"no-store"}); // t= : 캐시된 옛 응답이 오지 않도록
-    const json = await res.json();
-    if(!json.ok) throw new Error(json.error||"load fail");
-    const d = json.data || {};
-    REMOTE_DATA.meals      = (d.meals && Object.keys(d.meals).length) ? d.meals : FALLBACK_DATA.meals;
-    REMOTE_DATA.menus      = (d.menus && d.menus.length) ? d.menus : [];
-    REMOTE_DATA.activities = (d.activities && d.activities.length) ? d.activities : FALLBACK_DATA.activities;
-    // 일정은 신청앱 전용 칸(apply_schedules)에서 읽는다. 예전엔 메인앱과 같은 'schedules' 칸을
-    // 함께 써서 서로 덮어쓰는 문제가 있었다. 아직 전용 칸이 없으면(첫 전환), 옛 칸에서
-    // 신청앱 형식(type이 있는 것)만 골라서 이어받는다.
-    if(d.apply_schedules && d.apply_schedules.length){
-      REMOTE_DATA.schedules = d.apply_schedules;
-    }else if(d.schedules && d.schedules.length){
-      const mine = d.schedules.filter(x=>x && x.type);
-      REMOTE_DATA.schedules = mine.length ? mine : FALLBACK_DATA.schedules;
-    }else{
-      REMOTE_DATA.schedules = FALLBACK_DATA.schedules;
-    }
-    REMOTE_DATA.siteconfig = d.siteconfig || FALLBACK_DATA.siteconfig;
-  }catch(e){
-    console.warn("Sheets 연동 실패, fallback 데이터 사용", e);
-    REMOTE_DATA = JSON.parse(JSON.stringify(FALLBACK_DATA));
+async function loadRemoteData(force=false){
+  if(DATA_LOAD_PROMISE)return DATA_LOAD_PROMISE;
+  const cached=!force?readSessionDataCache_():null;
+  if(cached){
+    REMOTE_DATA=cached.data||REMOTE_DATA;
+    SCHEDULE_COUNTS=cached.counts||{};
+    DATA_LOAD_STATE="cached";
+    renderAll();
+    return true;
   }
-  renderAll();
-  loadScheduleCounts(); // 정원 카운트는 별도 요청 — 실패해도 나머지 화면엔 영향 없게 분리
+
+  DATA_LOAD_STATE="loading";
+  renderApplySchedules();
+  DATA_LOAD_PROMISE=(async()=>{
+    const slowTimer=setTimeout(()=>{
+      if(DATA_LOAD_STATE==="loading"){
+        const m=document.getElementById("scheduleMain"),p=document.getElementById("schedulePart");
+        if(m)m.insertAdjacentHTML("beforeend",scheduleLoadMessage_("slow"));
+        if(p)p.insertAdjacentHTML("beforeend",scheduleLoadMessage_("slow"));
+      }
+    },8000);
+    try{
+      let json,lastError;
+      for(let attempt=0;attempt<2;attempt++){
+        try{
+          json=await fetchJsonWithTimeout_(APPSSCRIPTURL,{cache:"no-store"},18000);
+          break;
+        }catch(e){lastError=e;if(attempt===0)await new Promise(r=>setTimeout(r,600));}
+      }
+      if(!json)throw lastError;
+      if(!json.ok)throw new Error(json.error||"load fail");
+      const d=json.data||{};
+
+      REMOTE_DATA.meals=(d.meals&&Object.keys(d.meals).length)?d.meals:FALLBACK_DATA.meals;
+      REMOTE_DATA.menus=(d.menus&&d.menus.length)?d.menus:[];
+      REMOTE_DATA.activities=(d.activities&&d.activities.length)?d.activities:FALLBACK_DATA.activities;
+      if(d.apply_schedules&&d.apply_schedules.length){
+        REMOTE_DATA.schedules=d.apply_schedules;
+      }else if(d.schedules&&d.schedules.length){
+        const mine=d.schedules.filter(x=>x&&x.type);
+        REMOTE_DATA.schedules=mine.length?mine:[];
+      }else{
+        REMOTE_DATA.schedules=[];
+      }
+      REMOTE_DATA.siteconfig=d.siteconfig||FALLBACK_DATA.siteconfig;
+      DATA_LOAD_STATE="loaded";
+      renderAll();
+      writeSessionDataCache_();
+      // 일정 표시를 정원 조회가 끝날 때까지 막지 않는다. 동시에 Apps Script에
+      // 두 요청을 보내면 느려질 수 있으므로 본문 로딩이 끝난 다음 조회한다.
+      loadScheduleCounts();
+      return true;
+    }catch(e){
+      console.warn("Sheets 연동 실패",e);
+      DATA_LOAD_STATE="error";
+      renderAll();
+      return false;
+    }finally{
+      clearTimeout(slowTimer);
+      DATA_LOAD_PROMISE=null;
+    }
+  })();
+  return DATA_LOAD_PROMISE;
 }
 async function loadScheduleCounts(){
   try{
-    const res = await fetch(APPSSCRIPTURL+"?action=getScheduleCounts&t="+Date.now(), {cache:"no-store"});
-    const json = await res.json();
-    if(json.ok) SCHEDULE_COUNTS = json.data || {};
+    const json = await fetchJsonWithTimeout_(APPSSCRIPTURL+"?action=getScheduleCounts", {cache:"no-store"},12000);
+    if(json.ok){
+      SCHEDULE_COUNTS = json.data || {};
+      renderApplySchedules();
+      writeSessionDataCache_();
+    }
   }catch(e){
     console.warn("정원 카운트 불러오기 실패", e);
   }
@@ -598,8 +966,12 @@ function applySiteTexts(){
   if(sc.leadAct2) document.getElementById("act2Lead").textContent = sc.leadAct2;
   if(sc.titleApply) document.getElementById("applyTitle").textContent = sc.titleApply;
   if(sc.leadApply) document.getElementById("applyLead").textContent = sc.leadApply;
-  if(sc.descMain) document.getElementById("mainDesc").textContent = sc.descMain;
-  if(sc.descPart) document.getElementById("partDesc").textContent = sc.descPart;
+  const mainCopyOld="공양봉사뿐 아니라 법사님 간담회, 산책, 회관 둘러보기, 군청년 프로그램 참관 등을 함께하는 바라지 일정입니다. 가능한 날짜를 복수 선택할 수 있습니다.";
+  const mainCopyNew="1박 2일 서울여행 또는 2박 3일 행복학교 전체 바라지 일정에 참여하는 방식입니다. 행복학교 바라지는 1박 2일 부분 참여 일정이 열릴 수도 있습니다. 지금 가능한 날짜와 시간을 보고 선택해주세요. 복수 선택도 가능합니다.";
+  const partCopyOld="공양간 봉사만 하루 단위로 함께합니다. 점심공양 지원과 저녁공양 봉사를 날짜별로 고를 수 있고, 복수 선택도 가능합니다.";
+  const partCopyNew="공양간 봉사만 함께하는 파트봉사입니다. 점심공양 지원과 저녁공양 봉사를 날짜별로 선택할 수 있고, 복수 선택도 가능합니다.";
+  document.getElementById("mainDesc").textContent=(!sc.descMain||sc.descMain===mainCopyOld)?mainCopyNew:sc.descMain;
+  document.getElementById("partDesc").textContent=(!sc.descPart||sc.descPart===partCopyOld)?partCopyNew:sc.descPart;
 }
 async function persistSiteconfig(){
   if(!ADMIN_PW){ showToast("관리자 인증이 필요합니다"); return; }
@@ -678,10 +1050,14 @@ function renderLanding(){
   const mains = REMOTE_DATA.schedules.filter(s => s.type==="main");
   const list = mains.filter(s => s.status !== "cancelled" && !isPastMain(s) && (s.status||"recruiting")==="recruiting");
   const curMonth = list.length ? Math.min(...list.map(s=>s.month)) : new Date().getMonth()+1;
-  document.getElementById("landingMonthLabel").textContent = `${curMonth}월에 예정된 바라지 봉사일정`;
+  document.getElementById("landingMonthLabel").textContent = DATA_LOAD_STATE==="loading" ? "모집 중인 바라지 봉사일정" : `${curMonth}월에 예정된 바라지 봉사일정`;
 
   const el = document.getElementById("landingSchedList");
-  if(!list.length){ el.innerHTML = '<div class="empty-note">현재 모집중인 일정이 없습니다.</div>'; }
+  if(DATA_LOAD_STATE==="loading"&&!REMOTE_DATA.schedules.length){
+    el.innerHTML=scheduleSkeletonHtml_(2);
+  }else if(DATA_LOAD_STATE==="error"&&!REMOTE_DATA.schedules.length){
+    el.innerHTML=scheduleLoadMessage_("error");
+  }else if(!list.length){ el.innerHTML = '<div class="empty-note">현재 모집중인 일정이 없습니다.</div>'; }
   else{
     el.innerHTML = list.map(s => {
       const admBtns = isAdmin ? `
@@ -959,14 +1335,28 @@ const ACTIVITY_ICONS = {
   home:    `<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg>`,
   camera:  `<svg viewBox="0 0 24 24"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg>`,
 };
+const ACTIVITY_ART = [
+  "https://ryusisung-antenna.github.io/web-projects/baraji/assets/media-3abf81b9cfac.jpg",
+  "https://ryusisung-antenna.github.io/web-projects/baraji/assets/media-2cac4c074d1a.jpg",
+  "https://ryusisung-antenna.github.io/web-projects/baraji/assets/media-257ab904c06f.jpg",
+  "https://ryusisung-antenna.github.io/web-projects/baraji/assets/media-59ecb37acbcb.jpg",
+  "https://ryusisung-antenna.github.io/web-projects/baraji/assets/media-5e02ad795e81.jpg",
+  "https://ryusisung-antenna.github.io/web-projects/baraji/assets/media-01e678a8fc34.jpg",
+  "https://ryusisung-antenna.github.io/web-projects/baraji/assets/media-597405d9157f.jpg",
+  "https://ryusisung-antenna.github.io/web-projects/baraji/assets/media-ad98264f5453.jpg",
+  "https://ryusisung-antenna.github.io/web-projects/baraji/assets/media-85fb01793750.jpg",
+  "https://ryusisung-antenna.github.io/web-projects/baraji/assets/media-2a810142ad37.jpg"
+];
 function renderActivities(){
   const el = document.getElementById("activityList");
   const list = REMOTE_DATA.activities.length ? REMOTE_DATA.activities : FALLBACK_ACTIVITIES;
   if(!list.length){ el.innerHTML = '<div class="empty-note">등록된 활동이 없습니다.</div>'; return; }
   el.innerHTML = list.map((a,i) => {
-    const iconSvg = ACTIVITY_ICONS[a.emoji] || null;
-    const iconHtml = iconSvg ? `<span class="act-icon">${iconSvg}</span>` : (a.icon ? `${a.icon} ` : "");
-    return `<div class="act-card"><div class="num">${i+1}</div><div><h3>${iconHtml}${a.title||""}</h3><p>${a.desc||""}</p></div></div>`;
+    const art = ACTIVITY_ART[i] || "";
+    return `<article class="activity-art-card">
+      ${art?`<img src="${art}" alt="${esc_(a.title||"바라지 활동")} 일러스트" loading="lazy">`:""}
+      <div class="activity-art-copy"><h3>${esc_(a.title||"")}</h3><p>${esc_(a.desc||"")}</p></div>
+    </article>`;
   }).join("");
 }
 
@@ -979,6 +1369,10 @@ const PROGRAMS = [
   { id:'seohaeng', label:'서울여행 (1박 2일)', meals:['dinner1','morning'], nights:'1박2일' },
   { id:'happy', label:'행복학교 (2박 3일)', meals:['dinner1','morning','dinner2'], nights:'2박3일' },
 ];
+const MEAL_ART = {
+  dinner1:"https://ryusisung-antenna.github.io/web-projects/baraji/assets/media-acf13f070848.jpg",
+  dinner2:"https://ryusisung-antenna.github.io/web-projects/baraji/assets/media-8a4819b1881e.jpg"
+};
 function mealSlotHtml_(key, meals){
   const m = meals[key];
   if(!m) return "";
@@ -988,7 +1382,8 @@ function mealSlotHtml_(key, meals){
     const emoji = mm ? (mm.emoji||"") : "";
     return `<div class="recipe-mini"><div class="rm-left"><span class="rm-dot"></span><span class="rm-name">${emoji?emoji+" ":""}${esc_(name)}</span></div></div>`;
   }).join("");
-  return `<div class="meal-slot"><div class="meal-slot-label">${esc_(m.label||key)}</div>${rows || '<div class="empty-note" style="text-align:left;padding:2px 0">아직 메뉴가 정해지지 않았습니다.</div>'}</div>`;
+  const art = MEAL_ART[key] || "";
+  return `<div class="meal-slot ${art?"has-art":""}"><div class="meal-slot-label">${esc_(m.label||key)}</div>${art?`<img class="meal-art" src="${art}" alt="${esc_(m.label||"공양")} 음식 일러스트" loading="lazy">`:""}${rows || '<div class="empty-note" style="text-align:left;padding:2px 0">아직 메뉴가 정해지지 않았습니다.</div>'}</div>`;
 }
 let selectedMealProgram = null;
 function activePrograms_(){
@@ -1130,60 +1525,153 @@ function enableDragReorder(containerId, type){
     document.addEventListener("pointerup", onUp, {once:true});
   });
 }
+function durationLabel(nights){
+  const n=String(nights||"").replace(/\s+/g,"");
+  if(n==="1박2일") return "1박 2일 봉사";
+  if(n==="2박3일") return "2박 3일 봉사";
+  return nights ? String(nights).replace(/(\d)박(\d)일/,"$1박 $2일") : "바라지 일정";
+}
+function hmToMinutes(v){
+  const m=String(v||"").match(/^(\d{1,2}):(\d{2})$/);
+  return m ? Number(m[1])*60+Number(m[2]) : 0;
+}
+function scheduleRange(s){
+  const year=new Date().getFullYear();
+  if(s.type==="applymain"){
+    const sh=hmToMinutes(s.startTime), eh=hmToMinutes(s.endTime);
+    return {start:new Date(year,Number(s.month)-1,Number(s.startDay),Math.floor(sh/60),sh%60).getTime(),end:new Date(year,Number(s.month)-1,Number(s.endDay),Math.floor(eh/60),eh%60).getTime()};
+  }
+  const sh=hmToMinutes(s.startTime), eh=hmToMinutes(s.endTime);
+  return {start:new Date(year,Number(s.month)-1,Number(s.day),Math.floor(sh/60),sh%60).getTime(),end:new Date(year,Number(s.month)-1,Number(s.day),Math.floor(eh/60),eh%60).getTime()};
+}
+function schedulesOverlap(a,b){
+  const A=scheduleRange(a), B=scheduleRange(b);
+  return A.start < B.end && B.start < A.end;
+}
+function selectedScheduleObjects(exceptId){
+  return [...selectedMains,...selectedParts].filter(id=>id!==exceptId).map(id=>REMOTE_DATA.schedules.find(s=>s.id===id)).filter(Boolean);
+}
+function hasScheduleConflict(s){
+  return selectedScheduleObjects(s.id).some(chosen=>schedulesOverlap(s,chosen));
+}
+function scheduleStatusHtml(s){
+  return (s.status==="planned"?'<span class="status-mini">일정 미확정</span>':"") + closedBadge(s) + capRemainBadge(s);
+}
+function applyAdminHtml(s,kind){
+  if(!isAdmin) return "";
+  const closed=isClosed(s);
+  const edit=kind==="main"?`showMainInlineForm('${s.id}')`:`showPartInlineForm('${s.id}')`;
+  return `<div class="apply-admin-row">
+    <button class="b-icon ${closed?"is-closed":""}" onclick="event.stopPropagation();toggleClosed('${s.id}')">${closed?"마감":"모집"}</button>
+    <button class="b-icon" onclick="event.stopPropagation();${edit}">수정</button>
+    <button class="b-icon del" onclick="event.stopPropagation();deleteSchedule('${s.id}')">삭제</button>
+  </div>`;
+}
 function renderApplySchedules(){
-  const mains = REMOTE_DATA.schedules.filter(s => s.type === "applymain" && s.status !== "cancelled" && !isPastMain(s));
-  const parts = REMOTE_DATA.schedules.filter(s => s.type === "part" && s.status !== "cancelled" && !isPastPart(s));
+  const mEl=document.getElementById("scheduleMain"), pEl=document.getElementById("schedulePart");
+  if(!mEl||!pEl) return;
+  if(DATA_LOAD_STATE==="loading"&&!REMOTE_DATA.schedules.length){
+    mEl.innerHTML=scheduleSkeletonHtml_(3);
+    pEl.innerHTML=scheduleSkeletonHtml_(2,true);
+    return;
+  }
+  if(DATA_LOAD_STATE==="error"&&!REMOTE_DATA.schedules.length){
+    const msg=scheduleLoadMessage_("error");
+    mEl.innerHTML=msg;
+    pEl.innerHTML=msg;
+    return;
+  }
+  const mains=REMOTE_DATA.schedules.filter(s=>s.type==="applymain"&&s.status!=="cancelled"&&!isPastMain(s));
+  const parts=REMOTE_DATA.schedules.filter(s=>s.type==="part"&&s.status!=="cancelled"&&!isPastPart(s));
+  const order=["1박2일","2박3일"];
+  const keys=[...new Set(mains.map(s=>String(s.nights||"").replace(/\s+/g,"")))];
+  keys.sort((a,b)=>{
+    const ia=order.indexOf(a), ib=order.indexOf(b);
+    return (ia<0?99:ia)-(ib<0?99:ib);
+  });
+  const pad=n=>String(n).padStart(2,"0");
+  const compactDate=(m,d)=>`${Number(m)}.${pad(d)}(${wd(m,d)})`;
 
-  document.getElementById("scheduleMain").innerHTML = mains.map(s => {
-    const blocked = isFull(s) && !selectedMains.includes(s.id);
-    const closed = isClosed(s);
-    return `
-    <div class="opt-item ${selectedMains.includes(s.id)?'sel':''} ${blocked?'is-full':''}" data-id="${s.id}" data-status="${s.status||'recruiting'}">
-      ${isAdmin?`<div class="drag-handle">⠿</div>`:`<div class="opt-radio" ${blocked?'':`onclick="toggleMain('${s.id}')"`}></div>`}
-      <div class="opt-text" ${blocked?'':`onclick="toggleMain('${s.id}')"`}>${mainApplyTitle(s)}${s.status==='planned'?' <span class="opt-tag">(일정 미확정)</span>':''}${closedBadge(s)}${capRemainBadge(s)}</div>
-      ${isAdmin?`<div class="opt-admin-btns"><button class="b-icon ${closed?'is-closed':''}" onclick="toggleClosed('${s.id}')">${closed?"마감":"모집"}</button><button class="b-icon" onclick="showMainInlineForm('${s.id}')">✎</button><button class="b-icon del" onclick="deleteSchedule('${s.id}')">✕</button></div>`:""}
-    </div>
-    <div id="mainInlineForm-${s.id}"></div>`;
-  }).join("");
-  document.getElementById("schedulePart").innerHTML = parts.map(s => {
-    const blocked = isFull(s) && !selectedParts.includes(s.id);
-    const closed = isClosed(s);
-    return `
-    <div class="opt-item ${selectedParts.includes(s.id)?'sel':''} ${blocked?'is-full':''}" data-id="${s.id}">
-      ${isAdmin?`<div class="drag-handle">⠿</div>`:`<div class="opt-radio" ${blocked?'':`onclick="togglePart('${s.id}')"`}></div>`}
-      <div class="opt-text" ${blocked?'':`onclick="togglePart('${s.id}')"`}>${partApplyTitle(s)}${closedBadge(s)}${capRemainBadge(s)}</div>
-      ${isAdmin?`<div class="opt-admin-btns"><button class="b-icon ${closed?'is-closed':''}" onclick="toggleClosed('${s.id}')">${closed?"마감":"모집"}</button><button class="b-icon" onclick="showPartInlineForm('${s.id}')">✎</button><button class="b-icon del" onclick="deleteSchedule('${s.id}')">✕</button></div>`:""}
-    </div>
-    <div id="partInlineForm-${s.id}"></div>`;
-  }).join("");
+  mEl.innerHTML=keys.length?keys.map(key=>{
+    const items=mains.filter(s=>String(s.nights||"").replace(/\s+/g,"")===key);
+    return `<div class="apply-program-group">
+      <div class="apply-program-head"><h4>${durationLabel(key)}</h4><span class="apply-duration">${String(key).replace(/(\d)박(\d)일/,"$1박 $2일")}</span></div>
+      ${items.map(s=>{
+        const sel=selectedMains.includes(s.id), conflict=!sel&&hasScheduleConflict(s), blocked=(isFull(s)||conflict)&&!sel;
+        return `<div class="apply-schedule-card ${sel?"sel":""} ${blocked?"blocked":""}" data-id="${s.id}" aria-disabled="${blocked}" ${blocked?"":`onclick="toggleMain('${s.id}')"`}>
+          <div class="schedule-check">${sel?"✓":""}</div>
+          <div class="schedule-inline-wrap">
+            <div class="schedule-inline"><span class="date">${compactDate(s.month,s.startDay)}</span><span class="time">${esc_(s.startTime||"")}</span><span class="range">~</span><span class="date">${compactDate(s.month,s.endDay)}</span><span class="time">${esc_(s.endTime||"")}</span></div>
+            <div class="schedule-inline-meta">${scheduleStatusHtml(s)}</div>
+            ${conflict?'<small class="conflict-note">선택한 다른 일정과 시간이 겹칩니다.</small>':""}
+          </div>
+          ${applyAdminHtml(s,"main")}
+        </div><div id="mainInlineForm-${s.id}"></div>`;
+      }).join("")}
+    </div>`;
+  }).join(""):'<div class="empty-note">현재 선택 가능한 바라지 프로그램 일정이 없습니다.</div>';
 
-  const pre = sessionStorage.getItem("baraji_selected_schedule");
-  if(pre && mains.some(s=>s.id===pre) && !selectedMains.includes(pre)) selectedMains.push(pre);
+  const cats=[
+    {name:"점심공양지원",label:"점심공양 지원",fallback:"09:00 – 14:00"},
+    {name:"저녁공양봉사",label:"저녁공양 봉사",fallback:"13:30 – 19:30"}
+  ];
+  const partHtml=cats.map(cat=>{
+    const items=parts.filter(s=>s.activity===cat.name);
+    if(!items.length) return "";
+    const first=items[0];
+    const time=(first.startTime||first.endTime)?`${esc_(first.startTime||"")} – ${esc_(first.endTime||"")}`:cat.fallback;
+    return `<div class="part-category">
+      <div class="part-cat-head"><h4>${cat.label}</h4><span>${time}</span></div>
+      ${items.map(s=>{
+        const sel=selectedParts.includes(s.id), conflict=!sel&&hasScheduleConflict(s), blocked=(isFull(s)||conflict)&&!sel;
+        const badge=isFull(s)?'<span class="part-date-badge full">마감</span>':(hasCap(s)?`<span class="part-date-badge">잔여 ${Math.max(0,Number(s.cap)-capCount(s))}자리</span>`:"");
+        return `<div class="part-date-row ${sel?"sel":""} ${blocked?"blocked":""}" data-id="${s.id}" aria-disabled="${blocked}" ${blocked?"":`onclick="togglePart('${s.id}')"`}>
+          <div class="schedule-check">${sel?"✓":""}</div>
+          <div class="part-date-main"><b>${s.month}월 ${s.day}일 (${wd(s.month,s.day)})</b>${conflict?'<small class="conflict-note">선택한 일정과 겹쳐 선택할 수 없습니다.</small>':""}</div>
+          ${badge}
+          ${applyAdminHtml(s,"part")}
+        </div><div id="partInlineForm-${s.id}"></div>`;
+      }).join("")}
+    </div>`;
+  }).join("");
+  pEl.innerHTML=partHtml||'<div class="empty-note">현재 선택 가능한 파트 일일봉사 일정이 없습니다.</div>';
+
+  const pre=sessionStorage.getItem("baraji_selected_schedule");
+  if(pre&&mains.some(s=>s.id===pre)&&!selectedMains.includes(pre)) selectedMains.push(pre);
   updateSectionMode();
-  if(!isAdmin){ document.getElementById("mainInlineForm").innerHTML=""; document.getElementById("partInlineForm").innerHTML=""; }
-  if(isAdmin){
-    enableDragReorder("scheduleMain","applymain");
-    enableDragReorder("schedulePart","part");
+  if(!isAdmin){
+    const mf=document.getElementById("mainInlineForm"), pf=document.getElementById("partInlineForm");
+    if(mf) mf.innerHTML="";
+    if(pf) pf.innerHTML="";
   }
 }
 function toggleMain(id){
-  const i = selectedMains.indexOf(id);
-  if(i>=0) selectedMains.splice(i,1); else selectedMains.push(id);
+  const s=REMOTE_DATA.schedules.find(x=>x.id===id);
+  if(!s) return;
+  const i=selectedMains.indexOf(id);
+  if(i>=0) selectedMains.splice(i,1);
+  else if(!isFull(s)&&!hasScheduleConflict(s)) selectedMains.push(id);
   renderApplySchedules();
 }
 function togglePart(id){
-  const i = selectedParts.indexOf(id);
-  if(i>=0) selectedParts.splice(i,1); else selectedParts.push(id);
+  const s=REMOTE_DATA.schedules.find(x=>x.id===id);
+  if(!s) return;
+  const i=selectedParts.indexOf(id);
+  if(i>=0) selectedParts.splice(i,1);
+  else if(!isFull(s)&&!hasScheduleConflict(s)) selectedParts.push(id);
   renderApplySchedules();
 }
 function updateSectionMode(){
-  const chosen = selectedMains.map(id => REMOTE_DATA.schedules.find(x=>x.id===id)).filter(Boolean);
-  selectedIsPending = chosen.length>0 && chosen.some(s => s.status === "planned");
-  pendingScheduleTitle = chosen.map(s => s.name || mainApplyTitle(s)).join(" · ");
-  document.getElementById("confirmedSection").classList.toggle("hidden", selectedIsPending && chosen.length>0);
-  document.getElementById("pendingSection").classList.toggle("hidden", !(selectedIsPending && chosen.length>0));
-  if(selectedIsPending && chosen.length>0){
-    document.getElementById("pendingMonthLabel").textContent = `"${pendingScheduleTitle}" 은 아직 일정이 완전히 확정되지 않은 상태입니다`;
+  const chosen=selectedMains.map(id=>REMOTE_DATA.schedules.find(x=>x.id===id)).filter(Boolean);
+  selectedIsPending=chosen.length>0&&chosen.some(s=>s.status==="planned");
+  pendingScheduleTitle=chosen.map(s=>s.name||mainApplyTitle(s)).join(" · ");
+  const confirmed=document.getElementById("confirmedFields");
+  const pending=document.getElementById("pendingNotice");
+  if(confirmed) confirmed.classList.toggle("hidden",selectedIsPending);
+  if(pending) pending.classList.toggle("hidden",!selectedIsPending);
+  if(selectedIsPending){
+    const label=document.getElementById("pendingMonthLabel");
+    if(label) label.textContent=`"${pendingScheduleTitle}" 은 아직 일정이 완전히 확정되지 않은 상태입니다`;
   }
 }
 
@@ -1229,55 +1717,298 @@ function copyText(text){
   return Promise.resolve(fallbackCopy(text));
 }
 async function submitApply(){
-  const basic = {
-    bu: getRadioVal("bu"), ji: document.getElementById("ji").value.trim(),
-    addr: document.getElementById("addr").value.trim(), name: document.getElementById("name").value.trim(),
-    phone: document.getElementById("phone").value.trim(), memberType: getRadioVal("memberType"),
-    gender: getRadioVal("gender")
+  if(document.getElementById("submitBtn").disabled)return;
+  const basic={
+    bu:getRadioVal("bu"),
+    ji:document.getElementById("ji").value.trim(),
+    addr:document.getElementById("addr").value.trim(),
+    name:document.getElementById("name").value.trim(),
+    phone:document.getElementById("phone").value.trim(),
+    memberType:getRadioVal("memberType"),
+    gender:getRadioVal("gender")
   };
-  const basicRequired = ["bu","ji","addr","name","phone","memberType","gender"];
-  const missingBasic = basicRequired.filter(k => !basic[k]);
-  const noSchedule = selectedMains.length===0 && selectedParts.length===0;
-  if(missingBasic.length || noSchedule){
-    document.getElementById("errorMsg").style.display = "block";
+  const missing=["bu","ji","addr","name","phone","memberType","gender"].filter(k=>!basic[k]);
+  const noSchedule=selectedMains.length===0&&selectedParts.length===0;
+  if(missing.length||noSchedule){
+    document.getElementById("errorMsg").style.display="block";
     showToast("필수 항목을 확인해주세요");
     return;
   }
   let payload;
   if(selectedIsPending){
-    payload = { ...basic, kind:"pending", mainSchedules: selectedMains.slice(), mainScheduleTitle: pendingScheduleTitle, submittedAt: new Date().toISOString() };
+    payload={...basic,kind:"pending",mainSchedules:selectedMains.slice(),mainScheduleTitle:pendingScheduleTitle,submittedAt:new Date().toISOString()};
   }else{
-    const motive = document.getElementById("motive").value.trim();
-    const route = document.getElementById("route").value.trim();
-    if(!motive || !route){ document.getElementById("errorMsg").style.display = "block"; showToast("필수 항목을 확인해주세요"); return; }
-    payload = { ...basic, kind:"confirmed", mainSchedules: selectedMains.slice(), partSchedules: selectedParts.slice(), motive, route, submittedAt: new Date().toISOString() };
-  }
-  document.getElementById("errorMsg").style.display = "none";
-  const btn = document.getElementById("submitBtn");
-  btn.disabled = true; btn.textContent = "제출 중...";
-  try{
-    const res = await fetch(APPSSCRIPTURL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify({ action:"applyForm", value: payload }) });
-    const json = await res.json();
-    if(json.ok){
-      if(selectedIsPending){
-        document.getElementById("doneTitle").textContent = "예약 접수가 완료되었습니다";
-        document.getElementById("doneDesc").innerHTML = "일정이 확정되면 남겨주신 연락처로<br>신청페이지를 안내드리겠습니다.";
-      }else{
-        document.getElementById("doneTitle").textContent = "신청이 완료되었습니다";
-        document.getElementById("doneDesc").innerHTML = "신청해주셔서 감사합니다.<br>신청하신 분은 텔레그램 소통방으로 안내드립니다.";
-      }
-      document.getElementById("formArea").classList.add("hidden");
-      document.getElementById("doneScreen").classList.add("show");
-      sessionStorage.removeItem("baraji_selected_schedule");
-    }else{
-      showToast(json.error || "제출 중 오류가 발생했습니다");
-      loadRemoteData(); // 방금 마감됐을 수 있으니 일정을 새로 읽어 화면에 반영
-      btn.disabled = false; btn.textContent = "신청 제출하기";
+    const motive=document.getElementById("motive").value.trim();
+    const route=document.getElementById("route").value.trim();
+    if(!motive||!route){
+      document.getElementById("errorMsg").style.display="block";
+      showToast("신청 동기와 신청 경로를 확인해주세요");
+      return;
     }
-  }catch(e){
-    showToast("네트워크 오류가 발생했습니다. 다시 시도해주세요");
-    btn.disabled = false; btn.textContent = "신청 제출하기";
+    payload={...basic,kind:"confirmed",mainSchedules:selectedMains.slice(),partSchedules:selectedParts.slice(),motive,route,submittedAt:new Date().toISOString()};
   }
+  document.getElementById("errorMsg").style.display="none";
+
+  const btn=document.getElementById("submitBtn");
+  const progress=document.getElementById("submitProgress");
+  btn.disabled=true;
+  btn.textContent="신청 접수 중...";
+  if(progress) progress.classList.remove("hidden");
+  const progressText=progress&&progress.querySelector("small");
+  const slowTimer=setTimeout(()=>{
+    if(progress){progress.classList.add("is-slow");progressText.textContent="서버 응답이 늦어지고 있습니다. 화면을 닫지 말고 잠시 기다려주세요.";}
+  },10000);
+  const uncertainTimer=setTimeout(()=>{
+    if(progress){progress.classList.add("is-uncertain");progressText.textContent="저장 여부를 확인하는 중입니다. 중복 신청을 막기 위해 제출 버튼을 잠시 잠가둡니다.";}
+  },30000);
+  try{
+    const res=await fetch(APPSSCRIPTURL,{
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({action:"applyForm",value:payload})
+    });
+    if(!res.ok)throw new Error("서버 응답 오류");
+    const json=await res.json();
+    if(!json.ok){
+      const rejected=new Error(json.error||"신청이 접수되지 않았습니다.");
+      rejected.confirmedRejection=true;
+      throw rejected;
+    }
+
+    document.getElementById("formArea").classList.add("hidden");
+    document.getElementById("doneScreen").classList.add("show");
+    document.getElementById("doneTitle").textContent=selectedIsPending?"예약 접수가 완료되었습니다":"신청이 완료되었습니다";
+    document.getElementById("doneDesc").innerHTML=selectedIsPending?"일정이 확정되면 남겨주신 연락처로 안내드립니다.":"신청하신 분은 텔레그램 소통방으로 안내됩니다.";
+    renderGuide(basic.name);
+    if(progress) progress.classList.add("hidden");
+    sessionStorage.removeItem("baraji_selected_schedule");
+    sessionStorage.removeItem(SESSION_DATA_CACHE_KEY);
+  }catch(e){
+    if(e.confirmedRejection){
+      if(progress) progress.classList.add("hidden");
+      btn.disabled=false;
+      btn.textContent="신청 제출하기";
+      showToast(e.message);
+    }else{
+      // 통신 오류는 서버가 저장한 직후 응답만 유실된 경우와 구별할 수 없다.
+      // 자동 재전송은 중복 접수를 만들 수 있으므로 잠그고 확인을 안내한다.
+      if(progress){
+        progress.classList.add("is-uncertain");
+        progress.querySelector("b").textContent="접수 여부 확인이 필요합니다";
+        progressText.textContent="응답이 끊겨 저장 여부를 알 수 없습니다. 같은 신청을 다시 보내지 말고 운영자에게 이름·연락처로 접수 여부를 확인해주세요.";
+      }
+      btn.textContent="접수 여부 확인 필요";
+    }
+  }finally{
+    clearTimeout(slowTimer);
+    clearTimeout(uncertainTimer);
+  }
+}
+function scheduleStartKey(s){
+  if(s.startDay!=null) return new Date(new Date().getFullYear(),Number(s.month||1)-1,Number(s.startDay),0,0,0).getTime();
+  return new Date(new Date().getFullYear(),Number(s.month||1)-1,Number(s.day),0,0,0).getTime();
+}
+function selectedGuideItems(){
+  const cdate=(m,d)=>`${Number(m)}.${String(Number(d)).padStart(2,"0")}(${wd(m,d)})`;
+  const mains=selectedMains.map(id=>REMOTE_DATA.schedules.find(s=>s.id===id)).filter(Boolean).map(s=>({
+    type:"main",sortKey:scheduleStartKey(s),kind:"바라지 프로그램",badge:String(s.nights||"").replace(/(\d)박(\d)일/,"$1박 $2일"),
+    compact1:cdate(s.month,s.startDay),time1:esc_(s.startTime||""),
+    compact2:cdate(s.month,s.endDay),time2:esc_(s.endTime||"")
+  }));
+  const parts=selectedParts.map(id=>REMOTE_DATA.schedules.find(s=>s.id===id)).filter(Boolean).map(s=>({
+    type:"part",sortKey:scheduleStartKey(s),kind:s.activity||"공양봉사",badge:"하루 봉사",
+    compact1:cdate(s.month,s.day),time1:`${esc_(s.startTime||"")} – ${esc_(s.endTime||"")}`
+  }));
+  return [...mains,...parts].sort((a,b)=>a.sortKey-b.sortKey);
+}
+function renderGuide(name){
+  const nameEl=document.getElementById("guideName");
+  if(nameEl) nameEl.textContent=name?`${name}님, 신청해주셔서 감사합니다.`:"신청해주셔서 감사합니다.";
+  const host=document.getElementById("guideSchedules");
+  if(!host) return;
+  const cards=selectedGuideItems().map(it=>it.type==="main"
+    ? `<div class="guide-sched-card"><div class="guide-sched-top"><b>${it.kind}</b><span class="guide-sched-badge">${it.badge}</span></div><div class="guide-inline-date"><span class="g-date">${it.compact1}</span><span class="g-time">${it.time1}</span><span class="g-range">~</span><span class="g-date">${it.compact2}</span><span class="g-time">${it.time2}</span></div></div>`
+    : `<div class="guide-sched-card"><div class="guide-sched-top"><b>${it.kind}</b><span class="guide-sched-badge">${it.badge}</span></div><div class="guide-inline-date"><span class="g-date">${it.compact1}</span><span class="g-time">${it.time1}</span></div></div>`
+  );
+  host.innerHTML=cards.length?cards.join(""):'<div class="empty-note">선택한 일정</div>';
+}
+function canvasTextLines_(ctx,text,maxWidth){
+  const chars=[...String(text||"")],lines=[];
+  let line="";
+  for(const ch of chars){
+    const test=line+ch;
+    if(line&&ctx.measureText(test).width>maxWidth){lines.push(line.trimEnd());line=ch.trimStart();}
+    else line=test;
+  }
+  if(line)lines.push(line.trimEnd());
+  return lines.length?lines:[""];
+}
+function drawCanvasLines_(ctx,lines,x,y,lineHeight){
+  lines.forEach((line,i)=>ctx.fillText(line,x,y+i*lineHeight));
+}
+function drawSpacedText_(ctx,text,x,y,spacing){
+  let cx=x;
+  [...String(text||"")].forEach((ch,i)=>{
+    ctx.fillText(ch,cx,y);
+    cx+=ctx.measureText(ch).width+(i<String(text).length-1?spacing:0);
+  });
+  return cx;
+}
+function roundRect(ctx,x,y,w,h,r,fill,stroke){
+  ctx.beginPath();
+  ctx.roundRect(x,y,w,h,r);
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}
+}
+function guideDateParts_(value){
+  const m=String(value||"").match(/^(.*?)(\([^)]*\))$/);
+  return m?{date:m[1],weekday:m[2]}:{date:String(value||""),weekday:""};
+}
+async function saveGuideImage(){
+  // 캔버스는 로딩 시점의 서체를 그대로 굳혀서 저장하므로 두 웹폰트가
+  // 실제로 사용 가능한 상태가 될 때까지 기다린 뒤 이미지를 만든다.
+  await document.fonts.ready;
+  await Promise.all([
+    document.fonts.load('700 92px "Gowun Batang"','나의 바라지 안내'),
+    document.fonts.load('700 44px "IBM Plex Sans KR"','신청 완료'),
+    document.fonts.load('400 38px "IBM Plex Sans KR"','신청하신 내용이 접수되었습니다.')
+  ]);
+
+  const items=selectedGuideItems();
+  const completedStepCount=Math.max(1,Number(REMOTE_DATA.siteconfig?.guideCompletedStepCount||1));
+  const steps=[
+    {no:"01",title:"신청 완료",desc:"신청하신 내용이 접수되었습니다."},
+    {no:"02",title:"신청 일정 확인 연락",desc:"일정이 맞는지, 변동사항은 없는지 메시지로 확인드려요."},
+    {no:"03",title:"텔레그램 소통방 초대",desc:"준비물과 세부일정, 변동사항을 소통방에서 함께 나눕니다."},
+    {no:"04",title:"바라지에서 만나요",desc:"건강히 잘 지내다가 약속한 날 만나요."}
+  ];
+
+  const W=1080,SIDE=64,TOP=88,BOTTOM=64,BLOCK_GAP=56;
+  const COLORS={bg:"#FFF8EB",card:"#FFFDF8",ink:"#25342B",soft:"#5D695D",green:"#B15A38",greenSoft:"#FBE9D9",line:"#EADBC8"};
+  const SANS='"IBM Plex Sans KR", sans-serif',SERIF='"Gowun Batang", serif';
+  const HEADER_H=218,SECTION_TITLE_H=43,TICKET_GAP=28,TICKET_H=362;
+  const SERVICE_H=SECTION_TITLE_H+(items.length?28+items.length*TICKET_H+(items.length-1)*TICKET_GAP:0);
+  const FOOTER_H=73;
+
+  // 설명의 실제 줄 수로 각 단계의 높이를 먼저 계산해야 맨 아래에 빈 공간이 남지 않는다.
+  const measure=document.createElement("canvas").getContext("2d");
+  measure.font=`400 38px ${SANS}`;
+  const timelineTextWidth=W-SIDE-(SIDE+60+28);
+  steps.forEach((step,i)=>{
+    step.completed=i<completedStepCount;
+    step.lines=canvasTextLines_(measure,step.desc,timelineTextWidth);
+    step.height=Math.max(60,66+step.lines.length*57);
+  });
+  const TIMELINE_ITEMS_H=steps.reduce((sum,step)=>sum+step.height,0)+(steps.length-1)*40;
+  const TIMELINE_H=SECTION_TITLE_H+32+TIMELINE_ITEMS_H;
+  const H=TOP+HEADER_H+BLOCK_GAP+SERVICE_H+BLOCK_GAP+TIMELINE_H+BLOCK_GAP+FOOTER_H+BOTTOM;
+
+  const c=document.createElement("canvas");
+  c.width=W;c.height=H;
+  const x=c.getContext("2d");
+  x.textBaseline="alphabetic";x.textAlign="left";
+  x.fillStyle=COLORS.bg;x.fillRect(0,0,W,H);
+
+  // 헤더
+  let y=TOP;
+  x.fillStyle=COLORS.green;x.font=`600 30px ${SANS}`;
+  drawSpacedText_(x,"MY BARAJI",SIDE,y+30,8);
+  const titleTop=y+36+14;
+  x.fillStyle=COLORS.ink;x.font=`700 92px ${SERIF}`;x.fillText("나의 바라지 안내",SIDE,titleTop+91);
+  const nameTop=titleTop+106+14;
+  const greeting=document.getElementById("guideName").textContent||"신청해주셔서 감사합니다.";
+  const nameEnd=greeting.indexOf("님,");
+  let nameX=SIDE;
+  if(nameEnd>0){
+    const person=greeting.slice(0,nameEnd);
+    x.fillStyle=COLORS.ink;x.font=`700 40px ${SANS}`;x.fillText(person,nameX,nameTop+40);
+    nameX+=x.measureText(person).width;
+    x.fillStyle=COLORS.soft;x.font=`500 40px ${SANS}`;x.fillText(greeting.slice(nameEnd),nameX,nameTop+40);
+  }else{
+    x.fillStyle=COLORS.soft;x.font=`500 40px ${SANS}`;x.fillText(greeting,nameX,nameTop+40);
+  }
+
+  // 내 봉사
+  y=TOP+HEADER_H+BLOCK_GAP;
+  x.fillStyle=COLORS.green;x.font=`700 36px ${SANS}`;drawSpacedText_(x,"내 봉사",SIDE,y+36,4);
+  let sy=y+SECTION_TITLE_H+28;
+  const drawDateBlock=(label,dateValue,timeValue,bx,by)=>{
+    const dp=guideDateParts_(dateValue);
+    x.fillStyle=COLORS.soft;x.font=`500 30px ${SANS}`;drawSpacedText_(x,label,bx,by+30,2);
+    x.fillStyle=COLORS.ink;x.font=`700 72px ${SANS}`;x.fillText(dp.date,bx,by+111);
+    const dateW=x.measureText(dp.date).width;
+    if(dp.weekday){x.font=`600 40px ${SANS}`;x.fillText(dp.weekday,bx+dateW+8,by+111);}
+    x.fillStyle=COLORS.green;x.font=`600 44px ${SANS}`;x.fillText(timeValue,bx,by+174);
+  };
+  for(const it of items){
+    const tx=SIDE,tw=W-SIDE*2,bandH=100;
+    roundRect(x,tx,sy+2,tw,TICKET_H,28,COLORS.line,null);
+    x.save();x.beginPath();x.roundRect(tx,sy,tw,TICKET_H,28);x.clip();
+    x.fillStyle=COLORS.card;x.fillRect(tx,sy,tw,TICKET_H);
+    x.fillStyle=COLORS.green;x.fillRect(tx,sy,tw,bandH);x.restore();
+    x.fillStyle=COLORS.card;x.font=`700 40px ${SANS}`;x.fillText(it.kind,tx+40,sy+65);
+    x.font=`600 30px ${SANS}`;
+    const badgeW=x.measureText(it.badge).width+44,badgeH=52,badgeX=tx+tw-40-badgeW,badgeY=sy+24;
+    roundRect(x,badgeX,badgeY,badgeW,badgeH,26,COLORS.card,null);
+    x.fillStyle=COLORS.green;x.fillText(it.badge,badgeX+22,badgeY+37);
+    const blockY=sy+bandH+34;
+    if(it.type==="main"){
+      drawDateBlock("시작",it.compact1,it.time1,tx+40,blockY);
+      drawDateBlock("마침",it.compact2,it.time2,tx+tw-40-330,blockY);
+      const ax=tx+tw/2-32,ay=blockY+77;
+      x.strokeStyle=COLORS.green;x.lineWidth=4;x.lineCap="round";x.lineJoin="round";
+      x.beginPath();x.moveTo(ax,ay+20);x.lineTo(ax+56,ay+20);x.moveTo(ax+44,ay+8);x.lineTo(ax+56,ay+20);x.lineTo(ax+44,ay+32);x.stroke();
+    }else{
+      drawDateBlock("일정",it.compact1,it.time1,tx+40,blockY);
+    }
+    sy+=TICKET_H+TICKET_GAP;
+  }
+
+  // 향후 진행
+  y=TOP+HEADER_H+BLOCK_GAP+SERVICE_H+BLOCK_GAP;
+  x.fillStyle=COLORS.green;x.font=`700 36px ${SANS}`;drawSpacedText_(x,"향후 진행",SIDE,y+36,4);
+  let fy=y+SECTION_TITLE_H+32;
+  const circleX=SIDE,circleCX=circleX+30,contentX=circleX+60+28;
+  steps.forEach((step,i)=>{
+    const nextY=fy+step.height+(i<steps.length-1?40:0);
+    if(i<steps.length-1){
+      x.strokeStyle=COLORS.line;x.lineWidth=3;x.beginPath();x.moveTo(circleCX,fy+60);x.lineTo(circleCX,nextY);x.stroke();
+    }
+    x.beginPath();x.arc(circleCX,fy+30,30,0,Math.PI*2);
+    if(step.completed){x.fillStyle=COLORS.green;x.fill();}
+    else{x.fillStyle=COLORS.card;x.fill();x.strokeStyle=COLORS.green;x.lineWidth=3;x.stroke();}
+    x.textAlign="center";
+    if(step.completed){
+      x.strokeStyle=COLORS.card;x.lineWidth=5;x.lineCap="round";x.lineJoin="round";
+      x.beginPath();x.moveTo(circleCX-13,fy+30);x.lineTo(circleCX-3,fy+40);x.lineTo(circleCX+15,fy+19);x.stroke();
+    }else{
+      x.fillStyle=COLORS.green;x.font=`700 28px ${SANS}`;x.fillText(step.no,circleCX,fy+40);
+    }
+    x.textAlign="left";
+    x.fillStyle=COLORS.ink;x.font=`700 44px ${SANS}`;x.fillText(step.title,contentX,fy+45);
+    if(step.completed){
+      const titleW=x.measureText(step.title).width,badgeText="완료";
+      x.font=`600 28px ${SANS}`;const completeW=x.measureText(badgeText).width+32;
+      roundRect(x,contentX+titleW+18,fy+7,completeW,44,22,COLORS.greenSoft,null);
+      x.fillStyle=COLORS.green;x.fillText(badgeText,contentX+titleW+34,fy+39);
+    }
+    x.fillStyle=COLORS.soft;x.font=`400 38px ${SANS}`;
+    drawCanvasLines_(x,step.lines,contentX,fy+106,57);
+    fy=nextY;
+  });
+
+  // 푸터
+  y=TOP+HEADER_H+BLOCK_GAP+SERVICE_H+BLOCK_GAP+TIMELINE_H+BLOCK_GAP;
+  x.fillStyle=COLORS.line;x.fillRect(SIDE,y,W-SIDE*2,2);
+  x.fillStyle=COLORS.green;x.font=`700 36px ${SERIF}`;x.textAlign="center";
+  x.fillText("밥은 먹었니? · 군청년 바라지",W/2,y+2+28+36);x.textAlign="left";
+
+  c.toBlob(blob=>{
+    if(!blob){showToast("이미지를 만들지 못했습니다. 다시 시도해주세요.");return;}
+    const url=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=url;a.download="군청년바라지_참가안내.png";document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+  },"image/png");
 }
 
 /* ---------- 페이지 전환 / 영상 ---------- */
