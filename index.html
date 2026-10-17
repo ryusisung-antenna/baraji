@@ -251,6 +251,9 @@ body.admin-on .prep-group-label[contenteditable]{ outline:1px dashed var(--sage-
 .meal-pick{ display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
 .meal-pick-item{ display:flex; align-items:center; gap:5px; border:1px solid var(--line); border-radius:20px; padding:5px 11px; font-size:12.5px; cursor:pointer; background:#fff; }
 .meal-pick-item input{ margin:0; }
+.menu-manage-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 0; border-bottom:1px dashed var(--line); font-size:13.5px; }
+.menu-manage-row span{ flex:1; min-width:0; word-break:keep-all; overflow-wrap:anywhere; }
+.menu-del-btn{ flex:none; min-width:56px; min-height:40px; border:1px solid #c0392b; color:#c0392b; background:#fff; border-radius:8px; font-size:12.5px; cursor:pointer; }
 .re-textarea{ width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid var(--line); border-radius:6px; font-family:inherit; font-size:13px; line-height:1.6; resize:vertical; }
 .admin-editrow input{ font-size:12.5px; padding:6px 8px; border:1px solid var(--line); border-radius:6px; }
 .admin-editrow input.time{ width:56px; }
@@ -1838,13 +1841,16 @@ function quickStepsOf(pageId){
       const h = el.querySelector('h2 span[data-editable-key], h1.title');
       const title = h ? h.textContent.trim() : ('' + (i+1));
       const info = quickTabInfo(title);
+      // 2박3일 첫 탭은 "2박 3일"이 아니라 "활동들"로 보여준다
+      if(pageId === 'page-stay3' && i === 0) info.name = '활동들';
       return { index:i, title, name: info.name, icon: info.icon, html: el.innerHTML };
     });
   // "전체 활동" 탭 — 부분만 참여하시는 분도 전체 흐름을 볼 수 있게 붙인다.
   // 다만 서울여행(1박2일) 전체 참가자는 안내서에 이미 전체가 담기므로 제외한다.
   const isFullStay = (quickFromPage === 'page-stay1' || quickFromPage === 'page-stay2' || quickFromPage === 'page-stay3');
   const tabs = [home, ...rest];
-  if(!(PROGRAM_ID === 'seohaeng' && isFullStay)){
+  // 2박3일(page-stay3)도 일정 자체가 전체 활동이라 이 탭이 필요 없다.
+  if(!(PROGRAM_ID === 'seohaeng' && isFullStay) && quickFromPage !== 'page-stay3'){
     // 파트봉사로 신청하신 분께는 "이게 내 일정"으로 오해하지 않도록 다른 이름을 씁니다.
     // 전체(1박2일·2박3일) 참가자에게는 실제로 본인 일정이므로 그대로 "전체 활동"입니다.
     const tabName = isFullStay ? '바라지 전체 활동' : '전체참여하면';
@@ -3582,10 +3588,16 @@ function openContentEditor(kind){
     }).join('') + `
       <div class="admin-editgroup">
         <label class="re-label">새 요리 추가 (이름만 넣고, 레시피는 나중에 채울 수 있습니다)</label>
-        <div style="display:flex;gap:6px">
-          <input id="newMenuName" class="re-input" placeholder="예: 감자조림" style="flex:1">
-          <button class="admin-add-btn" style="margin:0;white-space:nowrap" onclick="addNewMenu()">+ 추가</button>
-        </div>
+        <input id="newMenuName" class="re-input" placeholder="예: 감자조림" style="font-size:16px;padding:11px 12px">
+        <button class="admin-add-btn" onclick="addNewMenu()">+ 이 요리 추가</button>
+      </div>
+      <div class="admin-editgroup">
+        <label class="re-label">등록된 요리 정리 (필요 없는 요리 삭제)</label>
+        ${MENUS.map(m=>`
+          <div class="menu-manage-row" data-name="${escAttr(m.name)}">
+            <span>${escAttr(m.name)}</span>
+            <button type="button" class="menu-del-btn" onclick="deleteMenu(this)">삭제</button>
+          </div>`).join('')}
       </div>`;
   }
 
@@ -3601,6 +3613,26 @@ function addNewMenu(){
   MENUS.push({ emoji:'', name:name, tag:'', recipe:{ serving:'', ingredients:[], steps:[] } });
   queueSubappSync('menus');
   openContentEditor('meals'); // 새 요리가 목록에 보이도록 편집창을 다시 연다
+}
+// 등록된 요리를 목록에서 지운다. 레시피도 함께 사라지고, 이 목록은 다른 앱과 같이 쓰므로 확인을 받는다.
+function deleteMenu(btn){
+  const row = btn.closest('.menu-manage-row');
+  const name = row.dataset.name;
+  const idx = MENUS.findIndex(m=>m.name===name);
+  if(idx < 0) return;
+  if(!confirm("'" + name + "' 요리를 삭제할까요?\n\n· 이 요리에 적어둔 레시피도 함께 사라집니다.\n· 요리 목록은 서울여행·신청앱과 같이 쓰므로 그쪽에서도 사라집니다.\n· 한 번 삭제하면 되돌릴 수 없습니다.")) return;
+  MENUS.splice(idx, 1);
+  Object.keys(MEALS).forEach(k=>{
+    if(MEALS[k] && MEALS[k].menus) MEALS[k].menus = MEALS[k].menus.filter(n=>n!==name);
+  });
+  queueSubappSync('menus');
+  queueSubappSync('meals');
+  // 편집창을 다시 열면 체크해둔 것이 풀리므로, 화면에서 해당 항목만 걷어낸다
+  document.querySelectorAll('#contentEditorBody .meal-pick-item').forEach(el=>{
+    const cb = el.querySelector('input');
+    if(cb && cb.value === name) el.remove();
+  });
+  row.remove();
 }
 function escAttr(s){ return String(s==null?'':s).replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 function ceAddRow(gi){
